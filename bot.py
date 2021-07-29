@@ -14,7 +14,6 @@ from os.path import isfile, join
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
 status = cycle(['League of Legends', 'osu!'])
-TOKEN = 'ODY1NDg3NzQ2OTA1OTMxODQ2.YPEuRg.3_RCdpwXUFh0-DFsrvvwpiywDJA'
 ###########################################################
 
 @tasks.loop(seconds=1200)
