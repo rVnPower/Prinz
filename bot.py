@@ -1,11 +1,5 @@
 import discord
 from discord.ext import commands, tasks
-import random
-from itertools import cycle
-import wikipedia
-from saucenao_api import SauceNao
-import requests
-import json
 import os
 from os import listdir as o
 from os.path import isfile, join
@@ -38,7 +32,6 @@ async def on_message(message):
         await message.channel.send(embed=embed)
     else:
         await bot.process_commands(message)
-
 
 @bot.event
 async def on_command_error(ctx, error):
