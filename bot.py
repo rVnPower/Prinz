@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands, tasks
+import random
+from itertools import cycle
 import os
-from os import listdir as o
-from os.path import isfile, join
 # from keep_alive import keep_alive
-
+from dotenv import load_dotenv
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
 status = cycle(['League of Legends', 'osu!'])
@@ -33,6 +33,7 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
+
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
@@ -41,11 +42,11 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed)
     if isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name='You didn\'t pass in some arguments!')
+        embed.set_author(name='You didn\'t pass in some values!')
         await ctx.send(embed=embed)
     if isinstance(error, commands.BadArgument):
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name='You passed the wrong thing!')
+        embed.set_author(name='You passed the wrong value!')
         await ctx.send(embed=embed)
     else:
         raise error
@@ -55,4 +56,5 @@ for filename in os.listdir('./cogs'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
 # keep_alive()  # Starts a webserver to be pinged.
-bot.run(TOKEN)
+load_dotenv()
+bot.run(os.getenv("TOKEN"))
