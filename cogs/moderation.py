@@ -2,11 +2,6 @@
 import discord
 from discord.ext import commands, tasks
 import random
-from itertools import cycle
-import wikipedia
-from saucenao_api import SauceNao
-import requests
-import json
 #####################################################
 
 class Moderation(commands.Cog):
