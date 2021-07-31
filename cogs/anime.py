@@ -1,0 +1,95 @@
+#####################################################
+import discord
+from discord.ext import commands, tasks
+import random
+import requests
+import json
+#####################################################
+
+class Anime(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    @commands.command(aliases=['grated'])
+    async def img(self, ctx):
+      url = f'https://gdvn-static.vnpower.repl.co/lewdpower/G-Rated/{random.randint(1,118)}.jpg'
+      embed = discord.Embed(colour=discord.Colour.blurple())
+      embed.set_author(name='Here is your image!')
+      embed.set_image(url=url)
+      await ctx.send(embed=embed)
+
+    @commands.command()
+    async def ecchi(self, ctx):
+      url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/main/Ecchi/{random.randint(1,82)}.jpg'
+      embed = discord.Embed(colour=discord.Colour.blurple())
+      embed.set_author(name='Here is your image!')
+      embed.set_image(url=url)
+      await ctx.send(embed=embed)
+
+    @commands.command(aliases=['nsfw', 'hent'])
+    async def hentai(self, ctx):
+        if ctx.channel.is_nsfw():
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='Here is your image!')
+            embed.set_image(
+                url=
+                f'https://gdvn-static.vnpower.repl.co/lewdpower/He/0{random.randint(1,108)}.jpg'
+            )
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(
+                name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+
+    @commands.command(aliases=['nekoEro', 'nE'])
+    async def neko_ero(self, ctx):
+        data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/neko_ero/').json()
+        if ctx.channel.is_nsfw():
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='Here is your image!')
+            embed.set_image(url=data['data']['response']['url'])
+            embed.set_footer(text="Type: Neko Lewd. So bad for catgirls... <:terrified:864482152451014667>")
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+
+    @commands.command(aliases=['classicLewd', 'cL'])
+    async def classic_lewd(self, ctx):
+        data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/classic_lewd/').json()
+        if ctx.channel.is_nsfw():
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='Here is your image!')
+            embed.set_image(url=data['data']['response']['url'])
+            embed.set_footer(text="Type: Classic Lewd. It's classic! <:eyes:>")
+            await ctx.send(embed=embed)
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+
+    @commands.command(aliases=['feetLewd', 'fL'])
+    async def feet_lewd(self, ctx):
+        data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/feet_lewd/').json()
+        if ctx.channel.is_nsfw():
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='Here is your image!')
+            embed.set_image(url=data['data']['response']['url'])
+            embed.set_footer(text="Type: Feet Lewd. You really love those bare feets, don't you? <:eyes:>")
+            await ctx.send(embed=embed)
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+
+def setup(bot):
+    bot.add_cog(Anime(bot))
