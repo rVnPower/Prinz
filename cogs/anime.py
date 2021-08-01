@@ -28,7 +28,6 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-
     @commands.command(aliases=['grated'])
     async def img(self, ctx):
       url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/G-Rated/{random.randint(1,145)}.jpg'

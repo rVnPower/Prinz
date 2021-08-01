@@ -109,10 +109,12 @@ class Infomation(commands.Cog):
         results = sauce.from_url(words)  # or from_file()
 
         best = results[0]
+        print(best)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=best.author)
         embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
         embed.add_field(name="Link: ", value=f"[{best.title}]({best.urls[0]})")
+        embed.add_field(name="Raw link:", value=best.urls[0])
         embed.set_image(url=best.thumbnail)
         embed.set_footer(text="<:mag_right:> This is what I have found!")
         await ctx.send(embed=embed)
