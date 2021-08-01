@@ -4,9 +4,9 @@ from discord.ext import commands, tasks
 #####################################################
 
 class Simple(commands.Cog):
-	def __init__(self, bot):
-		self.bot = bot
-		
+    def __init__(self, bot):
+        self.bot = bot
+
     @commands.command()
     async def help(self, ctx):
         # Help

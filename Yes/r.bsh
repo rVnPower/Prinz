@@ -1,0 +1,10 @@
+#!/bin/bash
+
+count=1
+
+for file in *.jpg
+do
+    new=$(printf "%d.jpg" "$count")
+    mv -- "$file" "$new"
+    (( count++ ))
+done

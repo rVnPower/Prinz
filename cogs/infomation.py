@@ -26,47 +26,23 @@ class Infomation(commands.Cog):
         # Weather
         owm = OWM('081c82065cfee62cb7988ddf90914bdd')
         mgr = owm.weather_manager()
-
-        observation = mgr.weather_at_place('London')
+        observation = mgr.weather_at_place(words)
         w = observation.weather
+        if 0 <= w.wind()['deg'] < 90:direction = 'N'
+        if 90 <= w.wind()['deg'] < 180:direction = 'E'
+        if 180 <= w.wind()['deg'] < 270:direction = 'S'
+        if 270 <= w.wind()['deg'] < 360:direction = 'W'
+
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f"Weather stats in {words}!")
         embed.add_field(name="Status:", value=w.detailed_status)
-        embed.add_field(name="Wind Speed:", value=w.wind()['speed'])
+        embed.add_field(name="Wind Speed:", value=f"{w.wind()['speed']}km/h {direction}")
         embed.add_field(name="Wind Degree:", value=w.wind()['deg'])
         embed.add_field(name="Humidity:", value=w.humidity)
         embed.add_field(name="Max. temperature:", value=f"{w.temperature('celsius')['temp_max']}°C /{w.temperature('fahrenheit')['temp_max']}°F")
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def help(self, ctx):
-        # Help
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name='Announcement!')
-        embed.add_field(name='I am still developing this bot!', value='There will be a website for this bot... So stay tuned!')
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def hi(self, ctx):
-        # Say hi!
-        await ctx.send(f'Hi! {ctx.author.mention}')
-
-    @commands.command()
-    async def ping(self, ctx):
-        # Checks bot latency
-        p = round(self.bot.latency * 1000)
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name=f'Pong! {p}ms!')
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def admin(self, ctx):
-        # Prints infomation about the admin
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name="VnPower!")
-        embed.add_field(name='Website: ', value="[Here](https://page.vnpower.repl.co/)")
-        embed.add_field(name='GitHub: ', value="-")
-        embed.add_field(name='Discord: ', value="-")
+        embed.add_field(name="Average temperature: ", value=f"{w.temperature('celsius')['temp']}°C /{w.temperature('fahrenheit')['temp']}°F")
+        embed.add_field(name="Rain:", value=w.rain)
+        embed.add_field(name="Clouds:", value=w.clouds)
         await ctx.send(embed=embed)
 
     @commands.command()
