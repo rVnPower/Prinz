@@ -127,6 +127,13 @@ class Infomation(commands.Cog):
         totalDeaths= 0
         newRecovered = 0
         totalRecovered= 0
+        try:
+            print(covi['Countries'])
+        except KeyError:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name="API is refreshing.. Please try again later!")
+            await ctx.send(embed=embed)
+            return
         for i in covi['Countries']:
             if str(i['Country'].lower()) == str(words.lower()) or str(i['CountryCode'].lower()) == str(words.lower()):
                 newConfirmed = i['NewConfirmed']
