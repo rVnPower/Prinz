@@ -8,6 +8,9 @@ import requests
 import json
 import asyncio
 import wolframalpha
+from pyowm import OWM
+from pyowm.utils import config
+from pyowm.utils import timestamps
 #####################################################
 payload={}
 headers = {}
@@ -19,13 +22,29 @@ class Infomation(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    async def weather(self, ctx, *, words):
+        # Weather
+        owm = OWM('081c82065cfee62cb7988ddf90914bdd')
+        mgr = owm.weather_manager()
+
+        observation = mgr.weather_at_place('London')
+        w = observation.weather
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"Weather stats in {words}!")
+        embed.add_field(name="Status:", value=w.detailed_status)
+        embed.add_field(name="Wind Speed:", value=w.wind()['speed'])
+        embed.add_field(name="Wind Degree:", value=w.wind()['deg'])
+        embed.add_field(name="Humidity:", value=w.humidity)
+        embed.add_field(name="Max. temperature:", value=f"{w.temperature('celsius')['temp_max']}°C /{w.temperature('fahrenheit')['temp_max']}°F")
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def help(self, ctx):
         # Help
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='Announcement!')
         embed.add_field(name='I am still developing this bot!', value='There will be a website for this bot... So stay tuned!')
         await ctx.send(embed=embed)
-
 
     @commands.command()
     async def hi(self, ctx):
@@ -71,6 +90,7 @@ class Infomation(commands.Cog):
         searchR = wikipedia.search(Pinput)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f"Search results of {Pinput} on Wikipedia:")
+        embed.set_footer(text="Type 'cancel' to abort.")
         for i in searchR:
             li = {}
             embed.add_field(name=f"{count}. ", value=i, inline=True)
@@ -147,6 +167,7 @@ class Infomation(commands.Cog):
                 embed.add_field(name="Total deaths:", value=totalDeaths)
                 embed.add_field(name="New recovered:", value=newRecovered)
                 embed.add_field(name="Total recovered:", value=totalRecovered)
+                embed.set_icon(url='https://cdn.discordapp.com/attachments/239446877953720321/691020838379716698/unknown.png')
                 await ctx.send(embed=embed)
                 break
 
