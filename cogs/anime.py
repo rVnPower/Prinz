@@ -10,10 +10,28 @@ class Anime(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(aliases=['rI'])
+    async def randomImg(self, ctx):
+        response = requests.get("https://git.meewmeew.info/data/alime.json")
+        lis = response.json()
+        links = list(lis['nsfw'].values())
+        link = random.choice(links)
+        data = requests.get(link).json()
+        if ctx.channel.is_nsfw():
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='Here is your image!')
+            embed.set_image(url=data['data']['response']['url'])
+            embed.set_footer(text="Type: Neko Lewd. So bad for catgirls... <:terrified:864482152451014667>")
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+
 
     @commands.command(aliases=['grated'])
     async def img(self, ctx):
-      url = f'https://gdvn-static.vnpower.repl.co/lewdpower/G-Rated/{random.randint(1,118)}.jpg'
+      url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/G-Rated/{random.randint(1,145)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())
       embed.set_author(name='Here is your image!')
       embed.set_image(url=url)
@@ -21,7 +39,7 @@ class Anime(commands.Cog):
 
     @commands.command()
     async def ecchi(self, ctx):
-      url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/main/Ecchi/{random.randint(1,82)}.jpg'
+      url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/Ecchi/{random.randint(1,82)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())
       embed.set_author(name='Here is your image!')
       embed.set_image(url=url)
@@ -34,7 +52,7 @@ class Anime(commands.Cog):
             embed.set_author(name='Here is your image!')
             embed.set_image(
                 url=
-                f'https://gdvn-static.vnpower.repl.co/lewdpower/He/0{random.randint(1,108)}.jpg'
+                f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/He/{random.randint(1,108)}.jpg'
             )
             await ctx.send(embed=embed)
         else:
