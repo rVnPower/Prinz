@@ -3,7 +3,7 @@ from discord.ext import commands, tasks
 import random
 from itertools import cycle
 import os
-# from keep_alive import keep_alive
+from keep_alive import keep_alive
 from dotenv import load_dotenv
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
@@ -33,6 +33,30 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
+@bot.command()
+async def load(ctx, extension):
+    if ctx.author == 'VnPower#8888':
+        bot.load_extension(f'cogs.{extension}')
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f'Loaded {extension} successfully!')
+        await ctx.send(embed=embed)
+    else:
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name='You don\'t have permissions to do that! This is a special command!')
+        await ctx.send(embed=embed)
+
+@bot.command()
+async def unload(ctx, extension):
+    bot.unload_extension(f'cogs.{extension}')
+    if ctx.author == 'VnPower#8888':
+        bot.load_extension(f'cogs.{extension}')
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f'Loaded {extension} successfully!')
+        await ctx.send(embed=embed)
+    else:
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name='You don\'t have permissions to do that! This is a special command!')
+        await ctx.send(embed=embed)
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -51,10 +75,12 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
+
+
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-# keep_alive()  # Starts a webserver to be pinged.
+keep_alive()  # Starts a webserver to be pinged.
 load_dotenv()
 bot.run(os.getenv("TOKEN"))
