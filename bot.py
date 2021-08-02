@@ -47,9 +47,8 @@ async def load(ctx, extension):
 
 @bot.command()
 async def unload(ctx, extension):
-    bot.unload_extension(f'cogs.{extension}')
     if ctx.author == 'VnPower#8888':
-        bot.load_extension(f'cogs.{extension}')
+        bot.unload_extension(f'cogs.{extension}')
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'Unloaded {extension} successfully!')
         await ctx.send(embed=embed)
@@ -66,11 +65,15 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed)
     if isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name='You didn\'t pass in some values!')
+        embed.set_author(name='You didn\'t pass in some arguments!')
         await ctx.send(embed=embed)
     if isinstance(error, commands.BadArgument):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='You passed the wrong value!')
+        await ctx.send(embed=embed)
+    if isinstance(error, commands.CommandNotFound):
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name='That command does not exist!')
         await ctx.send(embed=embed)
     else:
         raise error
