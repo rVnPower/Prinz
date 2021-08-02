@@ -51,7 +51,7 @@ async def unload(ctx, extension):
     if ctx.author == 'VnPower#8888':
         bot.load_extension(f'cogs.{extension}')
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name=f'Loaded {extension} successfully!')
+        embed.set_author(name=f'Unloaded {extension} successfully!')
         await ctx.send(embed=embed)
     else:
         embed = discord.Embed(colour=discord.Colour.blurple())
