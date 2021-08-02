@@ -24,20 +24,15 @@ class Infomation(commands.Cog):
     @commands.command(aliases=['userinfo'])
     async def info(self, ctx, member: discord.Member):
         roles = [role for role in member.roles]
-
         embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
-
         embed.set_author(name=f"Infomation of {member}")
         embed.set_thumbnail(url=member.avatar_url)
         embed.add_field(name='ID:' ,value=member)
         embed.add_field(name='Nickname: ',value=member.display_name)
-
         embed.add_field(name= 'Joined on: ', value= member.created_at.strftime("%a, %#d %B %Y, %I:%M %p"))
         embed.add_field(name= 'Joined server on: ', value= member.joined_at.strftime("%a, %#d %B %Y, %I:%M %p"))
-
         embed.add_field(name= f"Roles: ({len(roles)})", value=" ".join([role.mention for role in roles]))
         embed.add_field(name= "Highest role: ",value=member.top_role.mention)
-
         await ctx.send(embed=embed)
 
     @commands.command()

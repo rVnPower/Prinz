@@ -8,6 +8,8 @@ class Tools(commands.Cog):
         self.bot = bot
 
     @commands.command()
+
+    @commands.command()
     async def binary(self, ctx, *, words):
         Type = words.split(' ')[0]
         string = words.split(str(Type+' '))
