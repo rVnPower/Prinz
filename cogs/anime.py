@@ -12,16 +12,13 @@ class Anime(commands.Cog):
 
     @commands.command(aliases=['rI'])
     async def randomImg(self, ctx):
-        response = requests.get("https://git.meewmeew.info/data/alime.json")
-        lis = response.json()
-        links = list(lis['nsfw'].values())
-        link = random.choice(links)
-        data = requests.get(link).json()
+        response = requests.get("https://git.meewmeew.info/data/alime.json").json()
+        data = requests.get(random.choice(list(response['nsfw'].items()))[1]).json()
         if ctx.channel.is_nsfw():
             embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='Here is your image!')
+            embed.set_author(name='Here is your random image!')
             embed.set_image(url=data['data']['response']['url'])
-            embed.set_footer(text="Type: Neko Lewd. So bad for catgirls... <:terrified:864482152451014667>")
+            embed.set_footer(text="Enjoy.")
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(colour=discord.Colour.blurple())

@@ -105,7 +105,6 @@ class Infomation(commands.Cog):
     @commands.command()
     async def sauce(self, ctx, *, words):
         # Get an image source (Anime only)
-        print(type(ctx.attachments))
         sauce = SauceNao('18007b616a0808aa80ae9e17e3a8d110e53b081c')
         results = sauce.from_url(words)  # or from_file()
 
