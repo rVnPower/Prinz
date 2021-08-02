@@ -35,7 +35,8 @@ async def on_message(message):
 
 @bot.command()
 async def load(ctx, extension):
-    if ctx.author == 'VnPower#8888':
+    print(ctx.author)
+    if str(ctx.author) == 'VnPower#8888':
         bot.load_extension(f'cogs.{extension}')
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'Loaded {extension} successfully!')
@@ -47,7 +48,7 @@ async def load(ctx, extension):
 
 @bot.command()
 async def unload(ctx, extension):
-    if ctx.author == 'VnPower#8888':
+    if str(ctx.author) == 'VnPower#8888':
         bot.unload_extension(f'cogs.{extension}')
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'Unloaded {extension} successfully!')
@@ -84,6 +85,6 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-keep_alive()  # Starts a webserver to be pinged.
+# keep_alive()  # Starts a webserver to be pinged.
 load_dotenv()
 bot.run(os.getenv("TOKEN"))

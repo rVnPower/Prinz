@@ -21,6 +21,25 @@ class Infomation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(aliases=['userinfo'])
+    async def info(self, ctx, member: discord.Member):
+        roles = [role for role in member.roles]
+
+        embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
+
+        embed.set_author(name=f"Infomation of {member}")
+        embed.set_thumbnail(url=member.avatar_url)
+        embed.add_field(name='ID:' ,value=member)
+        embed.add_field(name='Nickname: ',value=member.display_name)
+
+        embed.add_field(name= 'Joined on: ', value= member.created_at.strftime("%a, %#d %B %Y, %I:%M %p"))
+        embed.add_field(name= 'Joined server on: ', value= member.joined_at.strftime("%a, %#d %B %Y, %I:%M %p"))
+
+        embed.add_field(name= f"Roles: ({len(roles)})", value=" ".join([role.mention for role in roles]))
+        embed.add_field(name= "Highest role: ",value=member.top_role.mention)
+
+        await ctx.send(embed=embed)
+
     @commands.command()
     async def weather(self, ctx, *, words):
         # Weather
@@ -132,7 +151,7 @@ class Infomation(commands.Cog):
             print(covi['Countries'])
         except KeyError:
             embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name="API is refreshing.. Please try again later!")
+            embed.set_author(name="Service is temporarily unavailable at this time.")
             await ctx.send(embed=embed)
             return
         for i in covi['Countries']:
@@ -151,7 +170,7 @@ class Infomation(commands.Cog):
                 embed.add_field(name="Total deaths:", value=totalDeaths)
                 embed.add_field(name="New recovered:", value=newRecovered)
                 embed.add_field(name="Total recovered:", value=totalRecovered)
-                embed.set_icon(url='https://cdn.discordapp.com/attachments/239446877953720321/691020838379716698/unknown.png')
+                embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/239446877953720321/691020838379716698/unknown.png')
                 await ctx.send(embed=embed)
                 break
 
