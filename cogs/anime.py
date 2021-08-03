@@ -13,7 +13,7 @@ class Anime(commands.Cog):
     @commands.command(aliases=['rI'])
     async def randomImg(self, ctx):
         response = requests.get("https://git.meewmeew.info/data/alime.json").json()
-        data = requests.get(random.choice(list(response['nsfw'].items()))[1]).json()
+        data = requests.get(random.choice(list(response['nsfw'].items()))[1]).json() or requests.get(random.choice(list(response['sfw'].items()))[1]).json()
         if ctx.channel.is_nsfw():
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='Here is your random image!')

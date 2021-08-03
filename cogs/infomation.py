@@ -118,16 +118,17 @@ class Infomation(commands.Cog):
 
     @commands.command()
     async def sauce(self, ctx, *, words):
-        # Get an image source (Anime only)
-        sauce = SauceNao('18007b616a0808aa80ae9e17e3a8d110e53b081c')
-        results = sauce.from_url(words)  # or from_file()
+        from pysaucenao import SauceNao, PixivSource
+        sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
 
+        # results = await sauce.from_file('/path/to/image.png')
+        results = await sauce.from_url(words)
         best = results[0]
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name=best.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=best.author_name)
         embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
         embed.add_field(name="Link: ", value=f"[{best.title}]({best.urls[0]})")
-        embed.add_field(name="Raw link:", value=best.urls[0])
         embed.set_image(url=best.thumbnail)
         embed.set_footer(text="<:mag_right:> This is what I have found!")
         await ctx.send(embed=embed)
