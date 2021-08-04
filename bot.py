@@ -5,9 +5,12 @@ from itertools import cycle
 import os
 from keep_alive import keep_alive
 from dotenv import load_dotenv
+from discord_slash import SlashCommand, SlashContext
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
+slash = SlashCommand(bot, override_type=True, sync_commands=True)
 status = cycle(['League of Legends', 'osu!'])
+guild_ids = [865509913417482240]
 ###########################################################
 
 @tasks.loop(seconds=1200)
@@ -33,7 +36,7 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
-@bot.command()
+@bot.command(name="Hi!", description="This is just a test command, nothing more.")
 async def load(ctx, extension):
     print(ctx.author)
     if str(ctx.author) == 'VnPower#8888':
@@ -78,8 +81,6 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed)
     else:
         raise error
-
-
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):

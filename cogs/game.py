@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands, tasks
 import random
 import asyncio
+from discord_slash import cog_ext, SlashContext
 #####################################################
 
 class Games(commands.Cog):
