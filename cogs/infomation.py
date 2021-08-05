@@ -12,8 +12,7 @@ from pyowm.utils import config
 from pyowm.utils import timestamps
 from discord_slash import cog_ext, SlashContext
 from replit import db
-guild_ids = []
-guild_ids = db['guild']
+
 #####################################################
 payload={}
 headers = {}
@@ -24,8 +23,8 @@ class Infomation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['userinfo'])
-    async def info(self, ctx, member: discord.Member):
+    @cog_ext.cog_slash(name='info', description='Check an user infomation.')
+    async def _info(self, ctx, member: discord.Member):
         roles = [role for role in member.roles]
         embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
         embed.set_author(name=f"Infomation of {member}")
@@ -38,8 +37,8 @@ class Infomation(commands.Cog):
         embed.add_field(name= "Highest role: ",value=member.top_role.mention)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def weather(self, ctx, *, words):
+    @cog_ext.cog_slash(name="weather", description="Checks weather in a location.")
+    async def _weather(self, ctx, words:str):
         # Weather
         owm = OWM('081c82065cfee62cb7988ddf90914bdd')
         mgr = owm.weather_manager()
@@ -62,8 +61,8 @@ class Infomation(commands.Cog):
         embed.add_field(name="Clouds:", value=w.clouds)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def wikilan(self, ctx ,*, Pinput:str):
+    @cog_ext.cog_slash(name= "wikilan", description="Changes Wikipedia 's language.")
+    async def _wikilan(self, ctx , Pinput:str):
         # Changes Wikipedia language
         embed = discord.Embed(colour=discord.Colour.blurple())
         if Pinput.lower().strip() in wikipedia.languages():
@@ -74,9 +73,9 @@ class Infomation(commands.Cog):
             embed.set_author(name=f'That language does not exist in Wikipedia!')
             await ctx.send(embed=embed)
 
-    @commands.command(aliases=['wiki'])
+    @cog_ext.cog_slash(name="wiki", description="Searches articles on Wikipedia")
     # Searches articles on Wikipedia
-    async def wikisrc(self, ctx, *, Pinput:str):
+    async def wiki(self, ctx, *, Pinput:str):
         # Searches Wikipedia
         lis = []
         count = 1
@@ -119,8 +118,8 @@ class Infomation(commands.Cog):
                     break
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def sauce(self, ctx, *, words):
+    @cog_ext.cog_slash(name="sauce", description="Find an image source.")
+    async def _sauce(self, ctx, words:str):
         from pysaucenao import SauceNao, PixivSource
         sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
 
@@ -136,8 +135,8 @@ class Infomation(commands.Cog):
         embed.set_footer(text="<:mag_right:> This is what I have found!")
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def covid(self, ctx, *, words):
+    @cog_ext.cog_slash(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
+    async def _covid(self, ctx, words:str):
         # Prints COVID-19 infomation in a country
         global covi
         newConfirmed = 0
@@ -173,16 +172,16 @@ class Infomation(commands.Cog):
                 await ctx.send(embed=embed)
                 break
 
-    @commands.command(aliases=[])
+    @cog_ext.cog_slash()
     async def countries(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name="Country names and country codes(ISO Alpha-2)")
         embed.add_field(name=".", value='var.countries')
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @cog_ext.cog_slash(name="math", description="Calculates.")
     # Test
-    async def math(self, ctx, *, words):
+    async def _math(self, ctx, words:str):
         client = wolframalpha.Client('QPK7GG-8KK22QQTLJ')
         result = client.query(words)
         output = next(result.results).text
@@ -190,8 +189,8 @@ class Infomation(commands.Cog):
         embed.set_author(name=output)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def server(self, ctx):
+    @cog_ext.cog_slash(name="server", description="Gets this server infomation.")
+    async def _server(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple(), timestamp=ctx.message.created_at)
         role_count = len(ctx.guild.roles)
         list_of_bots = [bot.mention for bot in ctx.guild.members if bot.bot]
