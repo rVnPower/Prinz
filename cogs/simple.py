@@ -2,7 +2,9 @@
 import discord
 from discord.ext import commands, tasks
 from discord_slash import cog_ext, SlashContext
-guild_ids = [865509913417482240, 745561266805800990]
+from replit import db
+guild_ids = []
+guild_ids = db['guild']
 #####################################################
 
 class Simple(commands.Cog):

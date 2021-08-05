@@ -4,7 +4,8 @@ from discord.ext import commands, tasks
 from discord_slash import cog_ext, SlashContext
 from replit import db
 ##################################
-guild_ids = [745561266805800990]
+guild_ids = []
+guild_ids = db['guild']
 alreadyIn = False
 ##################################
 def update(result):

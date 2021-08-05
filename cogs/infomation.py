@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands, tasks
 import random
 import wikipedia
-from saucenao_api import SauceNao
 import requests
 import json
 import asyncio
@@ -12,6 +11,9 @@ from pyowm import OWM
 from pyowm.utils import config
 from pyowm.utils import timestamps
 from discord_slash import cog_ext, SlashContext
+from replit import db
+guild_ids = []
+guild_ids = db['guild']
 #####################################################
 payload={}
 headers = {}

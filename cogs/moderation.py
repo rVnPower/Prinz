@@ -3,6 +3,9 @@ import discord
 from discord.ext import commands, tasks
 import random
 from discord_slash import cog_ext, SlashContext
+from replit import db
+guild_ids = []
+guild_ids = db['guild']
 #####################################################
 
 class Moderation(commands.Cog):
