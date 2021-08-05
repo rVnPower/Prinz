@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands, tasks
 from discord_slash import cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option
-guild_ids = [865509913417482240]
 #####################################################
 
 class Tools(commands.Cog):
@@ -34,6 +33,20 @@ class Tools(commands.Cog):
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name=f'Please provide a type! (Ex: "decode" or "encode")')
             await ctx.send(embed=embed)
+
+    @commands.command()
+    async def add(self, ctx):
+        Gid = ctx.guild.id
+        with open("id.txt", "r") as file_object:
+            for i in range(1, 1000):
+                check = file_object.readlines(i)
+                if int(check) == int(Gid):
+                    await ctx.send('bruh')
+'''
+        with open("id.txt", "a") as file_object:
+            for i in len(file_object):
+            for i in lis:
+                file_object.write(i + '\n')'''
 
 
 def setup(bot):

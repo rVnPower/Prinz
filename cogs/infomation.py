@@ -188,6 +188,28 @@ class Infomation(commands.Cog):
         embed.set_author(name=output)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def server(self, ctx):
+        embed = discord.Embed(colour=discord.Colour.blurple(), timestamp=ctx.message.created_at)
+        role_count = len(ctx.guild.roles)
+        list_of_bots = [bot.mention for bot in ctx.guild.members if bot.bot]
+
+        embed.add_field(name='Name', value=f"{ctx.guild.name}", inline=True)
+        embed.add_field(name="Server ID", value=ctx.guild.id, inline=True)
+        embed.add_field(name='Owner', value=ctx.guild.owner, inline=True)
+        embed.add_field(name='Verification Level', value=ctx.guild.verification_level, inline=True)
+        embed.add_field(name='Highest role', value=ctx.guild.roles[-2], inline=True)
+        embed.add_field(name="Region", value=ctx.guild.region, inline=True)
+
+        embed.add_field(name='Number Of Members', value=ctx.guild.member_count, inline=True)
+        embed.add_field(name='Bots:', value=(', '.join(list_of_bots)))
+        embed.add_field(name='Created At', value=ctx.guild.created_at.__format__('%A, %d. %B %Y @ %H:%M:%S'), inline=False)
+        embed.set_thumbnail(url=ctx.guild.icon_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Infomation(bot))

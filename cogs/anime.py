@@ -5,7 +5,7 @@ import random
 import requests
 import json
 from discord_slash import cog_ext, SlashContext
-guild_ids = [865509913417482240, 745561266805800990]
+guild_ids = [865509913417482240, 745561266805800990, 868985869263077386]
 #####################################################
 
 class Anime(commands.Cog):
