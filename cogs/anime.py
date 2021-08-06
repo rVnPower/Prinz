@@ -11,7 +11,7 @@ class Anime(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_ext.cog_slash(name="randomImg", description="Send a random image")
+    @commands.command(name="randomImg", description="Send a random image")
     async def _randomImg(self, ctx):
         response = requests.get("https://git.meewmeew.info/data/alime.json").json()
         data = requests.get(random.choice(list(response['nsfw'].items()))[1]).json() or requests.get(random.choice(list(response['sfw'].items()))[1]).json()
@@ -26,7 +26,7 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="img", description="Send a random anime image from VnPower's GDrive")
+    @commands.command(name="img", description="Send a random anime image from VnPower's GDrive")
     async def _img(self, ctx):
       url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/G-Rated/{random.randint(1,145)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())
@@ -34,7 +34,7 @@ class Anime(commands.Cog):
       embed.set_image(url=url)
       await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="ecchi", description="Send a random ecchi image")
+    @commands.command(name="ecchi", description="Send a random ecchi image")
     async def _ecchi(self, ctx):
       url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/Ecchi/{random.randint(1,82)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())
@@ -42,7 +42,7 @@ class Anime(commands.Cog):
       embed.set_image(url=url)
       await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="hentai", description="Send a random hentai image")
+    @commands.command(name="hentai", description="Send a random hentai image")
     async def _hentai(self, ctx):
         if ctx.channel.is_nsfw():
             embed = discord.Embed(colour=discord.Colour.blurple())
@@ -58,7 +58,7 @@ class Anime(commands.Cog):
                 name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="nekoEro", description="Too bad for catgirls...")
+    @commands.command(name="nekoEro", description="Too bad for catgirls...")
     async def _neko_ero(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/neko_ero/').json()
         if ctx.channel.is_nsfw():
@@ -72,7 +72,7 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="classicLewd", description="Classic lewd image.")
+    @commands.command(name="classicLewd", description="Classic lewd image.")
     async def _classiclewd(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/classic_lewd/').json()
         if ctx.channel.is_nsfw():
@@ -89,7 +89,7 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="feetLewd", description="You really love those bare feets, don't you?")
+    @commands.command(name="feetLewd", description="You really love those bare feets, don't you?")
     async def _feet_lewd(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/feet_lewd/').json()
         if ctx.channel.is_nsfw():

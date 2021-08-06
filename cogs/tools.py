@@ -9,8 +9,8 @@ class Tools(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_ext.cog_slash(name="binary", description="Convert everything to binary.")
-    async def _binary(self, ctx, words:str):
+    @commands.command(name="binary", description="Convert everything to binary.")
+    async def _binary(self, ctx, *, words:str):
         Type = words.split(' ')[0]
         string = words.split(str(Type+' '))
         if Type.lower().strip() == 'decode':

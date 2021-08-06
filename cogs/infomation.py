@@ -23,7 +23,7 @@ class Infomation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_ext.cog_slash(name='info', description='Check an user infomation.')
+    @commands.command(name='info', description='Check an user infomation.')
     async def _info(self, ctx, member: discord.Member):
         roles = [role for role in member.roles]
         embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
@@ -37,8 +37,8 @@ class Infomation(commands.Cog):
         embed.add_field(name= "Highest role: ",value=member.top_role.mention)
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="weather", description="Checks weather in a location.")
-    async def _weather(self, ctx, words:str):
+    @commands.command(name="weather", description="Checks weather in a location.")
+    async def _weather(self, ctx, *, words:str):
         # Weather
         owm = OWM('081c82065cfee62cb7988ddf90914bdd')
         mgr = owm.weather_manager()
@@ -61,8 +61,8 @@ class Infomation(commands.Cog):
         embed.add_field(name="Clouds:", value=w.clouds)
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name= "wikilan", description="Changes Wikipedia 's language.")
-    async def _wikilan(self, ctx , Pinput:str):
+    @commands.command(name= "wikilan", description="Changes Wikipedia 's language.")
+    async def _wikilan(self, ctx, *, Pinput:str):
         # Changes Wikipedia language
         embed = discord.Embed(colour=discord.Colour.blurple())
         if Pinput.lower().strip() in wikipedia.languages():
@@ -73,7 +73,7 @@ class Infomation(commands.Cog):
             embed.set_author(name=f'That language does not exist in Wikipedia!')
             await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="wiki", description="Searches articles on Wikipedia")
+    @commands.command(name="wiki", description="Searches articles on Wikipedia")
     # Searches articles on Wikipedia
     async def wiki(self, ctx, *, Pinput:str):
         # Searches Wikipedia
@@ -118,8 +118,8 @@ class Infomation(commands.Cog):
                     break
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="sauce", description="Find an image source.")
-    async def _sauce(self, ctx, words:str):
+    @commands.command(name="sauce", description="Find an image source.")
+    async def _sauce(self, ctx, *, words:str):
         from pysaucenao import SauceNao, PixivSource
         sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
 
@@ -135,8 +135,8 @@ class Infomation(commands.Cog):
         embed.set_footer(text="<:mag_right:> This is what I have found!")
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
-    async def _covid(self, ctx, words:str):
+    @commands.command(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
+    async def _covid(self, ctx, *, words:str):
         # Prints COVID-19 infomation in a country
         global covi
         newConfirmed = 0
@@ -172,14 +172,14 @@ class Infomation(commands.Cog):
                 await ctx.send(embed=embed)
                 break
 
-    @cog_ext.cog_slash()
+    @commands.command()
     async def countries(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name="Country names and country codes(ISO Alpha-2)")
         embed.add_field(name=".", value='var.countries')
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="math", description="Calculates.")
+    @commands.command(name="math", description="Calculates.")
     # Test
     async def _math(self, ctx, words:str):
         client = wolframalpha.Client('QPK7GG-8KK22QQTLJ')
@@ -189,7 +189,7 @@ class Infomation(commands.Cog):
         embed.set_author(name=output)
         await ctx.send(embed=embed)
 
-    @cog_ext.cog_slash(name="server", description="Gets this server infomation.")
+    @commands.command(name="server", description="Gets this server infomation.")
     async def _server(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple(), timestamp=ctx.message.created_at)
         role_count = len(ctx.guild.roles)
