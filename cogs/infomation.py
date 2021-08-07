@@ -11,8 +11,8 @@ from pyowm import OWM
 from pyowm.utils import config
 from pyowm.utils import timestamps
 from discord_slash import cog_ext, SlashContext
-from replit import db
-
+import os
+from dotenv import load_dotenv
 #####################################################
 payload={}
 headers = {}
@@ -195,13 +195,13 @@ class Infomation(commands.Cog):
         role_count = len(ctx.guild.roles)
         list_of_bots = [bot.mention for bot in ctx.guild.members if bot.bot]
 
-        embed.add_field(name='Name', value=f"{ctx.guild.name}", inline=True)
-        embed.add_field(name="Server ID", value=ctx.guild.id, inline=True)
-        embed.add_field(name='Owner', value=ctx.guild.owner, inline=True)
-        embed.add_field(name='Verification Level', value=ctx.guild.verification_level, inline=True)
-        embed.add_field(name='Highest role', value=ctx.guild.roles[-2], inline=True)
-        embed.add_field(name="Region", value=ctx.guild.region, inline=True)
-
+        embed.add_field(name='Name:', value=f"{ctx.guild.name}", inline=True)
+        embed.add_field(name="Server ID:", value=ctx.guild.id, inline=True)
+        embed.add_field(name='Owner:', value=ctx.guild.owner, inline=True)
+        embed.add_field(name='Verification Level:', value=ctx.guild.verification_level, inline=True)
+        embed.add_field(name='Highest role:', value=ctx.guild.roles[-2], inline=True)
+        embed.add_field(name="Region:", value=ctx.guild.region, inline=True)
+        embed.add_field(name="Explicit Content Filter: ", value=ctx.guild.explicit_content_filter, inline=True)
         embed.add_field(name='Number Of Members', value=ctx.guild.member_count, inline=True)
         embed.add_field(name='Bots:', value=(', '.join(list_of_bots)))
         embed.add_field(name='Created At', value=ctx.guild.created_at.__format__('%A, %d. %B %Y @ %H:%M:%S'), inline=False)
@@ -211,6 +211,58 @@ class Infomation(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def beatmap(self, ctx, *, words):
+        load_dotenv()
+        API_URL = 'https://osu.ppy.sh/api/v2'
+        TOKEN_URL = 'https://osu.ppy.sh/oauth/token'
+
+        def get_token():
+            data = {
+                'client_id': 8954,
+                'client_secret': 'EowlkKpcDXEGxagwbS7NF31ZQs6hl18ALPxcOUNX',
+                'grant_type': 'client_credentials',
+                'scope': 'public'
+            }
+            response = requests.post(TOKEN_URL, data=data)
+            return response.json().get('access_token')
+
+        def main():
+            token = get_token()
+            headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': f'Bearer {token}'
+            }
+            params = {
+                'id': words
+            }
+            response = requests.get(f'{API_URL}/beatmaps/lookup', params=params, headers=headers).json()
+            return response
+        data = main()
+        try:
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=data['beatmapset']['title'], url=data['url'])
+        except KeyError:
+            embed = discord.Embed(colour=discord.Colour.blurple(), title="That beatmap does not exist!")
+            await ctx.send(embed=embed)
+        embed.set_author(name=data['beatmapset']['creator'])
+        embed.add_field(name="Beatmap ID: ", value=data['beatmapset_id'])
+        embed.add_field(name="Status: ", value=data['beatmapset']['status'])
+        embed.add_field(name="Mode: ", value=data['mode'])
+        embed.add_field(name="Difficulty rating: ", value=data['difficulty_rating'])
+        embed.add_field(name="Last updated: ", value=data['beatmapset']['last_updated'])
+        embed.add_field(name="Players: ", value=data['playcount'])
+        embed.add_field(name="Passed players: ", value=data['passcount'])
+        embed.add_field(name="Artist: ", value=data['beatmapset']['artist'])
+        embed.set_image(url=data['beatmapset']['covers']['cover'])
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def github(self, ctx, *, words):
+        response = requests.get(f'https://api.github.com/users/{words}').json()
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=response['rVnPower'])
+        embed.set_thumbnail(url=response['avatar_url'])
 
 def setup(bot):
     bot.add_cog(Infomation(bot))
