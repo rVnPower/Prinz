@@ -4,7 +4,6 @@ aiohttp-proxy==0.1.2
 altgraph==0.17
 api==0.0.7
 appdirs==1.4.4
-apturl==0.5.2
 asgiref==3.3.1
 astunparse==1.6.3
 async-timeout==3.0.1
@@ -33,8 +32,6 @@ discord-py-slash-command==2.4.0
 discord.py==1.7.3
 distlib==0.3.2
 distro==1.4.0
-distro-info===0.23ubuntu1
-Django==3.1.7
 dnspython==2.1.0
 duplicity==0.8.12.0
 email-validator==1.1.2

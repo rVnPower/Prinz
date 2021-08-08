@@ -259,10 +259,20 @@ class Infomation(commands.Cog):
 
     @commands.command()
     async def github(self, ctx, *, words):
-        response = requests.get(f'https://api.github.com/users/{words}').json()
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name=response['rVnPower'])
-        embed.set_thumbnail(url=response['avatar_url'])
+        data = requests.get(f'https://api.github.com/users/{words}').json()
+        embed = discord.Embed(colour=discord.Colour.blurple(), title=data['login'], url=data['html_url'])
+        embed.set_thumbnail(url=data['avatar_url'])
+        embed.add_field(name="ID: ", value=data['id'])
+        embed.add_field(name="Bio: ", value=data['bio'])
+        embed.add_field(name="Public repos: ", value=data['public_repos'])
+        embed.add_field(name="Public gists: ", value=data['public_gists'])
+        embed.add_field(name="Followers: ", value=data['followers'])
+        embed.add_field(name="Following: ", value=data['following'])
+        embed.add_field(name="Website: ", value=data['blog'])
+        embed.add_field(name="Email: ", value=data['email'])
+        embed.add_field(name="Hireable: ", value=data['hireable'])
+        embed.add_field(name="Joined at: ", value=data['created_at'])
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Infomation(bot))

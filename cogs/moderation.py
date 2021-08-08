@@ -24,7 +24,6 @@ class Moderation(commands.Cog):
             embed.add_field(name=f'Something went wrong...',
                             value='Did you give the permission to the bot?',
                             inline=False)
-
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -40,8 +39,11 @@ class Moderation(commands.Cog):
             embed.add_field(name=f'Something went wrong...',
                             value='Did you give the permission to the bot?',
                             inline=False)
-
         await ctx.send(embed=embed)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name="Hey!")
+        embed.add_field(name="I'm sorry about this but...", value=f" You have been banned from {ctx.guild.name} for {reason}!")
+        await ctx.member.send(embed=embed)
 
     @commands.command()
     async def clear(self, ctx, amount: int):

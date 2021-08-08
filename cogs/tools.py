@@ -34,5 +34,9 @@ class Tools(commands.Cog):
             embed.set_author(name=f'Please provide a type! (Ex: "decode" or "encode")')
             await ctx.send(embed=embed)
 
+    @commands.command(pass_content=True)
+    async def invite(self, ctx):
+        await ctx.author.send("Here is the link! Thanks for inviting!\nhttps://discord.com/api/oauth2/authorize?client_id=865487746905931846&permissions=140056586310&scope=bot%20applications.commands")
+
 def setup(bot):
     bot.add_cog(Tools(bot))
