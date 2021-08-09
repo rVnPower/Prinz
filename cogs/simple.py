@@ -1,7 +1,6 @@
 #####################################################
 import discord
 from discord.ext import commands, tasks
-from discord_slash import cog_ext, SlashContext
 #####################################################
 
 class Simple(commands.Cog):
@@ -9,7 +8,7 @@ class Simple(commands.Cog):
         self.bot = bot
 
     @commands.command(name="help", description="If you need help.")
-    async def _help(self, ctx: SlashContext):
+    async def _help(self, ctx):
         # Help
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='Announcement!')
@@ -17,12 +16,12 @@ class Simple(commands.Cog):
         await ctx.send(embeds=[embed])
 
     @commands.command(name="hi", description="She will greet you!")
-    async def _hi(self, ctx: SlashContext):
+    async def _hi(self, ctx):
         # Say hi!
         await ctx.send(f'Hi! {ctx.author.mention}')
 
     @commands.command(name="ping", description="Checks bot latency.")
-    async def _ping(self, ctx: SlashContext):
+    async def _ping(self, ctx):
         # Checks bot latency
         p = round(self.bot.latency * 1000)
         embed = discord.Embed(colour=discord.Colour.blurple())
@@ -30,7 +29,7 @@ class Simple(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name="admin", description="Display informations about bot owner.")
-    async def _admin(self, ctx: SlashContext):
+    async def _admin(self, ctx):
         # Prints infomation about the admin
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name="VnPower!")

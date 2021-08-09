@@ -2,9 +2,6 @@
 import discord
 from discord.ext import commands, tasks
 import random
-from discord_slash import cog_ext, SlashContext
-from replit import db
-
 #####################################################
 
 class Moderation(commands.Cog):

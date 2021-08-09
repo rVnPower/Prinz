@@ -1,8 +1,7 @@
 #####################################################
 import discord
 from discord.ext import commands, tasks
-from discord_slash import cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option
+
 #####################################################
 
 class Tools(commands.Cog):
@@ -24,7 +23,7 @@ class Tools(commands.Cog):
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name=f'Output: {ascii_string}')
             await ctx.send(embed=embed)
-        if Type.lower().strip() == 'encode':
+        elif Type.lower().strip() == 'encode':
             string = string[1]
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name="Output: "+" ".join(f"{ord(i):08b}" for i in string))

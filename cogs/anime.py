@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 import random
 import requests
 import json
-from discord_slash import cog_ext, SlashContext
+from NHentai.nhentai import NHentai
 #####################################################
 
 class Anime(commands.Cog):
@@ -100,6 +100,19 @@ class Anime(commands.Cog):
             await ctx.send(embed=embed)
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+
+    @commands.command(aliases=['rD'])
+    async def random_doujin(self ,ctx):
+        if ctx.channel.is_nsfw():
+            nhentai = NHentai()
+            Doujin = nhentai.get_random()
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=Doujin.title, url=f'https://nhentai.net/g/{Doujin.id}')
+            embed.set_image(url=Doujin.images[0])
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(colour=discord.Colour.blurple())
