@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
-status = cycle(['League of Legends', 'osu!'])
+status = cycle(['League of Legends', 'osu!', 'l!invite'])
 ###########################################################
 
 @tasks.loop(seconds=1200)
@@ -36,7 +36,6 @@ async def on_message(message):
 
 @bot.command(name="Hi!", description="This is just a test command, nothing more.")
 async def load(ctx, extension):
-    print(ctx.author)
     if str(ctx.author) == 'VnPower#8888':
         bot.load_extension(f'cogs.{extension}')
         embed = discord.Embed(colour=discord.Colour.blurple())

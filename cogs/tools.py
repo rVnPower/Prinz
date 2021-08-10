@@ -1,7 +1,7 @@
 #####################################################
 import discord
 from discord.ext import commands, tasks
-
+import math
 #####################################################
 
 class Tools(commands.Cog):
@@ -36,6 +36,18 @@ class Tools(commands.Cog):
     @commands.command(pass_content=True)
     async def invite(self, ctx):
         await ctx.author.send("Here is the link! Thanks for inviting!\nhttps://discord.com/api/oauth2/authorize?client_id=865487746905931846&permissions=140056586310&scope=bot%20applications.commands")
+
+    @commands.command()
+    async def prime(self, ctx, *, n:int):
+        m = math.sqrt(abs(n))
+        i = 2
+        while n % i != 0 and i <=n:
+            i += 1
+            if i>m and n>=2:
+                await ctx.send(f'{n} is a prime number!')
+                break
+        else:
+            await ctx.send(f'{n} is not a prime number!')
 
 def setup(bot):
     bot.add_cog(Tools(bot))
