@@ -7,7 +7,7 @@ import time
 class Simple(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.t1 = time.time()
+        self.t1 = time.time() 
 
     @commands.command(name="help", description="If you need help.")
     async def _help(self, ctx):
