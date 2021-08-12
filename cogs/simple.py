@@ -26,10 +26,15 @@ class Simple(commands.Cog):
     async def _ping(self, ctx):
         # Checks bot latency
         t2 = time.time()
+        n = t2-self.t1
+        h = n // 3600
+        s = n % 3600
+        m = s // 60
+        s = s % 60
         p = round(self.bot.latency * 1000)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'Pong! {p}ms!')
-        embed.add_field(name="Runtime: ", value=f'{round(t2-self.t1, 2)} seconds', inline=True)
+        embed.add_field(name="Runtime: ", value=f'{h} hour(s), {m} minute(s), {s} second(s)', inline=True)
         await ctx.send(embed=embed)
 
     @commands.command(name="admin", description="Display informations about bot owner.")

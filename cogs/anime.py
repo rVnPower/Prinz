@@ -11,7 +11,7 @@ class Anime(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="randomImg", description="Send a random image")
+    @commands.command(name="randomImg", description="Send a random image", aliases=['rI'])
     async def _randomImg(self, ctx):
         response = requests.get("https://git.meewmeew.info/data/alime.json").json()
         data = requests.get(random.choice(list(response['nsfw'].items()))[1]).json() or requests.get(random.choice(list(response['sfw'].items()))[1]).json()
@@ -58,7 +58,7 @@ class Anime(commands.Cog):
                 name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(name="nekoEro", description="Too bad for catgirls...")
+    @commands.command(name="nekoEro", description="Too bad for catgirls...", aliases=['nE'])
     async def _neko_ero(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/neko_ero/').json()
         if ctx.channel.is_nsfw():
@@ -72,8 +72,8 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(name="classicLewd", description="Classic lewd image.")
-    async def _classiclewd(self, ctx):
+    @commands.command(name="classicLewd", description="Classic lewd image.", aliases=['cL'])
+    async def _classic_lewd(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/classic_lewd/').json()
         if ctx.channel.is_nsfw():
             embed = discord.Embed(colour=discord.Colour.blurple())
@@ -89,7 +89,7 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(name="feetLewd", description="You really love those bare feets, don't you?")
+    @commands.command(name="feetLewd", description="You really love those bare feets, don't you?", aliases=['fL'])
     async def _feet_lewd(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/feet_lewd/').json()
         if ctx.channel.is_nsfw():

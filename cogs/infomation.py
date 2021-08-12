@@ -23,8 +23,8 @@ class Infomation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='info', description='Check an user infomation.')
-    async def _info(self, ctx, member: discord.Member):
+    @commands.command(aliases=['whois', 'info'], description='Check an user infomation.')
+    async def wis(self, ctx, member: discord.Member):
         roles = [role for role in member.roles]
         embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
         embed.set_author(name=f"Infomation of {member}")
@@ -36,6 +36,21 @@ class Infomation(commands.Cog):
         embed.add_field(name= f"Roles: ({len(roles)})", value=" ".join([role.mention for role in roles]))
         embed.add_field(name= "Highest role: ",value=member.top_role.mention)
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def whoami(self, ctx):
+        roles = [role for role in ctx.author.roles]
+        embed = discord.Embed(colour=ctx.author.color, timestamp=ctx.message.created_at)
+        embed.set_author(name=f"Infomation of {ctx.author}")
+        embed.set_thumbnail(url=ctx.author.avatar_url)
+        embed.add_field(name='ID:' ,value=ctx.author)
+        embed.add_field(name='Nickname: ',value=ctx.author.display_name)
+        embed.add_field(name= 'Joined on: ', value= ctx.author.created_at.strftime("%a, %#d %B %Y, %I:%M %p"))
+        embed.add_field(name= 'Joined server on: ', value= ctx.author.joined_at.strftime("%a, %#d %B %Y, %I:%M %p"))
+        embed.add_field(name= f"Roles: ({len(roles)})", value=" ".join([role.mention for role in roles]))
+        embed.add_field(name= "Highest role: ",value=ctx.author.top_role.mention)
+        await ctx.send(embed=embed)
+
 
     @commands.command(name="weather", description="Checks weather in a location.")
     async def _weather(self, ctx, *, words:str):
@@ -120,20 +135,39 @@ class Infomation(commands.Cog):
 
     @commands.command(name="sauce", description="Find an image source.")
     async def _sauce(self, ctx, *, words:str):
-        from pysaucenao import SauceNao, PixivSource
+        from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource
         sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
 
         # results = await sauce.from_file('/path/to/image.png')
         results = await sauce.from_url(words)
         best = results[0]
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name=best.author_name)
+        embed = discord.Embed(colour=discord.Colour.blurple(), title=best.author_name, url=best.author_url)
+        embed.set_author(name=f"[{best.title}]({best.urls[0]})")
         embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
-        embed.add_field(name="Link: ", value=f"[{best.title}]({best.urls[0]})")
+        embed.add_field(name="Source: ", value=best.index)
         embed.set_image(url=best.thumbnail)
         embed.set_footer(text="<:mag_right:> This is what I have found!")
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def sauce_ctx(self, ctx):
+        from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource
+        sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
+        # results = await sauce.from_file('/path/to/image.png')
+        results = await sauce.from_url(ctx.message.attachments[0].url)
+        best = results[0]
+        if isinstance(results[0], PixivSource):
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=best.author_name, url=best.author_url)
+            embed.set_author(name=f"[{best.title}]({best.urls[0]})")
+            embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
+            embed.add_field(name="Source: ", value=best.index)
+            embed.set_image(url=best.thumbnail)
+            embed.set_footer(text="<:mag_right:> This is what I have found!")
+            await ctx.send(embed=embed)
+        if isinstance(results[0], VideoSource):
+            embed = discord.Embed(colour=discord.Colour.blurple(), title="")
+            pass
+
 
     @commands.command(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
     async def _covid(self, ctx, *, words:str):
@@ -181,7 +215,7 @@ class Infomation(commands.Cog):
 
     @commands.command(name="math", description="Calculates.")
     # Test
-    async def _math(self, ctx, words:str):
+    async def alpha(self, ctx, words:str):
         client = wolframalpha.Client('QPK7GG-8KK22QQTLJ')
         result = client.query(words)
         output = next(result.results).text
@@ -208,60 +242,10 @@ class Infomation(commands.Cog):
         embed.set_thumbnail(url=ctx.guild.icon_url)
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def beatmap(self, ctx, *, words):
-        load_dotenv()
-        API_URL = 'https://osu.ppy.sh/api/v2'
-        TOKEN_URL = 'https://osu.ppy.sh/oauth/token'
-
-        def get_token():
-            data = {
-                'client_id': 8954,
-                'client_secret': 'EowlkKpcDXEGxagwbS7NF31ZQs6hl18ALPxcOUNX',
-                'grant_type': 'client_credentials',
-                'scope': 'public'
-            }
-            response = requests.post(TOKEN_URL, data=data)
-            return response.json().get('access_token')
-
-        def main():
-            token = get_token()
-            headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': f'Bearer {token}'
-            }
-            params = {
-                'id': words
-            }
-            response = requests.get(f'{API_URL}/beatmaps/lookup', params=params, headers=headers).json()
-            return response
-        data = main()
-        try:
-            embed = discord.Embed(colour=discord.Colour.blurple(), title=data['beatmapset']['title'], url=data['url'])
-        except KeyError:
-            embed = discord.Embed(colour=discord.Colour.blurple(), title="That beatmap does not exist!")
-            await ctx.send(embed=embed)
-        embed.set_author(name=data['beatmapset']['creator'])
-        embed.add_field(name="Beatmap ID: ", value=data['beatmapset_id'])
-        embed.add_field(name="Status: ", value=data['beatmapset']['status'])
-        embed.add_field(name="Mode: ", value=data['mode'])
-        embed.add_field(name="Difficulty rating: ", value=data['difficulty_rating'])
-        embed.add_field(name="Last updated: ", value=data['beatmapset']['last_updated'])
-        embed.add_field(name="Players: ", value=data['playcount'])
-        embed.add_field(name="Passed players: ", value=data['passcount'])
-        embed.add_field(name="Num. of circles: " , value=data['count_circles'])
-        embed.add_field(name="Num. of sliders: ", value=data['count_sliders'])
-        embed.add_field(name="Num. of spinners: ", value=data['count_spinners'])
-        embed.add_field(name="Artist: ", value=data['beatmapset']['artist'])
-        embed.set_image(url=data['beatmapset']['covers']['cover'])
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def github(self, ctx, *, words):
+    @commands.command(aliases=['gUser'])
+    async def github_user(self, ctx, *, words):
         data = requests.get(f'https://api.github.com/users/{words}').json()
         embed = discord.Embed(colour=discord.Colour.blurple(), title=data['login'], url=data['html_url'])
         embed.set_thumbnail(url=data['avatar_url'])

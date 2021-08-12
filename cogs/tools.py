@@ -2,6 +2,13 @@
 import discord
 from discord.ext import commands, tasks
 import math
+import PIL.Image
+import random
+import string
+import requests
+import json
+
+from core.chat_formatting import bold
 #####################################################
 
 class Tools(commands.Cog):
@@ -48,6 +55,12 @@ class Tools(commands.Cog):
                 break
         else:
             await ctx.send(f'{n} is not a prime number!')
+
+    @commands.command()
+    async def ascii(self, ctx, *, words):
+        await ctx.send(bold('Hi'))
+
+
 
 def setup(bot):
     bot.add_cog(Tools(bot))

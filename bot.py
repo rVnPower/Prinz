@@ -8,11 +8,11 @@ from dotenv import load_dotenv
 
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
-status = cycle(['League of Legends', 'osu!', 'l!invite'])
 ###########################################################
 
 @tasks.loop(seconds=1200)
 async def change_status():
+    status = cycle([f'l!invite = {str(len(bot.guilds))} servers += 1!'])
     await bot.change_presence(activity=discord.Game(next(status)))
 
 @bot.event
@@ -83,6 +83,6 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-# keep_alive()  # Starts a webserver to be pinged.
+keep_alive()  # Starts a webserver to be pinged.
 load_dotenv()
 bot.run(os.getenv("TOKEN"))
