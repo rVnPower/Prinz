@@ -5,7 +5,6 @@ from itertools import cycle
 import os
 from keep_alive import keep_alive
 from dotenv import load_dotenv
-
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
 ###########################################################

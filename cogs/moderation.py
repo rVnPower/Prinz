@@ -146,6 +146,7 @@ class Moderation(commands.Cog):
             await ctx.send("An error ocurred.")
         else:
             await ctx.send(f'Done.')
+'''
 
     @commands.command()
     async def tempban(self, ctx: commands.Context, member: discord.Member, duration: Optional[commands.TimedeltaConverter] = None, days: Optional[int] = None,*,reason: str = None):
@@ -182,6 +183,7 @@ class Moderation(commands.Cog):
         invite = await self.get_invite_for_reinvite(ctx, int(duration.total_seconds() + 86400))
         if invite is None:
             invite = ""
+'''
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

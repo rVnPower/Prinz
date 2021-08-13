@@ -2,6 +2,8 @@
 import discord
 from discord.ext import commands, tasks
 import time
+
+from core.chat_formatting import bold, italics
 #####################################################
 
 class Simple(commands.Cog):
@@ -50,6 +52,27 @@ class Simple(commands.Cog):
     @commands.command()
     async def dm(self, ctx, *, words):
         await ctx.author.send(words)
+
+    @commands.command()
+    async def hug(self, ctx, user: discord.Member, intensity: int = 1):
+        """Because everyone likes hugs!
+        Up to 10 intensity levels.
+        """
+        name = italics(user.display_name)
+        if intensity <= 0:
+            msg = "(っ˘̩╭╮˘̩)っ" + name
+        elif intensity <= 3:
+            msg = "(っ´▽｀)っ" + name
+        elif intensity <= 6:
+            msg = "╰(*´︶`*)╯" + name
+        elif intensity <= 9:
+            msg = "(つ≧▽≦)つ" + name
+        elif intensity >= 10:
+            msg = "(づ￣ ³￣)づ{} ⊂(´・ω・｀⊂)".format(name)
+        else:
+            # For the purposes of "msg might not be defined" linter errors
+            raise RuntimeError
+        await ctx.send(msg)
 
 def setup(bot):
 	bot.add_cog(Simple(bot))
