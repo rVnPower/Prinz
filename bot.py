@@ -3,7 +3,6 @@ from discord.ext import commands, tasks
 import random
 from itertools import cycle
 import os
-from keep_alive import keep_alive
 from dotenv import load_dotenv
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
@@ -82,6 +81,5 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-keep_alive()  # Starts a webserver to be pinged.
 load_dotenv()
 bot.run(os.getenv("TOKEN"))

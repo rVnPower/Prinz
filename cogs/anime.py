@@ -5,6 +5,7 @@ import random
 import requests
 import json
 from NHentai.nhentai import NHentai
+import animec
 #####################################################
 
 class Anime(commands.Cog):
@@ -118,6 +119,88 @@ class Anime(commands.Cog):
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
+
+    @commands.command()
+    async def kiss(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} kissed {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.kiss())
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def hug(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} hugged {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.hug())
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def cuddle(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} cuddled {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.cuddle())
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def cry(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} cried!")
+        embed.set_image(url=animec.waifu.Waifu.cry())
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def pat(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} patted {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.pat())
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def lick(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} licked {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.lick())
+        embed.set_footer(text="Eww.")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def bite(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} bit {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.bite())
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def slap(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} slapped {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.slap())
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def poke(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} poked {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.poke())
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Anime(bot)) 
