@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 bot = commands.Bot(command_prefix='l!', help_command=None)
 ###########################################################
 
-@tasks.loop(seconds=1200)
+@tasks.loop(seconds=600)
 async def change_status():
     status = cycle([f'l!invite = {str(len(bot.guilds))} servers += 1!'])
     await bot.change_presence(activity=discord.Game(next(status)))

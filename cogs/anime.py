@@ -202,5 +202,54 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.poke())
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def highfive(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} high-fived with {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.highfive())
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def ani_char(self, ctx, *, words):
+        try:
+            r = animec.sagasu.Charsearch(words)
+        except animec.errors.NoResultsFound:
+            embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found.")
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=r.title, url=r.url)
+            embed.add_field(name="- ", value="References:")
+            for i in r.references:
+                embed.add_field(name='-', value=f" {i}")
+            embed.set_image(url=r.image_url)
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['ani_search'])
+    async def anime(self, ctx, *, words):
+        seperator = ', '
+        try:
+            r = animec.anicore.Anime(words)
+        except animec.errors.NoResultsFound:
+            embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found.")
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=r.name, url=r.url)
+            embed.add_field(name="English title: ", value=r.title_english)
+            embed.add_field(name="Japanese title: ", value=r.title_jp)
+            embed.add_field(name="English title: ", value=r.title_english)
+            embed.add_field(name="Description: ", value=r.description)
+            embed.add_field(name="Producers: ", value=seperator.join(r.producers))
+            embed.add_field(name="Genres: ", value=seperator.join(r.genres))
+            embed.add_field(name="Episodes: ", value=r.episodes)
+            embed.add_field(name="Rank / Rating: ", value=f"{r.ranked} / {r.rating}")
+            embed.add_field(name="Popularity: ", value=r.popularity)
+            embed.add_field(name="NSFW: ", value=r.is_nsfw())
+            embed.add_field(name="Recommended: ", value=r.recommend())
+            embed.set_image(url=r.poster)
+            
+        await ctx.send(embed=embed)
+
+
+
 def setup(bot):
     bot.add_cog(Anime(bot)) 
