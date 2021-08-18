@@ -22,7 +22,7 @@ async def on_ready():
 async def on_message(message):
     send = [
         'Yes?', 'Do you need help? Type \'l!help\'!', 'I was playing...',
-        'Don\'t you have something to do?', f'Hi! {message.author}!',
+        'Don\'t you have something to do?',
         'You mentioned me!'
     ]
     if bot.user.mentioned_in(message):

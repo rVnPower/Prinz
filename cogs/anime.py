@@ -66,7 +66,6 @@ class Anime(commands.Cog):
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='Here is your image!')
             embed.set_image(url=data['data']['response']['url'])
-            embed.set_footer(text="Type: Neko Lewd. So bad for catgirls... <:terrified:864482152451014667>")
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(colour=discord.Colour.blurple())
@@ -80,7 +79,6 @@ class Anime(commands.Cog):
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='Here is your image!')
             embed.set_image(url=data['data']['response']['url'])
-            embed.set_footer(text="Type: Classic Lewd. It's classic! <:eyes:>")
             await ctx.send(embed=embed)
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='You can only use this command in a NSFW channel!')
@@ -97,7 +95,6 @@ class Anime(commands.Cog):
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='Here is your image!')
             embed.set_image(url=data['data']['response']['url'])
-            embed.set_footer(text="Type: Feet Lewd. You really love those bare feets, don't you? <:eyes:>")
             await ctx.send(embed=embed)
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='You can only use this command in a NSFW channel!')
