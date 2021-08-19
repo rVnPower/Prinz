@@ -6,6 +6,8 @@ import requests
 import json
 from NHentai.nhentai import NHentai
 import animec
+from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
+import asyncio
 #####################################################
 
 class Anime(commands.Cog):
@@ -214,11 +216,15 @@ class Anime(commands.Cog):
             r = animec.sagasu.Charsearch(words)
         except animec.errors.NoResultsFound:
             embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found.")
+            await ctx.send(embed=embed)
+            return
         else:
+            count = 0
             embed = discord.Embed(colour=discord.Colour.blurple(), title=r.title, url=r.url)
             embed.add_field(name="- ", value="References:")
             for i in r.references:
-                embed.add_field(name='-', value=f" {i}")
+                count += 1
+                embed.add_field(name=f"{count}.", value=f" {i}")
             embed.set_image(url=r.image_url)
         await ctx.send(embed=embed)
 
@@ -230,23 +236,39 @@ class Anime(commands.Cog):
         except animec.errors.NoResultsFound:
             embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found.")
         else:
+            current = 0
             embed = discord.Embed(colour=discord.Colour.blurple(), title=r.name, url=r.url)
             embed.add_field(name="English title: ", value=r.title_english)
             embed.add_field(name="Japanese title: ", value=r.title_jp)
-            embed.add_field(name="English title: ", value=r.title_english)
-            embed.add_field(name="Description: ", value=r.description)
-            embed.add_field(name="Producers: ", value=seperator.join(r.producers))
             embed.add_field(name="Genres: ", value=seperator.join(r.genres))
             embed.add_field(name="Episodes: ", value=r.episodes)
             embed.add_field(name="Rank / Rating: ", value=f"{r.ranked} / {r.rating}")
             embed.add_field(name="Popularity: ", value=r.popularity)
             embed.add_field(name="NSFW: ", value=r.is_nsfw())
-            embed.add_field(name="Recommended: ", value=r.recommend())
+            embed.add_field(name="Also recommended: ", value=seperator.join(list(r.recommend())))
             embed.set_image(url=r.poster)
-            
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    async def waifu(self, ctx):
+        r = animec.waifu.Waifu.waifu()
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_image(url=r)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def neko(self, ctx):
+        r = animec.waifu.Waifu.neko()
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_image(url=r)
+        await ctx.send(embed=embed)
 
+    @commands.command()
+    async def randomGif(self,ctx):
+        r = animec.waifu.Waifu.random_gif()
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_image(url=r)
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Anime(bot)) 

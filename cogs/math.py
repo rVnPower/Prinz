@@ -45,6 +45,7 @@ class Math(commands.Cog):
                 break
             else:
                 await ctx.send(f'{n} is not a prime number!')
+                break
 
 def setup(bot):
     bot.add_cog(Math(bot))

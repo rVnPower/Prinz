@@ -17,7 +17,7 @@ class Tools(commands.Cog):
 
     @commands.command(pass_content=True)
     async def invite(self, ctx):
-        await ctx.author.send("Here is the link! Thanks for inviting!\nhttps://discord.com/api/oauth2/authorize?client_id=865487746905931846&permissions=140056586310&scope=bot%20applications.commands")
+        await ctx.author.send("Here is the link! Thanks for inviting!\nhttps://discord.com/api/oauth2/authorize?client_id=877182587725049897&permissions=155118463095&scope=bot")
 
     @commands.command()
     async def ascii(self, ctx, *, words):

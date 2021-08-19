@@ -10,7 +10,6 @@ import wolframalpha
 from pyowm import OWM
 from pyowm.utils import config
 from pyowm.utils import timestamps
-from discord_slash import cog_ext, SlashContext
 import os
 from dotenv import load_dotenv
 #####################################################
@@ -19,7 +18,7 @@ headers = {}
 response = requests.request("GET", "https://api.covid19api.com/summary", headers=headers, data=payload)
 covi = response.json()
 
-class Infomation(commands.Cog):
+class Information(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -262,4 +261,4 @@ class Infomation(commands.Cog):
         await ctx.send(embed=embed)
 
 def setup(bot):
-    bot.add_cog(Infomation(bot))
+    bot.add_cog(Information(bot))

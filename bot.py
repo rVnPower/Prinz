@@ -32,6 +32,38 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
+async def help2(ctx):
+    count = 0
+    commands = ['Anime', 'Chess', 'Doujin', 'Games', 'GD (Geometry Dash)', 'Information', 'Math', 'Moderation', 'Music', 'Osu', 'Simple', 'Tools']
+    embed = discord.Embed(colour=discord.Colour.blurple(), title="List of command types")
+    embed.set_footer(text="Type 'l!help ' with a name of a type to see all of the commands!")
+    for i in commands:
+        count += 1
+        embed.add_field(name=f"{count}. ", value=i, inline=True)
+    await ctx.send(embed=embed)
+
+@bot.command(aliases=['help'])
+async def h(ctx, *, words:str):
+    r = bot.get_cog(words.capitalize() )
+    try:
+        commands = r.get_commands()
+    except AttributeError:
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name="That type does not exist!")
+        await ctx.send(embed=embed)
+        return
+    commands = r.get_commands()
+    embed = discord.Embed(colour=discord.Colour.blurple(), title=f"Commands in {words.capitalize()}")
+    for command in commands:
+        embed.add_field(name=command.name, value=f"`{command.description}`")
+    await ctx.send(embed=embed)
+
+
+@h.error
+async def error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await help2(ctx)
+
 @bot.command(name="Hi!", description="This is just a test command, nothing more.")
 async def load(ctx, extension):
     if str(ctx.author) == 'VnPower#8888':

@@ -9,15 +9,7 @@ from core.chat_formatting import bold, italics
 class Simple(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.t1 = time.time() 
-
-    @commands.command(name="help", description="If you need help.")
-    async def _help(self, ctx):
-        # Help
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name='Announcement!')
-        embed.add_field(name='I am still developing this bot!', value='There will be a website for this bot... So stay tuned!')
-        await ctx.send(embeds=[embed])
+        self.t1 = time.time()
 
     @commands.command(name="hi", description="She will greet you!")
     async def _hi(self, ctx):
