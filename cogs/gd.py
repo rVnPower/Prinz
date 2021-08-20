@@ -9,10 +9,10 @@ class Gd(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command()
+	@commands.command(description="Get information of a Geometry Dash level")
 	async def gd_level(self, ctx, ID:int):
-		r = requests.get(f'https://gdbrowser.com/api/level/{ID}')
-		if r.status_code == 200:
+		r = requests.get(f'https://gdbrowser.com/api/level/{ID}').json()
+		if r != '-1':
 			embed = discord.Embed(colour=discord.Colour.blurple(), title=r['name'])	
 			embed.set_author(name=r['author'])
 			embed.add_field(name="Description: ")
@@ -24,12 +24,12 @@ class Gd(commands.Cog):
 			embed.add_field(name="Likes: ", value=r['likes'])
 			embed.add_field(name="Required game version: ", value=r['gameVersion'])
 			embed.add_field(name="Song: ", value=f"{songID} - {songName}")
-		if r.status_code == 404:
+		else:
 			embed = discord.Embed(colour=discord.Colour.blurple())
 			embed.set_author(name="That level does not exist!")
 		await ctx.send(embed=embed)
 
-	@commands.command()
+	@commands.command(description="Get information of a Geometry Dash player")
 	async def gd_player(self, ctx, *, words):
 		r = requests.get(f'https://gdbrowser.com/api/profile/{words}').json()
 		embed = discord.Embed(colour=discord.Colour.blurple())
@@ -50,7 +50,7 @@ class Gd(commands.Cog):
 			embed.set_author(name="That player does not exist!")
 		await ctx.send(embed=embed)
 
-	@commands.command()
+	@commands.command(description="Search something in Geometry Dash")
 	async def gd_search(self, ctx, *, words):
 		r = requests.get(f"https://gdbrowser.com/api/search/{words}?page=1").json()
 		embed = discord.Embed(colour=discord.Colour.blurple())

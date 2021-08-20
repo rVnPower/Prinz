@@ -54,7 +54,7 @@ class Moderation(commands.Cog):
             except discord.HTTPException:
                 return
 
-    @commands.command(aliases=['k'])
+    @commands.command(aliases=['k'], description="Kick a member")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(colour=discord.Colour.blurple())
@@ -69,7 +69,7 @@ class Moderation(commands.Cog):
                             inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['b'])
+    @commands.command(aliases=['b'], description="Ban a member")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(colour=discord.Colour.blurple())
@@ -86,13 +86,13 @@ class Moderation(commands.Cog):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name="Hey!")
         embed.add_field(name="I'm sorry about this but...", value=f" You have been banned from {ctx.guild.name} for {reason}!")
-        await ctx.member.send(embed=embed)
+        await member.send(embed=embed)
 
-    @commands.command(aliases=['d'])
+    @commands.command(aliases=['d'], description="Clear a number of messages")
     async def clear(self, ctx, amount: int):
         await ctx.channel.purge(limit=amount + 1)
 
-    @commands.command(aliases=['u'])
+    @commands.command(aliases=['u'], description="Unban an user")
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
         banned_users = await ctx.guild.bans()
@@ -108,13 +108,13 @@ class Moderation(commands.Cog):
                 await ctx.send("Maybe that user doesn't exist...")
 
     @commands.has_permissions(ban_members=True)
-    @commands.command(aliases=['bl'])
+    @commands.command(aliases=['bl'], description="Show the banned users list")
     async def banlist(self, ctx):
         banned_users = await ctx.guild.bans()
         await ctx.send(banned_users)
 
     @commands.has_permissions(ban_members=True)
-    @commands.command()
+    @commands.command(description="Kick an user and delete messenges from that user for 1 day")
     async def softban(self, ctx: commands.Context, member: discord.Member, *, reason: str = None):
         ''' Kick an user and delete messenges from that user for 1 day'''
         guild = ctx.guild
@@ -146,6 +146,7 @@ class Moderation(commands.Cog):
             await ctx.send("An error ocurred.")
         else:
             await ctx.send(f'Done.')
+
 '''
 
     @commands.command()

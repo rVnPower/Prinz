@@ -12,7 +12,7 @@ class Chess(commands.Cog):
         self.bot = bot
         self.data = get_leaderboards().json
 
-    @commands.command()
+    @commands.command(description="Get a category leaderboard on Chess.com")
     async def chess_top(self, ctx, *, words:str = "daily"):
         data2 = self.data['leaderboards']
         categories = self.data['leaderboards'].keys()
@@ -24,7 +24,7 @@ class Chess(commands.Cog):
                     embed.add_field(name=f"Rank: {player['rank']}", value=f"Username: {player['username']} | Rating: {player['score']}")
                 await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Print all of the chess type on Chess.com")
     async def chess_type(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple(), title="Type of chess on Chess.com")
         embed.add_field(name='- ', value="daily, daily960, live_rapid, live_blitz, live_bullet, live_bughouse, live_blitz960, live_threecheck, live_crazyhouse, live_kingofthehill, tactics")

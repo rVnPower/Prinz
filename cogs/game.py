@@ -9,7 +9,7 @@ class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(description="Play a guessing game (Guess a number from 1 to 1000)")
     async def guess(self, ctx):
         # Simple guessing game
         embed = discord.Embed(colour=discord.Colour.blurple(), title="Guess a number between 1 and 1000.")

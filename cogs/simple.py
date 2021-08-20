@@ -28,7 +28,7 @@ class Simple(commands.Cog):
         p = round(self.bot.latency * 1000)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'Pong! {p}ms!')
-        embed.add_field(name="Runtime: ", value=f'{h} hour(s), {m} minute(s), {s} second(s)', inline=True)
+        embed.add_field(name="Runtime: ", value=f'{round(h)} hour(s), {round(m)} minute(s), {round(s, 2)} second(s)', inline=True)
         await ctx.send(embed=embed)
 
     @commands.command(name="admin", description="Display informations about bot owner.")
@@ -41,7 +41,7 @@ class Simple(commands.Cog):
         embed.add_field(name='Discord: ', value="VnPower#8888")
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="DM you a message")
     async def dm(self, ctx, *, words):
         await ctx.author.send(words)
 

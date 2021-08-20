@@ -1,7 +1,7 @@
 [
 	{
 		"question": "Hi",
-		"answer": "Hello"
+		"answer": "Hello!"
 	},
 	{
 		"question": "What's your name?",
@@ -94,6 +94,18 @@
 	{
 		"question": "I some need help",
 		"answer": "Type 'l!help'"
+	},
+	{
+		"question": "What are you doing?",
+		"answer": "Chatting with you..."
+	},
+	{
+		"question": "Really?",
+		"answer": "I don't know..."
+	},
+	{
+		"question": "Really?",
+		"answer": "Maybe..."
 	},
 	{
 		"question": "d",

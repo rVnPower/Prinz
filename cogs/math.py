@@ -34,7 +34,7 @@ class Math(commands.Cog):
             embed.set_author(name=f'Please provide a type! (Ex: "decode" or "encode")')
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Check if an integer is a prime number")
     async def prime(self, ctx, *, n:int):
         m = math.sqrt(abs(n))
         i = 2

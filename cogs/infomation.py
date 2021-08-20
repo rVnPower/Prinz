@@ -36,7 +36,7 @@ class Information(commands.Cog):
         embed.add_field(name= "Highest role: ",value=member.top_role.mention)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Check your Discord account details")
     async def whoami(self, ctx):
         roles = [role for role in ctx.author.roles]
         embed = discord.Embed(colour=ctx.author.color, timestamp=ctx.message.created_at)
@@ -205,7 +205,7 @@ class Information(commands.Cog):
                 await ctx.send(embed=embed)
                 break
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def countries(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name="Country names and country codes(ISO Alpha-2)")
@@ -243,7 +243,7 @@ class Information(commands.Cog):
         embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['gUser'])
+    @commands.command(aliases=['gUser'], description="Get information of a GitHub user.")
     async def github_user(self, ctx, *, words):
         data = requests.get(f'https://api.github.com/users/{words}').json()
         embed = discord.Embed(colour=discord.Colour.blurple(), title=data['login'], url=data['html_url'])

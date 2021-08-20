@@ -4,6 +4,23 @@ import random
 from itertools import cycle
 import os
 from dotenv import load_dotenv
+import json
+from chatterbot import ChatBot
+from chatterbot.trainers import ListTrainer
+from keep_alive import keep_alive
+greetingsAndQuestion = json.loads(open('greet.json', 'r').read())
+
+trainList = []
+
+for row in greetingsAndQuestion:
+    trainList.append(row['question'])
+    trainList.append(row['answer'])
+
+chatbot = ChatBot('Prinz')
+
+trainer = ListTrainer(chatbot)
+
+trainer.train(trainList)
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
 ###########################################################
@@ -25,6 +42,7 @@ async def on_message(message):
         'Don\'t you have something to do?',
         'You mentioned me!'
     ]
+
     if bot.user.mentioned_in(message):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=random.choice(send))
@@ -44,20 +62,21 @@ async def help2(ctx):
 
 @bot.command(aliases=['help'])
 async def h(ctx, *, words:str):
-    r = bot.get_cog(words.capitalize() )
+    r1 = bot.get_cog(words.capitalize())
     try:
-        commands = r.get_commands()
+        commands = r1.get_commands()
     except AttributeError:
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name="That type does not exist!")
         await ctx.send(embed=embed)
         return
-    commands = r.get_commands()
+    commands = r1.get_commands()
+
     embed = discord.Embed(colour=discord.Colour.blurple(), title=f"Commands in {words.capitalize()}")
     for command in commands:
         embed.add_field(name=command.name, value=f"`{command.description}`")
     await ctx.send(embed=embed)
-
+    
 
 @h.error
 async def error(ctx, error):
@@ -113,5 +132,6 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
+keep_alive()
 load_dotenv()
 bot.run(os.getenv("TOKEN"))

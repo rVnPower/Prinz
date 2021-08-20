@@ -10,7 +10,7 @@ class Osu(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(description="Get information of a Osu! beatmap")
     async def osu_beatmap(self, ctx, *, words):
         API_URL = 'https://osu.ppy.sh/api/v2'
         TOKEN_URL = 'https://osu.ppy.sh/oauth/token'
@@ -58,7 +58,7 @@ class Osu(commands.Cog):
         embed.set_image(url=data['beatmapset']['covers']['cover'])
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def osu_scores(self, ctx, *, words):
         API_URL = 'https://osu.ppy.sh/api/v2'
         TOKEN_URL = 'https://osu.ppy.sh/oauth/token'

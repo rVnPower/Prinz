@@ -6,7 +6,6 @@ import requests
 import json
 from NHentai.nhentai import NHentai
 import animec
-from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
 import asyncio
 #####################################################
 
@@ -14,7 +13,7 @@ class Anime(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="randomImg", description="Send a random image", aliases=['rI'])
+    @commands.command(description="Send a random image", aliases=['rI'])
     async def _randomImg(self, ctx):
         response = requests.get("https://git.meewmeew.info/data/alime.json").json()
         data = requests.get(random.choice(list(response['nsfw'].items()))[1]).json() or requests.get(random.choice(list(response['sfw'].items()))[1]).json()
@@ -29,7 +28,7 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(name="img", description="Send a random anime image from VnPower's GDrive")
+    @commands.command(description="Send a random anime image from VnPower's GDrive")
     async def _img(self, ctx):
       url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/G-Rated/{random.randint(1,145)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())
@@ -37,7 +36,7 @@ class Anime(commands.Cog):
       embed.set_image(url=url)
       await ctx.send(embed=embed)
 
-    @commands.command(name="ecchi", description="Send a random ecchi image")
+    @commands.command(description="Send a random ecchi image")
     async def _ecchi(self, ctx):
       url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/Ecchi/{random.randint(1,82)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())
@@ -45,7 +44,7 @@ class Anime(commands.Cog):
       embed.set_image(url=url)
       await ctx.send(embed=embed)
 
-    @commands.command(name="hentai", description="Send a random hentai image")
+    @commands.command(description="Send a random hentai image")
     async def _hentai(self, ctx):
         if ctx.channel.is_nsfw():
             embed = discord.Embed(colour=discord.Colour.blurple())
@@ -61,7 +60,7 @@ class Anime(commands.Cog):
                 name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(name="nekoEro", description="Too bad for catgirls...", aliases=['nE'])
+    @commands.command(description="Too bad for catgirls...", aliases=['nE'])
     async def _neko_ero(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/neko_ero/').json()
         if ctx.channel.is_nsfw():
@@ -74,7 +73,7 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(name="classicLewd", description="Classic lewd image.", aliases=['cL'])
+    @commands.command(description="Classic lewd image.", aliases=['cL'])
     async def _classic_lewd(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/classic_lewd/').json()
         if ctx.channel.is_nsfw():
@@ -90,7 +89,7 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(name="feetLewd", description="You really love those bare feets, don't you?", aliases=['fL'])
+    @commands.command(description="You really love those bare feets, don't you?", aliases=['fL'])
     async def _feet_lewd(self, ctx):
         data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/feet_lewd/').json()
         if ctx.channel.is_nsfw():
@@ -106,20 +105,7 @@ class Anime(commands.Cog):
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(aliases=['rD'])
-    async def random_doujin(self ,ctx):
-        if ctx.channel.is_nsfw():
-            nhentai = NHentai()
-            Doujin = nhentai.get_random()
-            embed = discord.Embed(colour=discord.Colour.blurple(), title=Doujin.title, url=f'https://nhentai.net/g/{Doujin.id}')
-            embed.set_image(url=Doujin.images[0])
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='You can only use this command in a NSFW channel!')
-            await ctx.send(embed=embed)
-
-    @commands.command()
+    @commands.command(description="Kiss an user")
     async def kiss(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -128,7 +114,7 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.kiss())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Hug an user")
     async def hug(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -137,7 +123,7 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.hug())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Cuddle an user")
     async def cuddle(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -146,7 +132,7 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.cuddle())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Cry ;_;")
     async def cry(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -155,7 +141,16 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.cry())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Blush #._.# ")
+    async def cry(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} blushed!")
+        embed.set_image(url=animec.waifu.Waifu.blush())
+        await ctx.send(embed=embed)
+
+    @commands.command(description="Pat an user")
     async def pat(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -164,7 +159,7 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.pat())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Lick an user")
     async def lick(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -174,7 +169,7 @@ class Anime(commands.Cog):
         embed.set_footer(text="Eww.")
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Bite an user")
     async def bite(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -183,7 +178,7 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.bite())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Slap an user")
     async def slap(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -192,7 +187,7 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.slap())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Poke an user")
     async def poke(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -201,7 +196,16 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.poke())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Kill an user")
+    async def kill(self, ctx, member:discord.Member):
+        mem = str(member)
+        author = str(ctx.author)
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name=f"{author.split('#')[0]} killed {mem.split('#')[0]}!")
+        embed.set_image(url=animec.waifu.Waifu.poke())
+        await ctx.send(embed=embed)
+
+    @commands.command(description="Highfive with an user")
     async def highfive(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -210,7 +214,7 @@ class Anime(commands.Cog):
         embed.set_image(url=animec.waifu.Waifu.highfive())
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Search for details of an anime charecter")
     async def ani_char(self, ctx, *, words):
         try:
             r = animec.sagasu.Charsearch(words)
@@ -228,7 +232,7 @@ class Anime(commands.Cog):
             embed.set_image(url=r.image_url)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['ani_search'])
+    @commands.command(aliases=['ani_search'], description="Search for details of an anime movie")
     async def anime(self, ctx, *, words):
         seperator = ', '
         try:
@@ -249,21 +253,21 @@ class Anime(commands.Cog):
             embed.set_image(url=r.poster)
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Send a random waifu")
     async def waifu(self, ctx):
         r = animec.waifu.Waifu.waifu()
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_image(url=r)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Send a random catgirl pic")
     async def neko(self, ctx):
         r = animec.waifu.Waifu.neko()
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_image(url=r)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(description="Send a random anime GIF")
     async def randomGif(self,ctx):
         r = animec.waifu.Waifu.random_gif()
         embed = discord.Embed(colour=discord.Colour.blurple())

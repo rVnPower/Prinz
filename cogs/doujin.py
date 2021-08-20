@@ -10,7 +10,20 @@ class Doujin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases=['rD'], description="Get a random doujin on NHentai")
+    async def random_doujin(self ,ctx):
+        if ctx.channel.is_nsfw():
+            nhentai = NHentai()
+            Doujin = nhentai.get_random()
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=Doujin.title, url=f'https://nhentai.net/g/{Doujin.id}')
+            embed.set_image(url=Doujin.images[0])
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
+
+    @commands.command(description="Read a doujin on NHentai")
     async def read_doujin(self, ctx, *, words:int):
         current = 0
         nhentai = NHentai()
