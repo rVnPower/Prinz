@@ -18,7 +18,7 @@ headers = {}
 response = requests.request("GET", "https://api.covid19api.com/summary", headers=headers, data=payload)
 covi = response.json()
 
-class Information(commands.Cog):
+class Information(commands.Cog, description="Information commands"):
     def __init__(self, bot):
         self.bot = bot
 

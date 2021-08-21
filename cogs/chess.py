@@ -7,7 +7,7 @@ import json
 from chessdotcom import get_leaderboards,get_player_stats
 #####################################################
 
-class Chess(commands.Cog):
+class Chess(commands.Cog, description="Chess.com commands"):
     def __init__(self, bot):
         self.bot = bot
         self.data = get_leaderboards().json

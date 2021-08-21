@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 import contextlib
 #####################################################
 
-class Moderation(commands.Cog):
+class Moderation(commands.Cog, description="Moderation commands"):
     def __init__(self, bot):
         self.bot = bot
 

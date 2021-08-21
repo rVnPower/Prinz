@@ -8,6 +8,7 @@ from NHentai.nhentai import NHentai
 class Doujin(commands.Cog): 
     def __init__(self, bot):
         self.bot = bot
+    '''
 
     @commands.command(aliases=['rD'], description="Get a random doujin on NHentai")
     async def random_doujin(self ,ctx):
@@ -63,6 +64,6 @@ class Doujin(commands.Cog):
                     await msg.remove_reaction(button, ctx.author)
                     if current != previous_page:
                         await msg.edit(embed=embeds[current])
-
+'''
 def setup(bot):
     bot.add_cog(Doujin(bot))

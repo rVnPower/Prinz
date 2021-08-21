@@ -6,7 +6,7 @@ import requests
 import json
 #####################################################
 
-class Osu(commands.Cog):
+class Osu(commands.Cog, description="Osu! commands"):
     def __init__(self, bot):
         self.bot = bot
 

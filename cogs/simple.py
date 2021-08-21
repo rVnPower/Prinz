@@ -2,11 +2,11 @@
 import discord
 from discord.ext import commands, tasks
 import time
-
+import nekos
 from core.chat_formatting import bold, italics
 #####################################################
 
-class Simple(commands.Cog):
+class Simple(commands.Cog, description="Simple and fun commands"):
     def __init__(self, bot):
         self.bot = bot
         self.t1 = time.time()
@@ -44,6 +44,35 @@ class Simple(commands.Cog):
     @commands.command(description="DM you a message")
     async def dm(self, ctx, *, words):
         await ctx.author.send(words)
+
+    @commands.command(description="Get a random textcat")
+    async def textcat(self, ctx):
+        await ctx.send(nekos.textcat())
+
+    @commands.command(description="Get a random fact")
+    async def fact(self, ctx):
+        embed = discord.Embed(colour=discord.Colour.blurple(), title='Did you know?', description=nekos.fact())
+        await ctx.send(embed=embed)
+
+    @commands.command(description="Get a random cat image")
+    async def cat(self, ctx):
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_image(url=nekos.cat())
+        await ctx.send(embed=embed)
+
+    @commands.command(description="Get a random `why?` question")
+    async def why(self, ctx):
+        embed = discord.Embed(colour=discord.Colour.blurple(), description=nekos.why())
+        await ctx.send(embed=embed)
+
+    @commands.command(description="Answer your question with a random answer", aliases=['eightball'])
+    async def _8ball(self, ctx, *, words:str):
+        if words.endswith('?'):
+            embed = discord.Embed(colour=discord.Colour.blurple(), description=nekos.eightball())
+            
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple(), description="That does not look like a question.")
+            await ctx.send(embed=embed)
 
 def setup(bot):
 	bot.add_cog(Simple(bot))

@@ -2,16 +2,15 @@
 import discord
 from discord.ext import commands, tasks
 import math
-import PIL.Image
 import random
 import string
 import requests
 import json
-
+import nekos
 from core.chat_formatting import bold
 #####################################################
 
-class Tools(commands.Cog):
+class Tools(commands.Cog, description="Tools"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -21,7 +20,11 @@ class Tools(commands.Cog):
 
     @commands.command(hidden=True)
     async def ascii(self, ctx, *, words):
-        await ctx.send(bold('Hi'))
+        await ctx.send(nekos.owoify(words))
+
+    @commands.command(aliases=['owo'], description="Owoify a string! Nya~")
+    async def owoify(self, ctx, *, words):
+        await ctx.send(nekos.owoify(words))
 
     @commands.command(aliases=['av'], description="Show your avatar")
     async def avatar(self, ctx):

@@ -5,7 +5,7 @@ import json
 import requests
 #####################################################
 
-class Gd(commands.Cog):
+class Gd(commands.Cog, description="Geometry Dash commands"):
 	def __init__(self, bot):
 		self.bot = bot
 

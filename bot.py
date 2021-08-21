@@ -7,19 +7,14 @@ from dotenv import load_dotenv
 import json
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
-from keep_alive import keep_alive
+###########################################################
 greetingsAndQuestion = json.loads(open('greet.json', 'r').read())
-
 trainList = []
-
 for row in greetingsAndQuestion:
     trainList.append(row['question'])
     trainList.append(row['answer'])
-
 chatbot = ChatBot('Prinz')
-
 trainer = ListTrainer(chatbot)
-
 trainer.train(trainList)
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
@@ -52,12 +47,15 @@ async def on_message(message):
 
 async def help2(ctx):
     count = 0
-    commands = ['Anime', 'Chess', 'Doujin', 'Games', 'GD (Geometry Dash)', 'Information', 'Math', 'Moderation', 'Music', 'Osu', 'Simple', 'Tools']
+    commands = list(bot.cogs.values())
+    
     embed = discord.Embed(colour=discord.Colour.blurple(), title="List of command types")
     embed.set_footer(text="Type 'l!help ' with a name of a type to see all of the commands!")
-    for i in commands:
-        count += 1
-        embed.add_field(name=f"{count}. ", value=i, inline=True)
+    for command in commands:
+        if str(command.description) != '':
+            embed.add_field(name=f"{command.qualified_name}", value=f"{command.description}", inline=True)
+        else:
+            embed.add_field(name=f"{command.qualified_name}", value=f"`No description provided`", inline=True)
     await ctx.send(embed=embed)
 
 @bot.command(aliases=['help'])
@@ -111,7 +109,7 @@ async def unload(ctx, extension):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name='You don\'t have permissions to do that!')
+        embed.set_author(name=f'You don\'t have permissions to do that! You need {error.param.name}')
         await ctx.send(embed=embed)
     if isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(colour=discord.Colour.blurple())
@@ -132,6 +130,5 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
-keep_alive()
 load_dotenv()
 bot.run(os.getenv("TOKEN"))

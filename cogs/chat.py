@@ -6,17 +6,12 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 
 greetingsAndQuestion = json.loads(open('greet.json', 'r').read())
-
 trainList = []
-
 for row in greetingsAndQuestion:
     trainList.append(row['question'])
     trainList.append(row['answer'])
-
 chatbot = ChatBot('Prinz')
-
 trainer = ListTrainer(chatbot)
-
 trainer.train(trainList)
 
 class Chat(commands.Cog, description="Chat with the AI"):
