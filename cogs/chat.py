@@ -5,12 +5,18 @@ import json
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 
-greetingsAndQuestion = json.loads(open('greet.json', 'r').read())
+greetingsAndQuestion = json.loads(open('intents/greet.json', 'r').read())
 trainList = []
 for row in greetingsAndQuestion:
     trainList.append(row['question'])
     trainList.append(row['answer'])
-chatbot = ChatBot('Prinz')
+chatbot = ChatBot('Prinz', logic_adapters=[
+                        {
+            'import_path': 'chatterbot.logic.BestMatch',
+            'default_response': 'I am sorry, but I do not understand.',
+            'maximum_similarity_threshold': 0.90
+        }
+                ])
 trainer = ListTrainer(chatbot)
 trainer.train(trainList)
 

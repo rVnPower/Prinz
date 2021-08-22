@@ -24,7 +24,9 @@ class Tools(commands.Cog, description="Tools"):
 
     @commands.command(aliases=['owo'], description="Owoify a string! Nya~")
     async def owoify(self, ctx, *, words):
-        await ctx.send(nekos.owoify(words))
+        loop = asyncio.get_event_loop()
+        r = await loop.run_in_executor(None, nekos.owoify, words)
+        await ctx.send(r)
 
     @commands.command(aliases=['av'], description="Show your avatar")
     async def avatar(self, ctx):

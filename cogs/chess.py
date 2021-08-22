@@ -21,7 +21,7 @@ class Chess(commands.Cog, description="Chess.com commands"):
                 embed = discord.Embed(colour=discord.Colour.blurple(), title=f"Category: {category}")
                 embed.set_author(name="Chess.com leaderboard!")
                 for player in data2[category]:
-                    embed.add_field(name=f"Rank: {player['rank']}", value=f"Username: {player['username']} | Rating: {player['score']}")
+                    embed.add_field(name=f"Rank: {player['rank']}", value=f"Username: {player['username']} | Rating: {player['score']}", inline=False)
                 await ctx.send(embed=embed)
 
     @commands.command(description="Print all of the chess type on Chess.com")
@@ -37,7 +37,7 @@ class Chess(commands.Cog, description="Chess.com commands"):
             categories = ['chess_blitz', 'chess_rapid', 'chess_bullet']
             embed = discord.Embed(colour=discord.Colour.blurple(), title=f"{words}'s stats on Chess.com")
             for category in categories:
-                embed.add_field(name= f'Category: {category} |', value=f"Current: {data[category]['last']['rating']} | Best: {data[category]['best']['rating']}")
+                embed.add_field(name= f'Category: {category} |', value=f"Current: {data[category]['last']['rating']} | Best: {data[category]['best']['rating']}", inline=False)
             return embed
         embed = print_leaderboard(words)
         await ctx.send(embed=embed)

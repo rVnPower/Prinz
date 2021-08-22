@@ -148,7 +148,11 @@ class Information(commands.Cog, description="Information commands"):
         embed.set_footer(text="<:mag_right:> This is what I have found!")
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @_sauce.error
+    async def error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await sauce_ctx()
+
     async def sauce_ctx(self, ctx):
         from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource
         sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')

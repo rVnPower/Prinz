@@ -65,14 +65,13 @@ class Simple(commands.Cog, description="Simple and fun commands"):
         embed = discord.Embed(colour=discord.Colour.blurple(), description=nekos.why())
         await ctx.send(embed=embed)
 
-    @commands.command(description="Answer your question with a random answer", aliases=['eightball'])
-    async def _8ball(self, ctx, *, words:str):
+    @commands.command(description="Answer your question with a random answer", aliases=['8ball'])
+    async def eightball(self, ctx, *, words:str):
         if words.endswith('?'):
-            embed = discord.Embed(colour=discord.Colour.blurple(), description=nekos.eightball())
-            
+            embed = discord.Embed(colour=discord.Colour.blurple(), description=nekos.eightball().text.capitalize())
         else:
             embed = discord.Embed(colour=discord.Colour.blurple(), description="That does not look like a question.")
-            await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
 def setup(bot):
 	bot.add_cog(Simple(bot))

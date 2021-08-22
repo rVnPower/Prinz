@@ -8,16 +8,9 @@ import json
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 ###########################################################
-greetingsAndQuestion = json.loads(open('greet.json', 'r').read())
-trainList = []
-for row in greetingsAndQuestion:
-    trainList.append(row['question'])
-    trainList.append(row['answer'])
-chatbot = ChatBot('Prinz')
-trainer = ListTrainer(chatbot)
-trainer.train(trainList)
-###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
+lang= 'en'
+bot.lang = lang
 ###########################################################
 
 @tasks.loop(seconds=600)
@@ -53,7 +46,7 @@ async def help2(ctx):
     embed.set_footer(text="Type 'l!help ' with a name of a type to see all of the commands!")
     for command in commands:
         if str(command.description) != '':
-            embed.add_field(name=f"{command.qualified_name}", value=f"{command.description}", inline=True)
+            embed.add_field(name=f"{command.qualified_name}", value=f"{command.description}", inline=False)
         else:
             embed.add_field(name=f"{command.qualified_name}", value=f"`No description provided`", inline=True)
     await ctx.send(embed=embed)
@@ -72,38 +65,17 @@ async def h(ctx, *, words:str):
 
     embed = discord.Embed(colour=discord.Colour.blurple(), title=f"Commands in {words.capitalize()}")
     for command in commands:
-        embed.add_field(name=command.name, value=f"`{command.description}`")
+        embed.add_field(name=command.name, value=f"`{command.description}`", inline=False)
     await ctx.send(embed=embed)
-    
+
+@bot.command(hidden=True)
+async def test(ctx):
+    await ctx.send(bot.lang)   
 
 @h.error
 async def error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await help2(ctx)
-
-@bot.command(name="Hi!", description="This is just a test command, nothing more.")
-async def load(ctx, extension):
-    if str(ctx.author) == 'VnPower#8888':
-        bot.load_extension(f'cogs.{extension}')
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name=f'Loaded {extension} successfully!')
-        await ctx.send(embed=embed)
-    else:
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name='You don\'t have permissions to do that! This is a special command!')
-        await ctx.send(embed=embed)
-
-@bot.command()
-async def unload(ctx, extension):
-    if str(ctx.author) == 'VnPower#8888':
-        bot.unload_extension(f'cogs.{extension}')
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name=f'Unloaded {extension} successfully!')
-        await ctx.send(embed=embed)
-    else:
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name='You don\'t have permissions to do that! This is a special command!')
-        await ctx.send(embed=embed)
 
 @bot.event
 async def on_command_error(ctx, error):

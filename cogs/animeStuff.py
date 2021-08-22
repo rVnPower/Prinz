@@ -15,9 +15,10 @@ class AnimeStuff(commands.Cog, description="Other stuff about anime"):
 
     @commands.command(description="Search for details of an anime charecter")
     async def ani_char(self, ctx, *, words):
+        loop = asyncio.get_event_loop()
         try:
-            r = animec.sagasu.Charsearch(words)
-        except animec.errors.NoResultsFound:
+            r = await loop.run_in_executor(None, animec.sagasu.Charsearch, words)
+        except animec.NoResultFound:
             embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found.")
             await ctx.send(embed=embed)
             return
@@ -34,8 +35,9 @@ class AnimeStuff(commands.Cog, description="Other stuff about anime"):
     @commands.command(aliases=['ani_search'], description="Search for details of an anime movie")
     async def anime(self, ctx, *, words):
         seperator = ', '
+        loop = asyncio.get_event_loop()
         try:
-            r = animec.anicore.Anime(words)
+            r = await loop.run_in_executor(None, animec.anicore.Anime, words)
         except animec.errors.NoResultsFound:
             embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found.")
         else:

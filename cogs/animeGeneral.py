@@ -153,7 +153,7 @@ class Anime(commands.Cog, description="General anime commands"):
         author = str(ctx.author)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f"{author.split('#')[0]} bonked {mem.split('#')[0]}!")
-        embed.set_image(url=animec.waifu.Waifu.slap())
+        embed.set_image(url=animec.waifu.Waifu.bonk())
         await ctx.send(embed=embed)
 
     @commands.command(description="Poke an user")

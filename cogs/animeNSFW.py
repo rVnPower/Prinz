@@ -104,7 +104,7 @@ class AnimeNSFW(commands.Cog, description="NSFW anime commands"):
         else:
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='You can only use this command in a NSFW channel!')
-        yawait ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
 def setup(bot):
 	bot.add_cog(AnimeNSFW(bot))

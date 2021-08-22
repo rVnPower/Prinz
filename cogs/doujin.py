@@ -54,9 +54,13 @@ class Doujin(commands.Cog):
                 elif reaction.emoji == '◀️':
                     if current > 0:
                         current -= 1
+                    else:
+                        current = len(embeds) - 1
                 elif reaction.emoji == '▶️':
                     if current < len(embeds):
                         current += 1
+                    else:
+                        current = 0
                 elif reaction.emoji == '⏩':
                     current = len(embeds) - 1
                 for button in buttons:

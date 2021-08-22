@@ -83,7 +83,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         data = await loop.run_in_executor(None, partial)
 
         if data is None:
-            raise YTDLError('Couldn\'t find anything that matches `{}`'.format(search))
+            raise YTDLError(f'Couldn\'t find anything that matches `{search}`')
 
         if 'entries' not in data:
             process_info = data
