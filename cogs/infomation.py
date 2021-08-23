@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands, tasks
 import random
 import wikipedia
-import requests
+import aiohttp
 import json
 import asyncio
 import wolframalpha
@@ -13,10 +13,6 @@ from pyowm.utils import timestamps
 import os
 from dotenv import load_dotenv
 #####################################################
-payload={}
-headers = {}
-response = requests.request("GET", "https://api.covid19api.com/summary", headers=headers, data=payload)
-covi = response.json()
 
 class Information(commands.Cog, description="Information commands"):
     def __init__(self, bot):
@@ -175,7 +171,9 @@ class Information(commands.Cog, description="Information commands"):
     @commands.command(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
     async def _covid(self, ctx, *, words:str):
         # Prints COVID-19 infomation in a country
-        global covi
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://api.covid19api.com/summary') as resp:
+                covi = await resp.json()
         newConfirmed = 0
         totalConfirmed= 0
         newDeaths = 0
@@ -249,7 +247,9 @@ class Information(commands.Cog, description="Information commands"):
 
     @commands.command(aliases=['gUser'], description="Get information of a GitHub user.")
     async def github_user(self, ctx, *, words):
-        data = requests.get(f'https://api.github.com/users/{words}').json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://api.github.com/users/{words}') as resp:
+                data = await resp.json()
         embed = discord.Embed(colour=discord.Colour.blurple(), title=data['login'], url=data['html_url'])
         embed.set_thumbnail(url=data['avatar_url'])
         embed.add_field(name="ID: ", value=data['id'])

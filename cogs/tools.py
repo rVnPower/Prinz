@@ -8,6 +8,7 @@ import requests
 import json
 import nekos
 from core.chat_formatting import bold
+import asyncio
 #####################################################
 
 class Tools(commands.Cog, description="Tools"):

@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands, tasks
 import time
 import nekos
+import asyncio
 from core.chat_formatting import bold, italics
 #####################################################
 
@@ -47,28 +48,38 @@ class Simple(commands.Cog, description="Simple and fun commands"):
 
     @commands.command(description="Get a random textcat")
     async def textcat(self, ctx):
-        await ctx.send(nekos.textcat())
+        loop = asyncio.get_event_loop()
+        r = await loop.run_in_executor(None, nekos.textcat)
+        await ctx.send(r)
 
     @commands.command(description="Get a random fact")
     async def fact(self, ctx):
-        embed = discord.Embed(colour=discord.Colour.blurple(), title='Did you know?', description=nekos.fact())
+        loop = asyncio.get_event_loop()
+        r = await loop.run_in_executor(None, nekos.fact)
+        embed = discord.Embed(colour=discord.Colour.blurple(), title='Did you know?', description=nekos.fact)
         await ctx.send(embed=embed)
 
     @commands.command(description="Get a random cat image")
     async def cat(self, ctx):
+        loop = asyncio.get_event_loop()
+        r = await loop.run_in_executor(None, nekos.cat)
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_image(url=nekos.cat())
+        embed.set_image(url=r)
         await ctx.send(embed=embed)
 
     @commands.command(description="Get a random `why?` question")
     async def why(self, ctx):
-        embed = discord.Embed(colour=discord.Colour.blurple(), description=nekos.why())
+        loop = asyncio.get_event_loop()
+        r = await loop.run_in_executor(None, nekos.why)
+        embed = discord.Embed(colour=discord.Colour.blurple(), description=r.capitalize())
         await ctx.send(embed=embed)
 
     @commands.command(description="Answer your question with a random answer", aliases=['8ball'])
     async def eightball(self, ctx, *, words:str):
+        loop = asyncio.get_event_loop()
+        r = await loop.run_in_executor(None, nekos.eightball, words)
         if words.endswith('?'):
-            embed = discord.Embed(colour=discord.Colour.blurple(), description=nekos.eightball().text.capitalize())
+            embed = discord.Embed(colour=discord.Colour.blurple(), description=r.text.capitalize())
         else:
             embed = discord.Embed(colour=discord.Colour.blurple(), description="That does not look like a question.")
         await ctx.send(embed=embed)

@@ -2,7 +2,6 @@
 import discord
 from discord.ext import commands, tasks
 import random
-import requests
 import json
 from NHentai.nhentai import NHentai
 import animec
@@ -53,7 +52,9 @@ class AnimeNSFW(commands.Cog, description="NSFW anime commands"):
 
     @commands.command(description="Too bad for catgirls...", aliases=['nE'])
     async def neko_ero(self, ctx):
-        data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/neko_ero/').json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://api.nekos.dev/api/v3/images/nsfw/img/neko_ero/') as resp:
+                r = await resp.json()
         if ctx.channel.is_nsfw():
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='Here is your image!')
@@ -66,7 +67,9 @@ class AnimeNSFW(commands.Cog, description="NSFW anime commands"):
 
     @commands.command(description="Classic lewd image.", aliases=['cL'])
     async def classic_lewd(self, ctx):
-        data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/classic_lewd/').json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://api.nekos.dev/api/v3/images/nsfw/img/classic_lewd/') as resp:
+                r = await resp.json()
         if ctx.channel.is_nsfw():
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='Here is your image!')
@@ -82,7 +85,9 @@ class AnimeNSFW(commands.Cog, description="NSFW anime commands"):
 
     @commands.command(description="You really love those bare feets, don't you?", aliases=['fL'])
     async def feet_lewd(self, ctx):
-        data = requests.get('https://api.nekos.dev/api/v3/images/nsfw/img/feet_lewd/').json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://api.nekos.dev/api/v3/images/nsfw/img/feet_lewd/') as resp:
+                r = await resp.json()
         if ctx.channel.is_nsfw():
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='Here is your image!')

@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands, tasks
 import json
 import requests
+import aiohttp
 #####################################################
 
 class Gd(commands.Cog, description="Geometry Dash commands"):
@@ -11,7 +12,9 @@ class Gd(commands.Cog, description="Geometry Dash commands"):
 
 	@commands.command(description="Get information of a Geometry Dash level")
 	async def gd_level(self, ctx, ID:int):
-		r = requests.get(f'https://gdbrowser.com/api/level/{ID}').json()
+		async with aiohttp.ClientSession() as session:
+			async with session.get(f'https://gdbrowser.com/api/level/{ID}') as resp:
+				r = await resp.json()
 		if r != '-1':
 			embed = discord.Embed(colour=discord.Colour.blurple(), title=r['name'])	
 			embed.set_author(name=r['author'])
@@ -31,7 +34,9 @@ class Gd(commands.Cog, description="Geometry Dash commands"):
 
 	@commands.command(description="Get information of a Geometry Dash player")
 	async def gd_player(self, ctx, *, words):
-		r = requests.get(f'https://gdbrowser.com/api/profile/{words}').json()
+		async with aiohttp.ClientSession() as session:
+			async with session.get(f'https://gdbrowser.com/api/profile/{words}') as resp:
+				r = await resp.json()
 		embed = discord.Embed(colour=discord.Colour.blurple())
 		if r != '-1':
 			embed.set_author(name=r['username'])
@@ -52,7 +57,9 @@ class Gd(commands.Cog, description="Geometry Dash commands"):
 
 	@commands.command(description="Search something in Geometry Dash")
 	async def gd_search(self, ctx, *, words):
-		r = requests.get(f"https://gdbrowser.com/api/search/{words}?page=1").json()
+		async with aiohttp.ClientSession() as session:
+			async with session.get(f'https://gdbrowser.com/api/search/{words}?page=1') as resp:
+				r = await resp.json()
 		embed = discord.Embed(colour=discord.Colour.blurple())
 		if r != '-1':
 			for i in r:
