@@ -7,11 +7,27 @@ from dotenv import load_dotenv
 import json
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
+from keep_alive import keep_alive
 ###########################################################
 bot = commands.Bot(command_prefix='l!', help_command=None)
 lang= 'en'
 bot.lang = lang
 ###########################################################
+
+greetingsAndQuestion = json.loads(open('intents/greet.json', 'r').read())
+trainList = []
+for row in greetingsAndQuestion:
+    trainList.append(row['question'])
+    trainList.append(row['answer'])
+chatbot = ChatBot('Prinz', logic_adapters=[
+                        {
+            'import_path': 'chatterbot.logic.BestMatch',
+            'default_response': 'I don\'t understand.',
+            'maximum_similarity_threshold': 0.90
+        }
+        ])
+trainer = ListTrainer(chatbot)
+trainer.train(trainList)
 
 @tasks.loop(seconds=600)
 async def change_status():
@@ -30,7 +46,14 @@ async def on_message(message):
         'Don\'t you have something to do?',
         'You mentioned me!'
     ]
-
+    if message.guild is None:
+        response = chatbot.get_response(message.content)
+        try:
+            await message.author.send(response)
+        except discord.HTTPException:
+            pass
+    else:
+        pass
     if bot.user.mentioned_in(message):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=random.choice(send))
@@ -102,5 +125,6 @@ for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
 
+keep_alive()
 load_dotenv()
 bot.run(os.getenv("TOKEN"))

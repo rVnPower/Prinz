@@ -16,7 +16,7 @@ chatbot = ChatBot('Prinz', logic_adapters=[
             'default_response': 'I don\'t understand.',
             'maximum_similarity_threshold': 0.90
         }
-                ])
+        ])
 trainer = ListTrainer(chatbot)
 trainer.train(trainList)
 

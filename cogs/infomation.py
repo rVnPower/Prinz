@@ -14,6 +14,24 @@ import os
 from dotenv import load_dotenv
 #####################################################
 
+async def sauce_ctx(ctx):
+    from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource
+    sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
+    # results = await sauce.from_file('/path/to/image.png')
+    results = await sauce.from_url(ctx.message.attachments[0].url)
+    best = results[0]
+    if isinstance(results[0], PixivSource):
+        embed = discord.Embed(colour=discord.Colour.blurple(), title=best.author_name, url=best.author_url)
+        embed.set_author(name=f"{best.title}", url=best.urls[0])
+        embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
+        embed.add_field(name="Source: ", value=best.index)
+        embed.set_image(url=best.thumbnail)
+        embed.set_footer(text="<:mag_right:> This is what I have found!")
+        await ctx.send(embed=embed)
+    if isinstance(results[0], VideoSource):
+        embed = discord.Embed(colour=discord.Colour.blurple(), title="")
+        pass
+
 class Information(commands.Cog, description="Information commands"):
     def __init__(self, bot):
         self.bot = bot
@@ -137,7 +155,7 @@ class Information(commands.Cog, description="Information commands"):
         results = await sauce.from_url(words)
         best = results[0]
         embed = discord.Embed(colour=discord.Colour.blurple(), title=best.author_name, url=best.author_url)
-        embed.set_author(name=f"[{best.title}]({best.urls[0]})")
+        embed.set_author(name=f"{best.title}", url=best.urls[0])
         embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
         embed.add_field(name="Source: ", value=best.index)
         embed.set_image(url=best.thumbnail)
@@ -147,26 +165,7 @@ class Information(commands.Cog, description="Information commands"):
     @_sauce.error
     async def error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await sauce_ctx()
-
-    async def sauce_ctx(self, ctx):
-        from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource
-        sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
-        # results = await sauce.from_file('/path/to/image.png')
-        results = await sauce.from_url(ctx.message.attachments[0].url)
-        best = results[0]
-        if isinstance(results[0], PixivSource):
-            embed = discord.Embed(colour=discord.Colour.blurple(), title=best.author_name, url=best.author_url)
-            embed.set_author(name=f"[{best.title}]({best.urls[0]})")
-            embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
-            embed.add_field(name="Source: ", value=best.index)
-            embed.set_image(url=best.thumbnail)
-            embed.set_footer(text="<:mag_right:> This is what I have found!")
-            await ctx.send(embed=embed)
-        if isinstance(results[0], VideoSource):
-            embed = discord.Embed(colour=discord.Colour.blurple(), title="")
-            pass
-
+            await sauce_ctx(ctx)
 
     @commands.command(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
     async def _covid(self, ctx, *, words:str):

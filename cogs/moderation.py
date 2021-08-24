@@ -113,6 +113,50 @@ class Moderation(commands.Cog, description="Moderation commands"):
         banned_users = await ctx.guild.bans()
         await ctx.send(banned_users)
 
+    @commands.has_permissions(manage_messages=True)
+    @commands.command(aliases=['m'], description='Mute an user')
+    async def mute(self, ctx, member: discord.Member, *, reason=None):
+        guild = ctx.guild
+        author = ctx.author
+        embed = discord.Embed(colour=discord.Colour.blurple())        
+        if author == member:
+            embed.set_author(name=f"I can't let you do that {ctx.author}!")
+            await ctx.send(embed=embed)
+            return
+        muteRole = discord.utils.get(guild.roles, name="Muted")
+
+        if not muteRole:
+            embed.set_author(name="No mute role found. Creating one...")
+            await ctx.send(embed=embed)
+            muteRole = await guild.create_role(name="Muted")
+
+            for channel in guild.channels:
+                await channel.set_permissions(muteRole, speak=False, send_messages=False, read_messages=False)
+        await member.add_roles(muteRole, reason=reason)
+        embed = discord.Embed(colour=discord.Colour.blurple(), title=f'Successfully muted {member}!')
+        await ctx.send(embed=embed, delete_after=10)
+        embed = discord.Embed(colour=discord.Colour.blurple(), title=f"You have been muted from {guild.name}!", description=f"Reason: {reason}")
+        await member.send(embed=embed)
+
+    @commands.has_permissions(manage_messages=True)
+    @commands.command(aliases=['um'], description='Unmute an user')
+    async def unmute(self, ctx, member: discord.Member, *, reason=None):
+        guild = ctx.guild
+        author = ctx.author
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        muteRole = discord.utils.get(guild.roles, name="Muted")
+
+        if not muteRole:
+            embed.set_author(name="No mute role found.")
+            await ctx.send(embed=embed)
+            return
+        await member.remove_roles(muteRole, reason=reason)
+
+        embed = discord.Embed(colour=discord.Colour.blurple(), title=f'Successfully unmuted {member}!')
+        await ctx.send(embed=embed, delete_after=10)
+        embed = discord.Embed(colour=discord.Colour.blurple(), title=f"You have been unmuted from {guild.name}!", description=f"Reason: {reason}")
+        await member.send(embed=embed)
+
     @commands.has_permissions(ban_members=True)
     @commands.command(description="Kick an user and delete messenges from that user for 1 day")
     async def softban(self, ctx: commands.Context, member: discord.Member, *, reason: str = None):
@@ -121,7 +165,7 @@ class Moderation(commands.Cog, description="Moderation commands"):
         author = ctx.author
         embed = discord.Embed(colour=discord.Colour.blurple())
         if author == member:
-            embed.set_author(name=f"I can't let you do that {author.mention}!")
+            embed.set_author(name=f"I can't let you do that {ctx.author}!")
             await ctx.send(embed=embed)
             return
 
