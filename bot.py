@@ -12,6 +12,16 @@ from keep_alive import keep_alive
 bot = commands.Bot(command_prefix='l!', help_command=None)
 lang= 'en'
 bot.lang = lang
+bot.lava_nodes = [
+    {
+        'host': 'lava.link',
+        'port': 80,
+        'rest_uri': f'http://lava.link:80',
+        'identifier': 'MAIN',
+        'password': 'whatever',
+        'region': 'singapore'
+    }
+]
 ###########################################################
 
 greetingsAndQuestion = json.loads(open('intents/greet.json', 'r').read())

@@ -4,7 +4,12 @@ from discord.ext import commands, tasks
 import random
 from datetime import datetime, timedelta, timezone
 import contextlib
+import dateparser # a converter that converts string to datetime, None otherwise, use another if you want
+from discord.utils import sleep_until
+import asyncio
 #####################################################
+async def perform_mute_wait(time):
+        await sleep_until(time)
 
 class Moderation(commands.Cog, description="Moderation commands"):
     def __init__(self, bot):
@@ -133,7 +138,7 @@ class Moderation(commands.Cog, description="Moderation commands"):
             for channel in guild.channels:
                 await channel.set_permissions(muteRole, speak=False, send_messages=False, read_messages=False)
         await member.add_roles(muteRole, reason=reason)
-        embed = discord.Embed(colour=discord.Colour.blurple(), title=f'Successfully muted {member}!')
+        embed = discord.Embed(colour=discord.Colour.blurple(), description=f'Successfully muted {member.mention}!')
         await ctx.send(embed=embed, delete_after=10)
         embed = discord.Embed(colour=discord.Colour.blurple(), title=f"You have been muted from {guild.name}!", description=f"Reason: {reason}")
         await member.send(embed=embed)
@@ -152,10 +157,40 @@ class Moderation(commands.Cog, description="Moderation commands"):
             return
         await member.remove_roles(muteRole, reason=reason)
 
-        embed = discord.Embed(colour=discord.Colour.blurple(), title=f'Successfully unmuted {member}!')
+        embed = discord.Embed(colour=discord.Colour.blurple(), description=f'Successfully unmuted {member.mention}!')
         await ctx.send(embed=embed, delete_after=10)
         embed = discord.Embed(colour=discord.Colour.blurple(), title=f"You have been unmuted from {guild.name}!", description=f"Reason: {reason}")
         await member.send(embed=embed)
+
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(description='Add a role to a member')
+    async def add_role(self, ctx, member:discord.Member, *, roleName, reason=None):
+        role = discord.utils.get(ctx.guild.roles, name=roleName)
+        try:
+            await member.add_roles(role, reason=reason)
+        except AttributeError:
+            try:
+                role = ctx.guild.get_role(int(roleName))
+            except AttributeError:
+                role = ctx.guild.get_role(int(roleName[3: len(roleName)-1]))
+            await member.add_roles(role, reason=reason)
+        embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Successfully gave {role.mention} role to {member}!")
+        await ctx.send(embed=embed, delete_after=10)
+
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(description='Add a role to a member')
+    async def remove_role(self, ctx, member:discord.Member, *, roleName, reason=None):
+        role = discord.utils.get(ctx.guild.roles, name=roleName)
+        try:
+            await member.remove_roles(role, reason=reason)
+        except AttributeError:
+            try:
+                role = ctx.guild.get_role(int(roleName))
+            except ValueError:
+                role = ctx.guild.get_role(int(roleName[3: len(roleName)-1]))
+            await member.remove_roles(role, reason=reason)
+        embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Successfully removed {role.mention} role to {member}!")
+        await ctx.send(embed=embed, delete_after=10)
 
     @commands.has_permissions(ban_members=True)
     @commands.command(description="Kick an user and delete messenges from that user for 1 day")
@@ -190,6 +225,31 @@ class Moderation(commands.Cog, description="Moderation commands"):
             await ctx.send("An error ocurred.")
         else:
             await ctx.send(f'Done.')
+
+    @commands.has_permissions(manage_messages=True)
+    @commands.command(usage="tempmute \"1d 2s\" @User [reason]")
+    async def tempmute(self, ctx, member: discord.Member, *, time: str, reason: str = None):
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        time = dateparser.parse(time)
+        if time is None:
+            embed.set_author(name="Invaild time.")
+            return
+
+        muteRole = discord.utils.get(ctx.guild.roles, name="Muted")
+
+        if not muteRole:
+            embed.set_author(name="No mute role found. Creating one...")
+            await ctx.send(embed=embed)
+            muteRole = await ctx.guild.create_role(name="Muted")
+
+            for channel in ctx.guild.channels:
+                await channel.set_permissions(muteRole, speak=False, send_messages=False, read_messages=False)
+  
+        await member.add_roles(muteRole)
+        embed = discord.Embed(colour=discord.Colour.blurple(), description=f"{member.mention} has been muted and will be Back in <t:{round(time.timestamp())}>")
+        await ctx.send(embed=embed)
+        loop = ctx.bot.loop
+        loop.create_task(perform_mute_wait(time))
 
 '''
 

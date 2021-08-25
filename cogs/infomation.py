@@ -12,22 +12,25 @@ from pyowm.utils import config
 from pyowm.utils import timestamps
 import os
 from dotenv import load_dotenv
+from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource, errors
 #####################################################
 
 async def sauce_ctx(ctx):
-    from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource
     sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
-    # results = await sauce.from_file('/path/to/image.png')
     results = await sauce.from_url(ctx.message.attachments[0].url)
-    best = results[0]
-    if isinstance(results[0], PixivSource):
-        embed = discord.Embed(colour=discord.Colour.blurple(), title=best.author_name, url=best.author_url)
-        embed.set_author(name=f"{best.title}", url=best.urls[0])
-        embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
-        embed.add_field(name="Source: ", value=best.index)
-        embed.set_image(url=best.thumbnail)
-        embed.set_footer(text="<:mag_right:> This is what I have found!")
-        await ctx.send(embed=embed)
+    for i in results:
+        if isinstance(i, PixivSource):
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=i.author_name, url=i.author_url)
+            try:
+                embed.set_author(name=i.title, url=i.urls[0])
+            except:
+                embed.set_author(name=i.title)
+            embed.add_field(name="Similarity: ", value=f"{i.similarity}%")
+            embed.add_field(name="Source: ", value=i.index)
+            embed.set_image(url=i.thumbnail)
+            embed.set_footer(text="<:mag_right:> This is what I have found!")
+            await ctx.send(embed=embed)
+            return
     if isinstance(results[0], VideoSource):
         embed = discord.Embed(colour=discord.Colour.blurple(), title="")
         pass
@@ -147,25 +150,37 @@ class Information(commands.Cog, description="Information commands"):
         await ctx.send(embed=embed)
 
     @commands.command(name="sauce", description="Find an image source.")
-    async def _sauce(self, ctx, *, words:str):
-        from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource
+    async def sauce(self, ctx, *, words:str):
         sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
 
         # results = await sauce.from_file('/path/to/image.png')
         results = await sauce.from_url(words)
-        best = results[0]
-        embed = discord.Embed(colour=discord.Colour.blurple(), title=best.author_name, url=best.author_url)
-        embed.set_author(name=f"{best.title}", url=best.urls[0])
-        embed.add_field(name="Similarity: ", value=f"{best.similarity}%")
-        embed.add_field(name="Source: ", value=best.index)
-        embed.set_image(url=best.thumbnail)
-        embed.set_footer(text="<:mag_right:> This is what I have found!")
-        await ctx.send(embed=embed)
+        for i in results:
+            if isinstance(i, PixivSource):
+                embed = discord.Embed(colour=discord.Colour.blurple(), title=i.author_name, url=i.author_url)
+                try:
+                    embed.set_author(name=i.title, url=i.urls[0])
+                except:
+                    embed.set_author(name=i.title)
+                embed.add_field(name="Similarity: ", value=f"{i.similarity}%")
+                embed.add_field(name="Source: ", value=i.index)
+                embed.set_image(url=i.thumbnail)
+                embed.set_footer(text="<:mag_right:> This is what I have found!")
+                await ctx.send(embed=embed)
 
-    @_sauce.error
+    @sauce.error
     async def error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await sauce_ctx(ctx)
+        if isinstance(error, commands.CommandInvokeError):
+            embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found...")
+            await ctx.send(embed=embed)
+
+    @sauce_ctx.error
+    async def error(self, ctx, error):
+        if isinstance(error, commands.CommandInvokeError):
+            embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found...")
+            await ctx.send(embed=embed)
 
     @commands.command(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
     async def _covid(self, ctx, *, words:str):
