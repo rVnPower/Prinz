@@ -178,7 +178,7 @@ class Moderation(commands.Cog, description="Moderation commands"):
         await ctx.send(embed=embed, delete_after=10)
 
     @commands.has_permissions(manage_roles=True)
-    @commands.command(description='Add a role to a member')
+    @commands.command(description='Remove a role from a member')
     async def remove_role(self, ctx, member:discord.Member, *, roleName, reason=None):
         role = discord.utils.get(ctx.guild.roles, name=roleName)
         try:
@@ -192,7 +192,8 @@ class Moderation(commands.Cog, description="Moderation commands"):
         embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Successfully removed {role.mention} role to {member}!")
         await ctx.send(embed=embed, delete_after=10)
 
-    @commands.has_permissions(ban_members=True)
+    # @commands.has_permissions(ban_members=True)
+    @commands.is_owner()
     @commands.command(description="Kick an user and delete messenges from that user for 1 day")
     async def softban(self, ctx: commands.Context, member: discord.Member, *, reason: str = None):
         ''' Kick an user and delete messenges from that user for 1 day'''
@@ -250,9 +251,7 @@ class Moderation(commands.Cog, description="Moderation commands"):
         await ctx.send(embed=embed)
         loop = ctx.bot.loop
         loop.create_task(perform_mute_wait(time))
-
 '''
-
     @commands.command()
     async def tempban(self, ctx: commands.Context, member: discord.Member, duration: Optional[commands.TimedeltaConverter] = None, days: Optional[int] = None,*,reason: str = None):
         """Temporarily ban a user from this server.
@@ -289,6 +288,5 @@ class Moderation(commands.Cog, description="Moderation commands"):
         if invite is None:
             invite = ""
 '''
-
 def setup(bot):
     bot.add_cog(Moderation(bot))

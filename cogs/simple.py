@@ -4,10 +4,12 @@ from discord.ext import commands, tasks
 import time
 import nekos
 import asyncio
+import aiohttp
+import random
 from core.chat_formatting import bold, italics
 #####################################################
 
-class Simple(commands.Cog, description="Simple and fun commands"):
+class Simple(commands.Cog, description="Simple and fun commands 🤪"):
     def __init__(self, bot):
         self.bot = bot
         self.t1 = time.time()
@@ -46,7 +48,7 @@ class Simple(commands.Cog, description="Simple and fun commands"):
     async def dm(self, ctx, *, words):
         await ctx.author.send(words)
 
-    @commands.command(description="Get a random textcat")
+    @commands.command(description="Get a random textcat", aliases=['kao'])
     async def textcat(self, ctx):
         loop = asyncio.get_event_loop()
         r = await loop.run_in_executor(None, nekos.textcat)
@@ -56,15 +58,17 @@ class Simple(commands.Cog, description="Simple and fun commands"):
     async def fact(self, ctx):
         loop = asyncio.get_event_loop()
         r = await loop.run_in_executor(None, nekos.fact)
-        embed = discord.Embed(colour=discord.Colour.blurple(), title='Did you know?', description=nekos.fact)
+        embed = discord.Embed(colour=discord.Colour.blurple(), title='Did you know?', description=r)
         await ctx.send(embed=embed)
 
-    @commands.command(description="Get a random cat image")
+    @commands.command(description="Get a random cat")
     async def cat(self, ctx):
+        phrase = ['Meow!', 'Grrrr...', 'Nya~']
         loop = asyncio.get_event_loop()
         r = await loop.run_in_executor(None, nekos.cat)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_image(url=r)
+        embed.set_footer(text=random.choice(phrase))
         await ctx.send(embed=embed)
 
     @commands.command(description="Get a random `why?` question")
@@ -76,12 +80,44 @@ class Simple(commands.Cog, description="Simple and fun commands"):
 
     @commands.command(description="Answer your question with a random answer", aliases=['8ball'])
     async def eightball(self, ctx, *, words:str):
+        print(ctx.author)
         loop = asyncio.get_event_loop()
-        r = await loop.run_in_executor(None, nekos.eightball, words)
+        r = await loop.run_in_executor(None, nekos.eightball)
         if words.endswith('?'):
             embed = discord.Embed(colour=discord.Colour.blurple(), description=r.text.capitalize())
         else:
             embed = discord.Embed(colour=discord.Colour.blurple(), description="That does not look like a question.")
+        await ctx.send(embed=embed)
+
+    @commands.command(description="Get a random dog")
+    async def dog(self, ctx):
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_footer(text="Source: https://dog.ceo/api/breeds/image/random")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://dog.ceo/api/breeds/image/random') as resp:
+                print(resp.status)
+                if int(resp.status) != 200:
+                    embed.set_author(name="The server does not respond... Maybe try again later.")
+                    await ctx.send(embed=embed)
+                    return
+                r = await resp.json()
+        embed.set_author(name="Woof!")
+        embed.set_image(url=r['message'])
+        await ctx.send(embed=embed)
+
+    @commands.command(description="Get a random duck")
+    async def duck(self, ctx):
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_footer(text="Source: https://random-d.uk/api/random?format=json")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://random-d.uk/api/random?format=json') as resp:
+                if int(resp.status) != 200:
+                    embed.set_author(name="The server does not respond... Maybe try again later.")
+                    await ctx.send(embed=embed)
+                    return
+                r = await resp.json()
+        embed.set_author(name="Quack!")
+        embed.set_image(url=r['url'])
         await ctx.send(embed=embed)
 
 def setup(bot):

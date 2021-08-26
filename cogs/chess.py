@@ -10,7 +10,10 @@ from chessdotcom import get_leaderboards,get_player_stats
 class Chess(commands.Cog, description="Chess.com commands"):
     def __init__(self, bot):
         self.bot = bot
-        self.data = get_leaderboards().json
+        try:
+            self.data = get_leaderboards().json
+        except:
+            pass
 
     @commands.command(description="Get a category leaderboard on Chess.com")
     async def chess_top(self, ctx, *, words:str = "daily"):

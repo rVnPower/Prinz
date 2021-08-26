@@ -13,7 +13,7 @@ class Anime(commands.Cog, description="General anime commands"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(description="Send a random anime image from VnPower's GDrive")
+    @commands.command(description="Send a random anime image from VnPower's Google Drive")
     async def sfw(self, ctx):
       url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/G-Rated/{random.randint(1,145)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())

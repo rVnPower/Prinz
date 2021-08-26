@@ -176,12 +176,6 @@ class Information(commands.Cog, description="Information commands"):
             embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found...")
             await ctx.send(embed=embed)
 
-    @sauce_ctx.error
-    async def error(self, ctx, error):
-        if isinstance(error, commands.CommandInvokeError):
-            embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found...")
-            await ctx.send(embed=embed)
-
     @commands.command(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
     async def _covid(self, ctx, *, words:str):
         # Prints COVID-19 infomation in a country

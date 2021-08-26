@@ -8,8 +8,24 @@ import json
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 from keep_alive import keep_alive
+import aiohttp
+
+def get_prefix(bot, message):
+    with open('data/prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+
+    try:
+        return prefixes[str(message.guild.id)]
+    except KeyError:
+        prefixes[str(message.guild.id)] = 'l!'
+
+        with open('prefixes.json', 'w') as file:
+            json.dump(prefixes, file, indent=4)
+        return prefixes[str(message.guild.id)]
+
+
 ###########################################################
-bot = commands.Bot(command_prefix='l!', help_command=None)
+bot = commands.Bot(command_prefix= get_prefix, help_command=None)
 lang= 'en'
 bot.lang = lang
 bot.lava_nodes = [
@@ -50,6 +66,24 @@ async def on_ready():
     print("Logged in!")
 
 @bot.event
+async def on_guild_join(guild):
+    with open('data/prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+    prefixes[str(guild.id)] = 'l!'
+
+    with open('data/prefixes.json', 'w') as f:
+        json.dump(prefixes, f, indent=4)
+
+@bot.event
+async def on_guild_leave(guild):
+    with open('data/prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+    prefixes.pop(str(guild.id))
+
+    with open('data/prefixes.json', 'w') as f:
+        json.dump(prefixes, f, indent=4)
+
+@bot.event
 async def on_message(message):
     send = [
         'Yes?', 'Do you need help? Type \'l!help\'!', 'I was playing...',
@@ -75,8 +109,8 @@ async def help2(ctx):
     count = 0
     commands = list(bot.cogs.values())
     
-    embed = discord.Embed(colour=discord.Colour.blurple(), title="List of command types")
-    embed.set_footer(text="Type 'l!help ' with a name of a type to see all of the commands!")
+    embed = discord.Embed(colour=discord.Colour.blurple(), title="Help command!", description=f"My current prefix is `{get_prefix(bot, ctx)}`!")
+    embed.set_footer(text=f"Type `{get_prefix(bot, ctx)}help` with a name of a type to see all of the commands!")
     for command in commands:
         if str(command.description) != '':
             embed.add_field(name=f"{command.qualified_name}", value=f"{command.description}", inline=False)
@@ -93,12 +127,33 @@ async def h(ctx, *, words:str):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name="That type does not exist!")
         await ctx.send(embed=embed)
-        return
-    commands = r1.get_commands()
+        pass
+    else:
+        commands = r1.get_commands()
 
-    embed = discord.Embed(colour=discord.Colour.blurple(), title=f"Commands in {words.capitalize()}")
-    for command in commands:
-        embed.add_field(name=command.name, value=f"`{command.description}`", inline=False)
+        embed = discord.Embed(colour=discord.Colour.blurple(), title=f"{words.capitalize()} commands!")
+        for command in commands:
+            embed.add_field(name=command.name, value=f"`{command.description}`", inline=False)
+        await ctx.send(embed=embed)
+
+@bot.command()
+async def command(ctx, *, words:str):
+    commands = list(bot.commands)
+    embed = discord.Embed(colour=discord.Colour.blurple())
+    for i in commands:
+        if str(i.name).lower() == words.lower().strip():
+            embed = discord.Embed(colour=discord.Colour.blurple(), description=i.description)
+            embed.set_author(name=i.name.capitalize())
+            if len(i.aliases) == 0:
+                embed.add_field(name="Aliases: ", value='None', inline=True)
+            else:
+                embed.add_field(name="Aliases: ", value=', '.join(str(p) for p in i.aliases), inline=True)
+            embed.add_field(name="Belong to: ", value=f"`{i.cog_name}`", inline=True)
+            embed.set_footer(text="Made from ❤️ | VnPower#8888", icon_url="https://cdn.discordapp.com/avatars/683670893515636749/7d8f6a81109fcc1c4afe451495b848e5.webp?size=1024")
+            await ctx.send(embed=embed)
+            return
+    embed.title = f"That command doesn't exist in `{words.capitalize()}`!"
+    embed.description = f"Try `{get_prefix(bot, ctx)}help` to get cogs and commands!"
     await ctx.send(embed=embed)
 
 @bot.command(hidden=True)
@@ -114,7 +169,7 @@ async def error(ctx, error):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name=f'You don\'t have permissions to do that! You need {error.param.name}')
+        embed.set_author(name=f'You don\'t have permissions to do that! You need `{", ".join(map(str, error.missing_perms))}`!')
         await ctx.send(embed=embed)
     if isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(colour=discord.Colour.blurple())
@@ -128,8 +183,16 @@ async def on_command_error(ctx, error):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='That command does not exist!')
         await ctx.send(embed=embed)
+    if isinstance(error, commands.CommandOnCooldown):
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name='This command is on cooldown! Please try again after {:.2f}s'.format(error.retry_after))
+        await ctx.send(embed=embed)
     else:
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.set_author(name='An error occurred while executing this command.')
+        await ctx.send(embed=embed)
         raise error
+
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
