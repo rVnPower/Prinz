@@ -80,7 +80,7 @@ class Config(commands.Cog):
 				try:
 					self.bot.reload_extension("cogs.{}".format(filename[:-3]))
 					to_send = f"{to_send} \n✅ {filename[:-3]}"
-				except commands.ExtensionFailed:
+				except commands.NoEntryPointError:
 					first_reload_failed_extensions.append(filename)
 
 		for filename in first_reload_failed_extensions:
