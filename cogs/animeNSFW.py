@@ -7,6 +7,10 @@ from NHentai.nhentai import NHentai
 import animec
 import asyncio
 import nekos
+from bs4 import BeautifulSoup
+import aiohttp
+import asyncio
+import json
 #####################################################
 possible = ['feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
         'solog', 'feetg', 'cum', 'erokemo', 'les', 'wallpaper', 'lewdk',
@@ -33,6 +37,7 @@ class AnimeNSFW(commands.Cog, description="NSFW anime commands"):
         'neko', 'spank', 'cuddle', 'erok', 'fox_girl', 'boobs', 'random_hentai_gif',
         'smallboobs', 'hug', 'ero', 'smug', 'goose', 'baka', 'woof'
         ]
+        self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0'}
 
     @commands.command(description="Send a random hentai image")
     async def hentai(self, ctx):
@@ -110,6 +115,15 @@ class AnimeNSFW(commands.Cog, description="NSFW anime commands"):
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='You can only use this command in a NSFW channel!')
         await ctx.send(embed=embed)
+
+    @commands.command(description="Get a bunch of images on HentaiZ")
+    async def hentaiz(self, ctx, page:int=random.randint(1, 200)):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://hentaiz.cc/gallery/page/{page}', headers=self.headers) as resp:
+                r = await resp.text()
+                soup = BeautifulSoup(r, 'lxml')
+                for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
+                    await ctx.send(img['data-mdb-img'])
 
 def setup(bot):
 	bot.add_cog(AnimeNSFW(bot))

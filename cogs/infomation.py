@@ -155,6 +155,7 @@ class Information(commands.Cog, description="Information commands"):
 
         # results = await sauce.from_file('/path/to/image.png')
         results = await sauce.from_url(words)
+        print(results[0].url)
         for i in results:
             if isinstance(i, PixivSource):
                 embed = discord.Embed(colour=discord.Colour.blurple(), title=i.author_name, url=i.author_url)

@@ -171,22 +171,27 @@ async def on_command_error(ctx, error):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'You don\'t have permissions to do that! You need `{", ".join(map(str, error.missing_perms))}`!')
         await ctx.send(embed=embed)
+        return
     if isinstance(error, commands.MissingRequiredArgument):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='You didn\'t pass in some arguments!')
         await ctx.send(embed=embed)
+        return
     if isinstance(error, commands.BadArgument):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='You passed the wrong value!')
         await ctx.send(embed=embed)
+        return
     if isinstance(error, commands.CommandNotFound):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='That command does not exist!')
         await ctx.send(embed=embed)
+        return
     if isinstance(error, commands.CommandOnCooldown):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='This command is on cooldown! Please try again after {:.2f}s'.format(error.retry_after))
         await ctx.send(embed=embed)
+        return
     else:
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name='An error occurred while executing this command.')

@@ -18,15 +18,18 @@ class Gd(commands.Cog, description="Geometry Dash commands"):
 		if r != '-1':
 			embed = discord.Embed(colour=discord.Colour.blurple(), title=r['name'])	
 			embed.set_author(name=r['author'], inline=True)
-			embed.add_field(name="Description: ", inline=True)
-			embed.add_field(name="ID: ", value=r['id'], inline=True)
-			embed.add_field(name='Difficulty: ', value=r['difficulty'], inline=True)
-			embed.add_field(name="Length: ", value=r['length'], inline=True)
-			embed.add_field(name="Featured: ", value=r['featured'], inline=True)
-			embed.add_field(name="Downloads:", value=r['downloads'], inline=True)
-			embed.add_field(name="Likes: ", value=r['likes'], inline=True)
-			embed.add_field(name="Required game version: ", value=r['gameVersion'], inline=True)
-			embed.add_field(name="Song: ", value=f"{songID} - {songName}")
+			embed.add_field(name=r['name'], value=
+				f'''
+				Description: {r["description"]}\n
+				ID: {r["id"]}\n
+				Difficulty: {r["difficulty"]}\n
+				Length: {r["length"]}\n
+				Featured: {r["featured"]}\n
+				Downloads: {r["downloads"]}\n
+				<:like:364076087648452610> Likes: {r["likes"]}\n
+				Required game version: {r["gameVersion"]}\n
+				Song: {songID} - {songName}
+				''')
 		else:
 			embed = discord.Embed(colour=discord.Colour.blurple())
 			embed.set_author(name="That level does not exist!")
@@ -58,13 +61,13 @@ class Gd(commands.Cog, description="Geometry Dash commands"):
 	@commands.command(description="Search something in Geometry Dash")
 	async def gd_search(self, ctx, *, words):
 		async with aiohttp.ClientSession() as session:
-			async with session.get(f'https://gdbrowser.com/api/search/{words}?page=1') as resp:
+			async with session.get(f'https://gdbrowser.com/api/search/{words}?page=0') as resp:
 				r = await resp.json()
 		embed = discord.Embed(colour=discord.Colour.blurple())
 		if r != '-1':
 			for i in r:
 				embed.set_author(name=f"Search results of {words} in Geometry Dash!")
-				embed.add_field(name=f"{i['name']}", value=f"Likes: {i['likes']} | Downloads: {i['downloads']}")
+				embed.add_field(name=f"{i['name']}", value=f"Likes: {i['likes']} | Downloads: {i['downloads']}", inline=False)
 			await ctx.send(embed=embed)
 
 def setup(bot):
