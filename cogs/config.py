@@ -6,6 +6,32 @@ import os
 import asyncio
 from discord.ext.commands.cooldowns import BucketType
 
+async def get_prefix(bot, message):
+    with open('data/prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+
+    try:
+        return prefixes[str(message.guild.id)]
+    except KeyError:
+        prefixes[str(message.guild.id)] = 'l!'
+
+        with open('prefixes.json', 'w') as file:
+            json.dump(prefixes, file, indent=4)
+        return prefixes[str(message.guild.id)]
+
+async def help2(bot, ctx):
+    count = 0
+    commands = list(bot.cogs.values())
+    
+    embed = discord.Embed(colour=discord.Colour.blurple(), title="Help command!", description=f"My current prefix is `{await get_prefix(bot, ctx)}`")
+    embed.set_footer(text=f"Type `{await get_prefix(bot, ctx)}help` with a name of a type to see all of the commands! (Currently have {len(bot.commands)})")
+    for command in commands:
+        if str(command.description) != '':
+            embed.add_field(name=f"{command.qualified_name}", value=f"{command.description}", inline=True)
+        else:
+            embed.add_field(name=f"{command.qualified_name}", value=f"`No description provided`", inline=True)
+    await ctx.send(embed=embed)
+
 class Config(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
@@ -117,16 +143,56 @@ class Config(commands.Cog):
 			await message.edit(embed=embed)
 
 	@commands.has_permissions(manage_guild=True)
+	@commands.cooldown(1, 60, commands.BucketType.guild)
 	@commands.command(aliases=['change_prefix'], description="Change server's bot prefix.")
 	async def prefix(self, ctx, *, prefixset:str = 'l!'):
 		with open('data/prefixes.json', 'r') as f:
 			prefixes = json.load(f)
+
+		old_prefix = await get_prefix(self.bot, ctx)
 		prefixes[str(ctx.guild.id)] = prefixset
 
 		with open('data/prefixes.json', 'w') as f:
 			json.dump(prefixes, f, indent=4)
-		embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Changed server's bot prefix to {prefixset}")
+		embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Changed server's bot prefix from `{old_prefix}` to `{prefixset}`")
 		await ctx.send(embed=embed)
+
+	@commands.command(aliases=['help'], description="Halp!!!!")
+	async def h(self, ctx, *, words:str):
+	    r1 = self.bot.get_cog(words.capitalize())
+	    try:
+	        commands = r1.get_commands()
+	    except AttributeError:
+	        commands = list(self.bot.commands)
+	        embed = discord.Embed(colour=discord.Colour.blurple())
+	        for i in commands:
+	            if str(i.name).lower() == words.lower().strip():
+	                embed = discord.Embed(colour=discord.Colour.blurple(), description=i.description)
+	                embed.set_author(name=i.name.capitalize())
+	                if len(i.aliases) == 0:
+	                    embed.add_field(name="Aliases: ", value='None', inline=True)
+	                else:
+	                    embed.add_field(name="Aliases: ", value=', '.join(str(p) for p in i.aliases), inline=True)
+	                embed.add_field(name="Category: ", value=f"`{i.cog_name}`", inline=True)
+	                await ctx.send(embed=embed)
+	                return
+	        embed.title = f"That command or category doesn't exist!"
+	        embed.description = f"Try `{get_prefix(bot, ctx)}help` to get category and commands!"
+	        await ctx.send(embed=embed)
+	        pass
+	    else:
+	        commands = r1.get_commands()
+
+	        embed = discord.Embed(colour=discord.Colour.blurple(), title=f"{words.capitalize()} commands!")
+	        for command in commands:
+	            embed.add_field(name=command.name, value=f"`{command.description}`", inline=False)
+	        await ctx.send(embed=embed)
+
+	@h.error
+	async def error(self, ctx, error):
+	    if isinstance(error, commands.MissingRequiredArgument):
+	        await help2(self.bot, ctx)
+
 
 def setup(bot):
 	bot.add_cog(Config(bot))

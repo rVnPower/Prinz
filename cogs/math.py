@@ -35,7 +35,7 @@ class Math(commands.Cog, description="Math commands"):
             await ctx.send(embed=embed)
 
     @commands.command(description="Check if an integer is a prime number")
-    async def prime(self, ctx, *, n:int):
+    async def prime(self, ctx, n:int):
         m = math.sqrt(abs(n))
         i = 2
         while n % i != 0 and i <=n:
@@ -43,9 +43,8 @@ class Math(commands.Cog, description="Math commands"):
             if i>m and n>=2:
                 await ctx.send(f'{n} is a prime number!')
                 break
-            else:
-                await ctx.send(f'{n} is not a prime number!')
-                break
+        else:
+            await ctx.send(f'{n} is not a prime number!')
 
 def setup(bot):
     bot.add_cog(Math(bot))

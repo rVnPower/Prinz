@@ -16,20 +16,20 @@ class Gd(commands.Cog, description="Geometry Dash commands"):
 			async with session.get(f'https://gdbrowser.com/api/level/{ID}') as resp:
 				r = await resp.json()
 		if r != '-1':
-			embed = discord.Embed(colour=discord.Colour.blurple(), title=r['name'])	
-			embed.set_author(name=r['author'], inline=True)
+			embed = discord.Embed(colour=discord.Colour.blurple())	
+			embed.set_author(name=r['author'])
 			embed.add_field(name=r['name'], value=
 				f'''
-				Description: {r["description"]}\n
-				ID: {r["id"]}\n
-				Difficulty: {r["difficulty"]}\n
-				Length: {r["length"]}\n
-				Featured: {r["featured"]}\n
-				Downloads: {r["downloads"]}\n
-				<:like:364076087648452610> Likes: {r["likes"]}\n
-				Required game version: {r["gameVersion"]}\n
-				Song: {songID} - {songName}
-				''')
+				**Description**: {r["description"]}\n
+				**ID**: {r["id"]}\n
+				**Difficulty**: {r["difficulty"]}\n
+				**Length**: {r["length"]}\n
+				**Featured**: {r["featured"]}\n
+				**Downloads**: {r["downloads"]}\n
+				<:like:364076087648452610> **Likes:** {r["likes"]}\n
+				**Required game version**: {r["gameVersion"]}\n
+				**Song**: {r["songID"]} - {r["songName"]}
+				''', inline=True)
 		else:
 			embed = discord.Embed(colour=discord.Colour.blurple())
 			embed.set_author(name="That level does not exist!")

@@ -6,6 +6,7 @@ import nekos
 import asyncio
 import aiohttp
 import random
+import json
 from core.chat_formatting import bold, italics
 #####################################################
 async def get_prefix(bot, message):
@@ -46,13 +47,13 @@ class Simple(commands.Cog, description="Simple and fun commands 🤪"):
         embed.add_field(name="Runtime: ", value=f'{round(h)} hour(s), {round(m)} minute(s), {round(s, 2)} second(s)', inline=True)
         await ctx.send(embed=embed)
 
-    @commands.command(name="admin", description="Display informations about this bot.")
+    @commands.command(description="Display informations about this bot.")
     async def info(self, ctx):
         # Prints infomation about the admin
         embed = discord.Embed(colour=discord.Colour.blurple(), description="Prinz is a simple Discord bot that was made for informations and anime. I do not want this bot to grow for now, because of Discord bad decisions.")
         embed.set_footer(text="Made from ❤️ | VnPower#8888", icon_url="https://cdn.discordapp.com/avatars/683670893515636749/7d8f6a81109fcc1c4afe451495b848e5.webp?size=1024")
-        embed.add_field(name=f"{get_prefix(bot, ctx)}help: ", value="For help", inline=True)
-        embed.add_field(name=f"{get_prefix(bot, ctx)}invite: ", value="DM you an invite link", inline=True)
+        embed.add_field(name=f"{await get_prefix(self.bot, ctx)}help: ", value="For help", inline=True)
+        embed.add_field(name=f"{await get_prefix(self.bot, ctx)}invite: ", value="DM you an invite link", inline=True)
         embed.add_field(name="Support us?", value="Vote for the bot: ")
         await ctx.send(embed=embed)
 

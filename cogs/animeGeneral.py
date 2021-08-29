@@ -7,11 +7,14 @@ import json
 from NHentai.nhentai import NHentai
 import animec
 import asyncio
+import aiohttp
+from bs4 import BeautifulSoup
 #####################################################
 
 class Anime(commands.Cog, description="General anime commands"):
     def __init__(self, bot):
         self.bot = bot
+        self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0'}
 
     @commands.command(description="Send a random anime image from VnPower's Google Drive")
     async def sfw(self, ctx):
@@ -51,6 +54,15 @@ class Anime(commands.Cog, description="General anime commands"):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_image(url=r)
         await ctx.send(embed=embed)
+
+    @commands.command(description="Get a bunch of anime images on HentaiZ")
+    async def hz_anime(self, ctx, page:int=random.randint(1, 200)):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://hentaiz.cc/gallery/page/{page}/?channels%5B0%5D=616622316356501515', headers=self.headers) as resp:
+                r = await resp.text()
+                soup = BeautifulSoup(r, 'lxml')
+                for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
+                    await ctx.send(img['data-mdb-img'])
 
     @commands.command(description="Kiss an user")
     async def kiss(self, ctx, member:discord.Member):

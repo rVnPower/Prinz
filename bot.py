@@ -105,66 +105,6 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
-async def help2(ctx):
-    count = 0
-    commands = list(bot.cogs.values())
-    
-    embed = discord.Embed(colour=discord.Colour.blurple(), title="Help command!", description=f"My current prefix is `{get_prefix(bot, ctx)}`!")
-    embed.set_footer(text=f"Type `{get_prefix(bot, ctx)}help` with a name of a type to see all of the commands!")
-    for command in commands:
-        if str(command.description) != '':
-            embed.add_field(name=f"{command.qualified_name}", value=f"{command.description}", inline=False)
-        else:
-            embed.add_field(name=f"{command.qualified_name}", value=f"`No description provided`", inline=True)
-    await ctx.send(embed=embed)
-
-@bot.command(aliases=['help'])
-async def h(ctx, *, words:str):
-    print(bot.cogs)
-    r1 = bot.get_cog(words.capitalize())
-    try:
-        commands = r1.get_commands()
-    except AttributeError:
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name="That category does not exist!")
-        await ctx.send(embed=embed)
-        pass
-    else:
-        commands = r1.get_commands()
-
-        embed = discord.Embed(colour=discord.Colour.blurple(), title=f"{words.capitalize()} commands!")
-        for command in commands:
-            embed.add_field(name=command.name, value=f"`{command.description}`", inline=False)
-        await ctx.send(embed=embed)
-
-@bot.command()
-async def command(ctx, *, words:str):
-    commands = list(bot.commands)
-    embed = discord.Embed(colour=discord.Colour.blurple())
-    for i in commands:
-        if str(i.name).lower() == words.lower().strip():
-            embed = discord.Embed(colour=discord.Colour.blurple(), description=i.description)
-            embed.set_author(name=i.name.capitalize())
-            if len(i.aliases) == 0:
-                embed.add_field(name="Aliases: ", value='None', inline=True)
-            else:
-                embed.add_field(name="Aliases: ", value=', '.join(str(p) for p in i.aliases), inline=True)
-            embed.add_field(name="Belong to: ", value=f"`{i.cog_name}`", inline=True)
-            await ctx.send(embed=embed)
-            return
-    embed.title = f"That command doesn't exist in `{words.capitalize()}`!"
-    embed.description = f"Try `{get_prefix(bot, ctx)}help` to get cogs and commands!"
-    await ctx.send(embed=embed)
-
-@bot.command(hidden=True)
-async def test(ctx):
-    await ctx.send(bot.lang)   
-
-@h.error
-async def error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await help2(ctx)
-
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):

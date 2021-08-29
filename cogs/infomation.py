@@ -39,7 +39,7 @@ class Information(commands.Cog, description="Information commands"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['whois', 'info'], description='Check an user infomation.')
+    @commands.command(aliases=['whois'], description='Check an user infomation.')
     async def wis(self, ctx, member: discord.Member):
         roles = [role for role in member.roles]
         embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
