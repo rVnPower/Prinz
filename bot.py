@@ -120,12 +120,13 @@ async def help2(ctx):
 
 @bot.command(aliases=['help'])
 async def h(ctx, *, words:str):
+    print(bot.cogs)
     r1 = bot.get_cog(words.capitalize())
     try:
         commands = r1.get_commands()
     except AttributeError:
         embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.set_author(name="That type does not exist!")
+        embed.set_author(name="That category does not exist!")
         await ctx.send(embed=embed)
         pass
     else:
@@ -149,7 +150,6 @@ async def command(ctx, *, words:str):
             else:
                 embed.add_field(name="Aliases: ", value=', '.join(str(p) for p in i.aliases), inline=True)
             embed.add_field(name="Belong to: ", value=f"`{i.cog_name}`", inline=True)
-            embed.set_footer(text="Made from ❤️ | VnPower#8888", icon_url="https://cdn.discordapp.com/avatars/683670893515636749/7d8f6a81109fcc1c4afe451495b848e5.webp?size=1024")
             await ctx.send(embed=embed)
             return
     embed.title = f"That command doesn't exist in `{words.capitalize()}`!"

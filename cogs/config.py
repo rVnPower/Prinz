@@ -52,7 +52,7 @@ class Config(commands.Cog):
 		out_file.close()
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
-	@commands.command(description="Reload all cogs")
+	@commands.command(description="Reload all cogs", aliases=['rall'])
 	async def reload_all(self, ctx, argument:str = None):
 		cogs_list = ""
 		to_send = ""

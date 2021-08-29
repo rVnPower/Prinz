@@ -9,7 +9,7 @@ import animec
 import asyncio
 #####################################################
 
-class AnimeStuff(commands.Cog, description="Other stuff about anime"):
+class Animestuff(commands.Cog, description="Other stuff about anime"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -55,4 +55,4 @@ class AnimeStuff(commands.Cog, description="Other stuff about anime"):
             await ctx.send(embed=embed)
 
 def setup(bot):
-	bot.add_cog(AnimeStuff(bot))
+	bot.add_cog(Animestuff(bot))

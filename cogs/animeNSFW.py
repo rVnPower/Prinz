@@ -24,7 +24,7 @@ possible = ['feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
         ]
 
 
-class AnimeNSFW(commands.Cog, description="NSFW anime commands"):
+class Animensfw(commands.Cog, description="NSFW anime commands"):
     def __init__(self, bot):
         self.bot = bot
         self.possible = ['feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
@@ -126,4 +126,4 @@ class AnimeNSFW(commands.Cog, description="NSFW anime commands"):
                     await ctx.send(img['data-mdb-img'])
 
 def setup(bot):
-	bot.add_cog(AnimeNSFW(bot))
+	bot.add_cog(Animensfw(bot))
