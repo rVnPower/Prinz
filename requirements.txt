@@ -24,3 +24,4 @@ ChatterBot==1.0.5
 chatterbot-corpus==1.2.0
 nekos.py==1.0.3
 pyowm==3.2.0
+https://api.nekos.dev/api/v3/images/nsfw/img/neko_ero/

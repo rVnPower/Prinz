@@ -32,7 +32,7 @@ class Doujin(commands.Cog):
         for i in Doujin.images:
             current +=1
             embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name=f"Page {current-1}/{len(Doujin.images)-1}")
+            embed.set_author(name=f"Page {current}/{len(Doujin.images)-1}")
             embed.set_image(url=i)
             embeds.append(embed)
         current = 0

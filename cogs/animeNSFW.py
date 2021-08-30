@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import aiohttp
 import asyncio
 import json
+import rule34
 #####################################################
 possible = ['feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
         'solog', 'feetg', 'cum', 'erokemo', 'les', 'wallpaper', 'lewdk',
@@ -55,52 +56,34 @@ class Animensfw(commands.Cog, description="NSFW anime commands"):
                 name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
 
-    @commands.command(description="Too bad for catgirls...", aliases=['nE'])
-    async def neko_ero(self, ctx):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://api.nekos.dev/api/v3/images/nsfw/img/neko_ero/') as resp:
-                r = await resp.json()
+    @commands.command(description="Search for images on Rule34 with tags", aliases=['r34'])
+    async def rule34(self, ctx, *, words:str):
+        async def main(words):
+            import rule34
+            rule34 = rule34.Rule34(loop)
+            r = await rule34.getImages(tags=words, randomPID=True)
+            return r
+        loop = asyncio.get_event_loop()
         if ctx.channel.is_nsfw():
+            r = await main(words)
             embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='Here is your image!')
-            embed.set_image(url=data['data']['response']['url'])
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='You can only use this command in a NSFW channel!')
-            await ctx.send(embed=embed)
-
-    @commands.command(description="Classic lewd image.", aliases=['cL'])
-    async def classic_lewd(self, ctx):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://api.nekos.dev/api/v3/images/nsfw/img/classic_lewd/') as resp:
-                r = await resp.json()
-        if ctx.channel.is_nsfw():
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='Here is your image!')
-            embed.set_image(url=data['data']['response']['url'])
-            await ctx.send(embed=embed)
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='You can only use this command in a NSFW channel!')
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='You can only use this command in a NSFW channel!')
-            await ctx.send(embed=embed)
-
-    @commands.command(description="You really love those bare feets, don't you?", aliases=['fL'])
-    async def feet_lewd(self, ctx):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://api.nekos.dev/api/v3/images/nsfw/img/feet_lewd/') as resp:
-                r = await resp.json()
-        if ctx.channel.is_nsfw():
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='Here is your image!')
-            embed.set_image(url=data['data']['response']['url'])
-            await ctx.send(embed=embed)
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='You can only use this command in a NSFW channel!')
-            await ctx.send(embed=embed)
+            embed.set_image(url=random.choice(r).file_url)
+            embed.set_footer(text="If you are searching with a name, you should replace spaces with `_`")
+            msg = await ctx.send(embed=embed)
+            await msg.add_reaction('🔄')
+            while True:
+                try:
+                    reaction, user = await self.bot.wait_for("reaction_add", check=lambda reaction , user: user==ctx.author and reaction.emoji == '🔄', timeout=30.0)
+                except asyncio.TimeoutError:
+                    return
+                else:
+                    if reaction.emoji == '🔄':
+                        embed = discord.Embed(colour=discord.Colour.blurple())
+                        embed.set_image(url=random.choice(r).file_url)
+                        embed.set_footer(text="If you are searching with a name, you should replace spaces with `_`")
+                        await msg.edit(embed=embed)
+                        await msg.remove_reaction('🔄', ctx.author)
+                    
         else:
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='You can only use this command in a NSFW channel!')
