@@ -19,7 +19,7 @@ async def sauce_ctx(ctx):
     sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
     results = await sauce.from_url(ctx.message.attachments[0].url)
     for i in results:
-        if isinstance(i, PixivSource):
+        if isinstance(results[0], PixivSource):
             embed = discord.Embed(colour=discord.Colour.blurple(), title=i.author_name, url=i.author_url)
             try:
                 embed.set_author(name=i.title, url=i.urls[0])
@@ -28,12 +28,22 @@ async def sauce_ctx(ctx):
             embed.add_field(name="Similarity: ", value=f"{i.similarity}%")
             embed.add_field(name="Source: ", value=i.index)
             embed.set_image(url=i.thumbnail)
-            embed.set_footer(text="<:mag_right:> This is what I have found!")
+            embed.set_footer(text="This is what I have found!")
             await ctx.send(embed=embed)
             return
-    if isinstance(results[0], VideoSource):
-        embed = discord.Embed(colour=discord.Colour.blurple(), title="")
-        pass
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            try:
+                embed.set_author(name=i.title, url=i.urls[0])
+            except:
+                embed.set_author(name=i.title)
+            embed.add_field(name="Similarity: ", value=f"{i.similarity}%")
+            embed.add_field(name="Source: ", value=i.index)
+            embed.set_image(url=i.thumbnail)
+            embed.set_footer(text="This is what I have found!")
+            await ctx.send(embed=embed)
+            return
+        
 
 class Information(commands.Cog, description="Information commands"):
     def __init__(self, bot):
@@ -155,9 +165,8 @@ class Information(commands.Cog, description="Information commands"):
 
         # results = await sauce.from_file('/path/to/image.png')
         results = await sauce.from_url(words)
-        print(results[0].url)
         for i in results:
-            if isinstance(i, PixivSource):
+            if isinstance(results[0], PixivSource):
                 embed = discord.Embed(colour=discord.Colour.blurple(), title=i.author_name, url=i.author_url)
                 try:
                     embed.set_author(name=i.title, url=i.urls[0])
@@ -168,6 +177,19 @@ class Information(commands.Cog, description="Information commands"):
                 embed.set_image(url=i.thumbnail)
                 embed.set_footer(text="<:mag_right:> This is what I have found!")
                 await ctx.send(embed=embed)
+                return
+            else:
+                embed = discord.Embed(colour=discord.Colour.blurple())
+                try:
+                    embed.set_author(name=i.title, url=i.urls[0])
+                except:
+                    embed.set_author(name=i.title)
+                embed.add_field(name="Similarity: ", value=f"{i.similarity}%")
+                embed.add_field(name="Source: ", value=i.index)
+                embed.set_image(url=i.thumbnail)
+                embed.set_footer(text="<:mag_right:> This is what I have found!")
+                await ctx.send(embed=embed)
+                return
 
     @sauce.error
     async def error(self, ctx, error):

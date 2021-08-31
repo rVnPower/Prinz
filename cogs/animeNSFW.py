@@ -12,6 +12,7 @@ import aiohttp
 import asyncio
 import json
 import rule34
+from pybooru import Danbooru
 #####################################################
 possible = ['feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
         'solog', 'feetg', 'cum', 'erokemo', 'les', 'wallpaper', 'lewdk',
@@ -82,12 +83,50 @@ class Animensfw(commands.Cog, description="NSFW anime commands"):
                         embed.set_image(url=random.choice(r).file_url)
                         embed.set_footer(text="If you are searching with a name, you should replace spaces with `_`")
                         await msg.edit(embed=embed)
-                        await msg.remove_reaction('🔄', ctx.author)
-                    
+                        await msg.remove_reaction('🔄', ctx.author)      
         else:
             embed = discord.Embed(colour=discord.Colour.blurple())
             embed.set_author(name='You can only use this command in a NSFW channel!')
             await ctx.send(embed=embed)
+
+    @commands.command(description="Get a random NSFW image of a topic")
+    async def danbooru(self, ctx, *, words:str):
+        if ctx.channel.is_nsfw():
+            async def main(words):
+                client = Danbooru('danbooru')
+                r = client.post_list(tags=words, random=True)
+                return r
+
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            r = await main(words)
+            post = random.choice(r)
+            file_url = post['large_file_url']
+            author = post['tag_string_artist']
+            embed.set_author(name=F"Artist: {author}", url=post['source'])
+            embed.set_image(url=file_url)
+            embed.set_footer(text=post['tag_string_general'])
+            msg = await ctx.send(embed=embed)
+            await msg.add_reaction('🔄')
+            while True:
+                try:
+                    reaction, user = await self.bot.wait_for("reaction_add", check=lambda reaction , user: user==ctx.author and reaction.emoji == '🔄', timeout=30.0)
+                except asyncio.TimeoutError:
+                    return
+                else:
+                    if reaction.emoji == '🔄':
+                        embed = discord.Embed(colour=discord.Colour.blurple())
+                        post = random.choice(r)
+                        file_url = post['large_file_url']
+                        author = post['tag_string_artist']
+                        embed.set_author(name=author, url=post['source'])
+                        embed.set_image(url=file_url)
+                        embed.set_footer(text=post['tag_string_general'])
+                        await msg.edit(embed=embed)
+                        await msg.remove_reaction('🔄', ctx.author) 
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+        await ctx.send(embed=embed)
 
     @commands.command(description="Get a random NSFW image of a topic")
     async def lewd(self, ctx, *, words:str = random.choice(possible)):
