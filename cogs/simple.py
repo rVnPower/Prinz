@@ -44,7 +44,7 @@ class Simple(commands.Cog, description="Simple and fun commands 🤪"):
         p = round(self.bot.latency * 1000)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'Pong! {p}ms!')
-        embed.add_field(name="Runtime: ", value=f'{round(h)} hour(s), {round(m)} minute(s), {round(s, 2)} second(s)', inline=True)
+        embed.add_field(name="Runtime: ", value=f"{round(h)} hour{'s' if h > 1 else ''}, {round(m)} minute{'s' if round(m) > 1 else ''}, {round(s)} second{'s' if round(s) > 1 else ''}", inline=True)
         await ctx.send(embed=embed)
 
     @commands.command(description="Display informations about this bot.")

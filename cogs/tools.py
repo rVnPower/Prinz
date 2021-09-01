@@ -9,11 +9,25 @@ import json
 import nekos
 from core.chat_formatting import bold
 import asyncio
+import re
 #####################################################
 
 def to_emoji(c):
     base = 0x1f1e6
     return chr(base + c)
+
+async def convert(self, ctx, argument):
+    time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
+    time_dict = {"h":3600, "s":1, "m":60, "d":86400}
+    matches = time_regex.findall(argument.lower())
+    time = 0
+    for v, k in matches:
+        try:
+            time += time_dict[k]*float(v)
+        except KeyError:
+            embed = discord.Embed(color = discord.Colour.blurple(),description=  "{} is an invalid time-key! h/m/s/d are valid!".format(k))
+            await ctx.send(embed=embed)
+    return time
 
 class Tools(commands.Cog, description="Tools"):
     def __init__(self, bot):
@@ -41,8 +55,16 @@ class Tools(commands.Cog, description="Tools"):
         await ctx.send(embed=embed)
 
     @commands.command(description="Create a simple poll")
-    async def poll(self, ctx, *, time:int= 600, topic:str):
+    async def poll(self, ctx, time:str = '30m', *, topic:str):
         embed = discord.Embed(title=f"{ctx.author} asks: {topic}", description=f":one: Yes\n:two: No", color = discord.Colour.blurple())
+
+        time = await convert(self, ctx, time)
+        h = round(time) // 3600
+        s = round(time) % 3600
+        m = s // 60
+        s = s % 60
+
+        embed.add_field(name="Duration: ", value=f"{h} hour{'s' if h > 1 else ''}, {m} minute{'s' if m > 1 else ''}, {s} second{'s' if s > 1 else ''}")
         embed.set_footer(text= f"Poll created at {ctx.message.created_at}", icon_url=ctx.author.avatar_url)
         msg = await ctx.send(embed=embed)
         try:
@@ -51,9 +73,8 @@ class Tools(commands.Cog, description="Tools"):
             pass
         await msg.add_reaction('1️⃣')
         await msg.add_reaction('2️⃣')
-        
 
-        await asyncio.sleep(600)
+        await asyncio.sleep(time)
 
         newMSG = await ctx.fetch_message(msg.id)
         onechoice = await newMSG.reactions[0].users().flatten()
@@ -65,7 +86,7 @@ class Tools(commands.Cog, description="Tools"):
         elif len(secchoice) > len(onechoice):
             result = 'No'
 
-        embed = discord.Embed(title= topic, description=f"Result: {result}", color = discord.Colour.blurple())
+        embed = discord.Embed(title=topic, description=f"Result: {result}", color = discord.Colour.blurple())
         await newMSG.edit(embed=embed)
 
     @commands.command()
