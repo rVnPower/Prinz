@@ -63,7 +63,7 @@ class Information(commands.Cog, description="Information commands"):
         embed.add_field(name= "Highest role: ",value=member.top_role.mention)
         await ctx.send(embed=embed)
 
-    @commands.command(description="Check your Discord account details")
+    @commands.command(description="Check your Discord account details", aliases=['whoisme'])
     async def whoami(self, ctx):
         roles = [role for role in ctx.author.roles]
         embed = discord.Embed(colour=ctx.author.color, timestamp=ctx.message.created_at)
@@ -75,6 +75,7 @@ class Information(commands.Cog, description="Information commands"):
         embed.add_field(name= 'Joined server on: ', value= ctx.author.joined_at.strftime("%a, %#d %B %Y, %I:%M %p"))
         embed.add_field(name= f"Roles: ({len(roles)})", value=" ".join([role.mention for role in roles]))
         embed.add_field(name= "Highest role: ",value=ctx.author.top_role.mention)
+        embed.add_field(name="Vanity URL: ", value=ctx.guild.vanity_url_code)
         await ctx.send(embed=embed)
 
 
@@ -150,6 +151,10 @@ class Information(commands.Cog, description="Information commands"):
                             name = i['name']
                             embed.set_author(name=f'Summary of {name}')
                             embed.add_field(name=name, value=wikipedia.summary(name, sentences=3))
+                            try:
+                                embed.set_image(url=wikipedia.summary(name, sentences=3).images[0])
+                            except:
+                                pass
                             await ctx.send(embed=embed)
                             return None
             except ValueError:
@@ -175,7 +180,7 @@ class Information(commands.Cog, description="Information commands"):
                 embed.add_field(name="Similarity: ", value=f"{i.similarity}%")
                 embed.add_field(name="Source: ", value=i.index)
                 embed.set_image(url=i.thumbnail)
-                embed.set_footer(text="<:mag_right:> This is what I have found!")
+                embed.set_footer(text=":mag_right: This is what I have found!")
                 await ctx.send(embed=embed)
                 return
             else:
@@ -187,7 +192,7 @@ class Information(commands.Cog, description="Information commands"):
                 embed.add_field(name="Similarity: ", value=f"{i.similarity}%")
                 embed.add_field(name="Source: ", value=i.index)
                 embed.set_image(url=i.thumbnail)
-                embed.set_footer(text="<:mag_right:> This is what I have found!")
+                embed.set_footer(text=":mag_right: This is what I have found!")
                 await ctx.send(embed=embed)
                 return
 
@@ -245,9 +250,9 @@ class Information(commands.Cog, description="Information commands"):
         embed.add_field(name=".", value='var.countries')
         await ctx.send(embed=embed)
 
-    @commands.command(name="math", description="Calculates.")
+    @commands.command(description="Calculates.")
     # Test
-    async def alpha(self, ctx, words:str):
+    async def alpha(self, ctx, *, words:str):
         client = wolframalpha.Client('QPK7GG-8KK22QQTLJ')
         result = client.query(words)
         output = next(result.results).text

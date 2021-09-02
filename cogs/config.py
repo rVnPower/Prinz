@@ -24,12 +24,12 @@ async def help2(bot, ctx):
     commands = list(bot.cogs.values())
     
     embed = discord.Embed(colour=discord.Colour.blurple(), title="Help command!", description=f"My current prefix is `{await get_prefix(bot, ctx)}`")
-    embed.set_footer(text=f"Type `{await get_prefix(bot, ctx)}help` with a name of a type to see all of the commands! (Currently have {len(bot.commands)})")
+    embed.set_footer(text=f"Type `{await get_prefix(bot, ctx)}help` with a name of a type to see all of the commands! (Currently have {len(bot.commands)})\nIf you wanted to know more about this bot, you can visit the documentation about this bot.")
     for command in commands:
-        if str(command.description) != '':
-            embed.add_field(name=f"{command.qualified_name}", value=f"{command.description}", inline=True)
-        else:
-            embed.add_field(name=f"{command.qualified_name}", value=f"`No description provided`", inline=True)
+        embed.add_field(name=f"{command.qualified_name}",value=' ', inline=True)
+    embed.add_field(name=f"_", value="**______________________________**", inline=True)
+    embed.add_field(name=f"Current version: ", value="Beta 1.6", inline=True)
+
     await ctx.send(embed=embed)
 
 class Config(commands.Cog):
