@@ -6,7 +6,7 @@ from NHentai.nhentai import NHentai
 from NHentai.nhentai_async import NHentaiAsync 
 #####################################################
 
-class Doujin(commands.Cog): 
+class Doujin(commands.Cog, description="...", name="➕"): 
     def __init__(self, bot):
         self.bot = bot
 

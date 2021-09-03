@@ -7,7 +7,7 @@ import json
 from chessdotcom import get_leaderboards,get_player_stats
 #####################################################
 
-class Chess(commands.Cog, description="Chess.com commands"):
+class Chess(commands.Cog, description="**Chess**", name="♟️"):
     def __init__(self, bot):
         self.bot = bot
         try:

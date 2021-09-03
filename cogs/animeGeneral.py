@@ -11,7 +11,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 #####################################################
 
-class Anime(commands.Cog, description="General anime commands"):
+class Anime(commands.Cog, description="General anime commands", name="➕"):
     def __init__(self, bot):
         self.bot = bot
         self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0'}

@@ -9,7 +9,7 @@ import animec
 import asyncio
 #####################################################
 
-class Animestuff(commands.Cog, description="Other stuff about anime"):
+class Animestuff(commands.Cog, description="Other stuff about anime", name="➕"):
     def __init__(self, bot):
         self.bot = bot
 

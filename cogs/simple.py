@@ -22,7 +22,7 @@ async def get_prefix(bot, message):
             json.dump(prefixes, file, indent=4)
         return prefixes[str(message.guild.id)]
 
-class Simple(commands.Cog, description="Simple and fun commands 🤪"):
+class Simple(commands.Cog, description="**Fun**", name="🤪"):
     def __init__(self, bot):
         self.bot = bot
         self.t1 = time.time()

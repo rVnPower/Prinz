@@ -5,7 +5,7 @@ import random
 import asyncio
 #####################################################
 
-class Games(commands.Cog, description="Game commands"):
+class Games(commands.Cog, description="**Game**", name="🎮"):
     def __init__(self, bot):
         self.bot = bot
 

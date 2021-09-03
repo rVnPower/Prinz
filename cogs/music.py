@@ -301,7 +301,7 @@ class VoiceState:
             self.voice = None
 
 
-class Music(commands.Cog, description="Music commands"):
+class Music(commands.Cog, description="**Music**", name="🎵"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.voice_states = {}

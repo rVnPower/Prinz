@@ -26,7 +26,7 @@ possible = ['feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
         ]
 
 
-class Animensfw(commands.Cog, description="NSFW anime commands"):
+class Animensfw(commands.Cog, description="NSFW anime commands", name="➕"):
     def __init__(self, bot):
         self.bot = bot
         self.possible = ['feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',

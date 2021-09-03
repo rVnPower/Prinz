@@ -45,7 +45,7 @@ async def sauce_ctx(ctx):
             return
         
 
-class Information(commands.Cog, description="Information commands"):
+class Information(commands.Cog, description="**Information**", name='ℹ️'):
     def __init__(self, bot):
         self.bot = bot
 

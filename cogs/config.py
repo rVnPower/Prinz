@@ -4,6 +4,8 @@ import random
 import json
 import os
 import asyncio
+import datetime
+import contextlib
 from discord.ext.commands.cooldowns import BucketType
 
 async def get_prefix(bot, message):
@@ -19,20 +21,7 @@ async def get_prefix(bot, message):
             json.dump(prefixes, file, indent=4)
         return prefixes[str(message.guild.id)]
 
-async def help2(bot, ctx):
-    count = 0
-    commands = list(bot.cogs.values())
-    
-    embed = discord.Embed(colour=discord.Colour.blurple(), title="Help command!", description=f"My current prefix is `{await get_prefix(bot, ctx)}`")
-    embed.set_footer(text=f"Type `{await get_prefix(bot, ctx)}help` with a name of a type to see all of the commands! (Currently have {len(bot.commands)})\nIf you wanted to know more about this bot, you can visit the documentation about this bot.")
-    for command in commands:
-        embed.add_field(name=f"{command.qualified_name}",value=' ', inline=True)
-    embed.add_field(name=f"_", value="**______________________________**", inline=True)
-    embed.add_field(name=f"Current version: ", value="Beta 1.6", inline=True)
-
-    await ctx.send(embed=embed)
-
-class Config(commands.Cog):
+class Config(commands.Cog, description="**Config**", name="🛠️"):
 	def __init__(self, bot):
 		self.bot = bot
 		with open('translation/servers.json', 'r') as f:
@@ -156,6 +145,7 @@ class Config(commands.Cog):
 			json.dump(prefixes, f, indent=4)
 		embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Changed server's bot prefix from `{old_prefix}` to `{prefixset}`")
 		await ctx.send(embed=embed)
+	'''
 
 	@commands.command(aliases=['help'], description="Halp!!!!")
 	async def h(self, ctx, *, words:str):
@@ -192,7 +182,104 @@ class Config(commands.Cog):
 	async def error(self, ctx, error):
 	    if isinstance(error, commands.MissingRequiredArgument):
 	        await help2(self.bot, ctx)
+	'''
 
 
 def setup(bot):
+	class HelpEmbed(discord.Embed): # Our embed with some preset attributes to avoid setting it multiple times
+	    def __init__(self, **kwargs):
+	        super().__init__(**kwargs)
+	        self.timestamp = datetime.datetime.utcnow()
+	        text = "Use help [command] or help [category] for more information | <> is required | [] is optional"
+	        self.set_footer(text=text)
+	        self.color = discord.Color.blurple()
+
+
+	class MyHelp(commands.HelpCommand):
+	    def __init__(self):
+	        super().__init__( # create our class with some aliases and cooldown
+	            command_attrs={
+	                "help": "The help command for the bot",
+	                "cooldown": commands.Cooldown(1, 3.0, commands.BucketType.user),
+	                "aliases": ['commands']
+	            }
+	        )
+	    
+	    async def send(self, **kwargs):
+	        """a short cut to sending to get_destination"""
+	        await self.get_destination().send(**kwargs)
+
+	    async def send_bot_help(self, mapping):
+	        """triggers when a `<prefix>help` is called"""
+	        ctx = self.context
+	        embed = HelpEmbed(title=f"Help")
+	        embed.set_thumbnail(url=ctx.me.avatar_url)
+	        usable = 0 
+
+	        for cog, commands in mapping.items(): #iterating through our mapping of cog: commands
+	            if filtered_commands := await self.filter_commands(commands): 
+	                # if no commands are usable in this category, we don't want to display it
+	                amount_commands = len(filtered_commands)
+	                usable += amount_commands
+	                if cog: # getting attributes dependent on if a cog exists or not
+	                    name = cog.qualified_name
+	                    description = cog.description or "No description"
+	                else:
+	                    name = "No Category"
+	                    description = "Commands with no category"
+
+	                embed.add_field(name=f"{name} Category [{amount_commands}]", value=description)
+
+	        embed.description = f"{len(bot.commands)} commands | {usable} usable" 
+
+	        await self.send(embed=embed)
+
+	    async def send_command_help(self, command):
+	        """triggers when a `<prefix>help <command>` is called"""
+	        signature = self.get_command_signature(command) # get_command_signature gets the signature of a command in <required> [optional]
+	        embed = HelpEmbed(title=signature, description=command.help or "No help found...")
+
+	        if cog := command.cog:
+	            embed.add_field(name="Category", value=cog.qualified_name)
+
+	        can_run = "No"
+	        # command.can_run to test if the cog is usable
+	        with contextlib.suppress(commands.CommandError):
+	            if await command.can_run(self.context):
+	                can_run = "Yes"
+	            
+	        embed.add_field(name="Usable", value=can_run)
+
+	        if command._buckets and (cooldown := command._buckets._cooldown): # use of internals to get the cooldown of the command
+	            embed.add_field(
+	                name="Cooldown",
+	                value=f"{cooldown.rate} per {cooldown.per:.0f} seconds",
+	            )
+
+	        await self.send(embed=embed)
+
+	    async def send_help_embed(self, title, description, commands): # a helper function to add commands to an embed
+	        embed = HelpEmbed(title=title, description=description or "No help found...")
+
+	        if filtered_commands := await self.filter_commands(commands):
+	            for command in filtered_commands:
+	                embed.add_field(name=self.get_command_signature(command), value=command.help or "No help found...")
+	           
+	        await self.send(embed=embed)
+
+	    async def send_group_help(self, group):
+	        """triggers when a `<prefix>help <group>` is called"""
+	        title = self.get_command_signature(group)
+	        await self.send_help_embed(title, group.help, group.commands)
+
+	    async def send_cog_help(self, cog):
+	        """triggers when a `<prefix>help <cog>` is called"""
+	        title = cog.qualified_name or "No"
+	        await self.send_help_embed(f'{title} Category', cog.description, cog.get_commands())
+
+	    async def send_error_message(self, error):
+	        embed = discord.Embed(title="Error", description=error)
+	        channel = self.get_destination()
+	        await channel.send(embed=embed)
+	bot.help_command = MyHelp()
 	bot.add_cog(Config(bot))

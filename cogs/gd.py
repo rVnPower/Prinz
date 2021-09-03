@@ -6,7 +6,7 @@ import requests
 import aiohttp
 #####################################################
 
-class Gd(commands.Cog, description="Geometry Dash commands"):
+class Gd(commands.Cog, description="Geometry Dash", name="➕"):
 	def __init__(self, bot):
 		self.bot = bot
 

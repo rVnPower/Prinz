@@ -11,7 +11,7 @@ import asyncio
 async def perform_mute_wait(time):
         await sleep_until(time)
 
-class Moderation(commands.Cog, description="Moderation commands"):
+class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
     def __init__(self, bot):
         self.bot = bot
 

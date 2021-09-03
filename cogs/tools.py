@@ -12,6 +12,57 @@ import asyncio
 import re
 #####################################################
 
+def decrypt(key, ciphertext):
+    ''' 
+        params: char key - offset of A
+                string ciphertext - encoded message to be read
+        desc: decrypt message by reversing offset of each letter by key
+    '''
+    shift = ord(key.upper()) - 65
+    plaintext = ""
+    for c in ciphertext.upper():
+        if ord(c) != ord(" "):
+            nchar = chr(ord(c) - shift)
+            if ord(nchar) < 65:
+                nchar = chr(ord(nchar) + 26)
+            elif ord(nchar) > 90:
+                nchar = chr(ord(nchar) - 26)
+            plaintext += nchar
+        else:
+            plaintext += " "
+    return plaintext
+
+async def get_prefix(bot, message):
+    with open('data/prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+
+    try:
+        return prefixes[str(message.guild.id)]
+    except KeyError:
+        prefixes[str(message.guild.id)] = 'l!'
+
+        with open('prefixes.json', 'w') as file:
+            json.dump(prefixes, file, indent=4)
+        return prefixes[str(message.guild.id)]
+
+def encrypt(key, plaintext):
+    ''' 
+        params: char key - offset of A
+                string plaintext - message to be encoded
+        desc: encrypt message by offsetting each letter by key
+    '''
+    shift = ord(key.upper()) - 65
+    ciphertext = ""
+    for c in plaintext.upper():
+        if ord(c) != ord(" "):
+            nchar = chr(ord(c) + shift)
+            if ord(nchar) > 90:
+                nchar = chr(ord(nchar) - 26)
+            ciphertext += nchar
+        else:
+            ciphertext += " "
+    return ciphertext
+
 def to_emoji(c):
     base = 0x1f1e6
     return chr(base + c)
@@ -29,7 +80,7 @@ async def convert(self, ctx, argument):
             await ctx.send(embed=embed)
     return time
 
-class Tools(commands.Cog, description="Tools"):
+class Utlilty(commands.Cog, description="**Utlilty**", name="⚙️"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -122,5 +173,48 @@ class Tools(commands.Cog, description="Tools"):
         for emoji, _ in choices:
             await poll.add_reaction(emoji)
 
+    @commands.command(description="Decode, encode or break Ceasar cipher.", usage="l!rot {encode/decode/break} {key} \"{cipher_text}\"", aliases=['caesar'])
+    async def rot(self, ctx, *args:str):
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        try:
+           type_ = args[0].strip().lower()
+           key = args[1].strip().lower()
+           ciphertext = args[2]
+        except:
+            await ctx.send(embed=discord.Embed(colour=discord.Colour.blurple(), description=f"You are executing this command incorrectly. Type `{await get_prefix(self.bot, ctx)}help rot` to know how to use this command!"))
+        if type_ == 'decode':
+            plaintext = decrypt(key, ciphertext)
+            embed.description = plaintext
+            await ctx.send(embed=embed)
+        elif type_ == 'encode':
+            plaintext = encrypt(key, ciphertext)
+            embed.description = plaintext
+            await ctx.send(embed=embed)
+        elif type_ == 'break':
+            ciphertext = ciphertext.upper()
+            if (key.upper()).find("Y") != -1:
+                bruteforce = True
+            else:
+                bruteforce = False
+
+            # check the frequency of each letter occurrence (A to Z)
+            keys, text = [], []
+            for l in list(map(chr, range(ord('A'), ord('[')))):
+                freq = ciphertext.count(l) / float(len(ciphertext.replace(" ", "")))
+                # if letter appears 10% or more it could be 'E'
+                if freq >= .1 or bruteforce:
+                    # shift so decrypt key is A=
+                    key = chr(ord(l) - 4)
+                    if ord(key) < 65:
+                        key = chr(ord(key) + 26)
+                    elif ord(key) > 90:
+                        key = chr(ord(key) - 26)
+                    keys.append("Possible key: A=" + key)
+                    text.append(decrypt(key, ciphertext) + "\n")
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            for a in range(len(keys)):
+                embed.add_field(name=f"{keys[a]}", value=f"{text[a]}", inline=True)
+            await ctx.send(embed=embed)
+
 def setup(bot):
-    bot.add_cog(Tools(bot))
+    bot.add_cog(Utlilty(bot))
