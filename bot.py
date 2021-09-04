@@ -45,7 +45,7 @@ trainList = []
 for row in greetingsAndQuestion:
     trainList.append(row['question'])
     trainList.append(row['answer'])
-chatbot = ChatBot('Prinz', logic_adapters=[
+chatbot = ChatBot('Miharu hay la cai gi do', logic_adapters=[
                         {
             'import_path': 'chatterbot.logic.BestMatch',
             'default_response': 'I don\'t understand.',

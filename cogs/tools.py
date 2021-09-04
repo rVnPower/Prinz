@@ -10,6 +10,7 @@ import nekos
 from core.chat_formatting import bold
 import asyncio
 import re
+from discord.ext.commands.cooldowns import BucketType
 #####################################################
 
 def decrypt(key, ciphertext):
@@ -80,7 +81,7 @@ async def convert(self, ctx, argument):
             await ctx.send(embed=embed)
     return time
 
-class Utlilty(commands.Cog, description="**Utlilty**", name="⚙️"):
+class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -215,6 +216,13 @@ class Utlilty(commands.Cog, description="**Utlilty**", name="⚙️"):
             for a in range(len(keys)):
                 embed.add_field(name=f"{keys[a]}", value=f"{text[a]}", inline=True)
             await ctx.send(embed=embed)
+
+    @commands.cooldown(1, 3600, commands.BucketType.user)
+    @commands.command(help="Sends a feedback to me")
+    async def feedback(self, ctx, *, words:str):
+        owner = self.bot.get_user(683670893515636749)
+        await owner.send(f"{ctx.author} sent a feedback: {words}")
+        await ctx.send("Sent!")
 
 def setup(bot):
     bot.add_cog(Utlilty(bot))

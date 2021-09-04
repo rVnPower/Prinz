@@ -45,11 +45,15 @@ async def sauce_ctx(ctx):
             return
         
 
-class Information(commands.Cog, description="**Information**", name='ℹ️'):
+class Information(commands.Cog, description="Informative commands", name='Information'):
     def __init__(self, bot):
         self.bot = bot
+        try:
+            self.data = get_leaderboards().json
+        except:
+            pass
 
-    @commands.command(aliases=['whois'], description='Check an user infomation.')
+    @commands.command(aliases=['whois'], help='Check an user infomation.')
     async def wis(self, ctx, member: discord.Member):
         roles = [role for role in member.roles]
         embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
@@ -63,7 +67,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
         embed.add_field(name= "Highest role: ",value=member.top_role.mention)
         await ctx.send(embed=embed)
 
-    @commands.command(description="Check your Discord account details", aliases=['whoisme'])
+    @commands.command(help="Check your Discord account details", aliases=['whoisme'])
     async def whoami(self, ctx):
         roles = [role for role in ctx.author.roles]
         embed = discord.Embed(colour=ctx.author.color, timestamp=ctx.message.created_at)
@@ -79,7 +83,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
         await ctx.send(embed=embed)
 
 
-    @commands.command(name="weather", description="Checks weather in a location.")
+    @commands.command(name="weather", help="Checks weather in a location.")
     async def _weather(self, ctx, *, words:str):
         # Weather
         owm = OWM('081c82065cfee62cb7988ddf90914bdd')
@@ -103,7 +107,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
         embed.add_field(name="Clouds:", value=w.clouds)
         await ctx.send(embed=embed)
 
-    @commands.command(name= "wikilan", description="Changes Wikipedia 's language.")
+    @commands.command(name= "wikilan", help="Changes Wikipedia 's language.")
     async def _wikilan(self, ctx, *, Pinput:str):
         # Changes Wikipedia language
         embed = discord.Embed(colour=discord.Colour.blurple())
@@ -115,7 +119,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
             embed.set_author(name=f'That language does not exist in Wikipedia!')
             await ctx.send(embed=embed)
 
-    @commands.command(name="wiki", description="Searches articles on Wikipedia")
+    @commands.command(name="wiki", help="Searches articles on Wikipedia")
     # Searches articles on Wikipedia
     async def wiki(self, ctx, *, Pinput:str):
         # Searches Wikipedia
@@ -164,7 +168,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
                     break
         await ctx.send(embed=embed)
 
-    @commands.command(name="sauce", description="Find an image source.")
+    @commands.command(name="sauce", help="Find an image source.")
     async def sauce(self, ctx, *, words:str):
         sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
 
@@ -204,7 +208,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
             embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found...")
             await ctx.send(embed=embed)
 
-    @commands.command(name="covid", description="Get COVID-19 infomation from a territory, region or country.")
+    @commands.command(name="covid", help="Get COVID-19 infomation from a territory, region or country.")
     async def _covid(self, ctx, *, words:str):
         # Prints COVID-19 infomation in a country
         async with aiohttp.ClientSession() as session:
@@ -250,7 +254,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
         embed.add_field(name=".", value='var.countries')
         await ctx.send(embed=embed)
 
-    @commands.command(description="Calculates.")
+    @commands.command(help="Calculates.")
     # Test
     async def alpha(self, ctx, *, words:str):
         client = wolframalpha.Client('QPK7GG-8KK22QQTLJ')
@@ -260,7 +264,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
         embed.set_author(name=output)
         await ctx.send(embed=embed)
 
-    @commands.command(name="server", description="Gets this server infomation.")
+    @commands.command(name="server", help="Gets this server infomation.")
     async def _server(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple(), timestamp=ctx.message.created_at)
         role_count = len(ctx.guild.roles)
@@ -281,7 +285,7 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
         embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['gUser'], description="Get information of a GitHub user.")
+    @commands.command(aliases=['gUser'], help="Get information of a GitHub user.")
     async def github_user(self, ctx, *, words):
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://api.github.com/users/{words}') as resp:
@@ -298,6 +302,178 @@ class Information(commands.Cog, description="**Information**", name='ℹ️'):
         embed.add_field(name="Email: ", value=data['email'])
         embed.add_field(name="Hireable: ", value=data['hireable'])
         embed.add_field(name="Joined at: ", value=data['created_at'])
+        await ctx.send(embed=embed)
+
+    @commands.command(help="Get information of a Osu! beatmap")
+    async def osu_beatmap(self, ctx, *, words):
+        API_URL = 'https://osu.ppy.sh/api/v2'
+        TOKEN_URL = 'https://osu.ppy.sh/oauth/token'
+
+        def get_token():
+            data = {
+                'client_id': 8954,
+                'client_secret': 'EowlkKpcDXEGxagwbS7NF31ZQs6hl18ALPxcOUNX',
+                'grant_type': 'client_credentials',
+                'scope': 'public'
+            }
+            response = requests.post(TOKEN_URL, data=data)
+            return response.json().get('access_token')
+
+        def main():
+            token = get_token()
+            headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': f'Bearer {token}'
+            }
+            params = {
+                'id': words
+            }
+            response = requests.get(f'{API_URL}/beatmaps/lookup', params=params, headers=headers).json()
+            return response
+        data = main()
+        try:
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=data['beatmapset']['title'], url=data['url'])
+        except KeyError:
+            embed = discord.Embed(colour=discord.Colour.blurple(), title="That beatmap does not exist!")
+            await ctx.send(embed=embed)
+        embed.set_author(name=data['beatmapset']['creator'])
+        embed.add_field(name="Beatmap ID: ", value=data['beatmapset_id'])
+        embed.add_field(name="Status: ", value=data['beatmapset']['status'])
+        embed.add_field(name="Mode: ", value=data['mode'])
+        embed.add_field(name="Difficulty rating: ", value=data['difficulty_rating'])
+        embed.add_field(name="Last updated: ", value=data['beatmapset']['last_updated'])
+        embed.add_field(name="Players: ", value=data['playcount'])
+        embed.add_field(name="Passed players: ", value=data['passcount'])
+        embed.add_field(name="Num. of circles: " , value=data['count_circles'])
+        embed.add_field(name="Num. of sliders: ", value=data['count_sliders'])
+        embed.add_field(name="Num. of spinners: ", value=data['count_spinners'])
+        embed.add_field(name="Artist: ", value=data['beatmapset']['artist'])
+        embed.set_image(url=data['beatmapset']['covers']['cover'])
+        await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def osu_scores(self, ctx, *, words):
+        API_URL = 'https://osu.ppy.sh/api/v2'
+        TOKEN_URL = 'https://osu.ppy.sh/oauth/token'
+        try:
+            Type = words.split(' ')[1]
+        except IndexError:
+            Type = 'osu'
+
+        def get_token():
+            data = {
+                'client_id': 8954,
+                'client_secret': 'EowlkKpcDXEGxagwbS7NF31ZQs6hl18ALPxcOUNX',
+                'grant_type': 'client_credentials',
+                'scope': 'public'
+            }
+            response = requests.post(TOKEN_URL, data=data)
+            return response.json().get('access_token')
+
+        def main():
+            token = get_token()
+            headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': f'Bearer {token}'
+            }
+            params = {
+                'mode': Type
+            }
+            response = requests.get(f'{API_URL}/beatmaps/{words}/scores', params=params, headers=headers).json()
+            return response
+        data = main()
+        print(data)
+
+    @commands.command(help="Get information of a Geometry Dash level")
+    async def gd_level(self, ctx, ID:int):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://gdbrowser.com/api/level/{ID}') as resp:
+                r = await resp.json()
+        if r != '-1':
+            embed = discord.Embed(colour=discord.Colour.blurple())  
+            embed.set_author(name=r['author'])
+            embed.add_field(name=r['name'], value=
+                f'''
+                **Description**: {r["description"]}\n
+                **ID**: {r["id"]}\n
+                **Difficulty**: {r["difficulty"]}\n
+                **Length**: {r["length"]}\n
+                **Featured**: {r["featured"]}\n
+                **Downloads**: {r["downloads"]}\n
+                <:like:364076087648452610> **Likes:** {r["likes"]}\n
+                **Required game version**: {r["gameVersion"]}\n
+                **Song**: {r["songID"]} - {r["songName"]}
+                ''', inline=True)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name="That level does not exist!")
+        await ctx.send(embed=embed)
+
+    @commands.command(help="Get information of a Geometry Dash player")
+    async def gd_player(self, ctx, *, words):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://gdbrowser.com/api/profile/{words}') as resp:
+                r = await resp.json()
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        if r != '-1':
+            embed.set_author(name=r['username'])
+            embed.add_field(name="Player ID: ", value=r['playerID'], inline=True)
+            if int(r['rank']) == 0:
+                embed.add_field(name="Rank: ", value="None", inline=True)
+            else:
+                embed.add_field(name="Rank: ", value=r['rank'], inline=True)
+            embed.add_field(name="Stars: ", value=r['stars'], inline=True)
+            embed.add_field(name="Diamonds: ", value=r['diamonds'], inline=True)
+            embed.add_field(name="Secret coins: ", value=r['coins'], inline=True)
+            embed.add_field(name="User coins:", value=r['userCoins'], inline=True)
+            embed.add_field(name="Demons:", value=r['demons'], inline=True)
+            embed.add_field(name="Creator points: ", value=r['cp'], inline=True)
+        if r == '-1':
+            embed.set_author(name="That player does not exist!")
+        await ctx.send(embed=embed)
+
+    @commands.command(help="Search something in Geometry Dash")
+    async def gd_search(self, ctx, *, words):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://gdbrowser.com/api/search/{words}?page=0') as resp:
+                r = await resp.json()
+        embed = discord.Embed(colour=discord.Colour.blurple())
+        if r != '-1':
+            for i in r:
+                embed.set_author(name=f"Search results of {words} in Geometry Dash!")
+                embed.add_field(name=f"{i['name']}", value=f"Likes: {i['likes']} | Downloads: {i['downloads']}", inline=False)
+            await ctx.send(embed=embed)
+
+    @commands.command(help="Get a category leaderboard on Chess.com")
+    async def chess_top(self, ctx, *, words:str = "daily"):
+        data2 = self.data['leaderboards']
+        categories = self.data['leaderboards'].keys()
+        for category in categories:
+            if category == words.lower().strip():
+                embed = discord.Embed(colour=discord.Colour.blurple(), title=f"Category: {category}")
+                embed.set_author(name="Chess.com leaderboard!")
+                for player in data2[category]:
+                    embed.add_field(name=f"Rank: {player['rank']}", value=f"Username: {player['username']} | Rating: {player['score']}", inline=False)
+                await ctx.send(embed=embed)
+
+    @commands.command(help="Print all of the chess type on Chess.com")
+    async def chess_type(self, ctx):
+        embed = discord.Embed(colour=discord.Colour.blurple(), title="Type of chess on Chess.com")
+        embed.add_field(name='- ', value="daily, daily960, live_rapid, live_blitz, live_bullet, live_bughouse, live_blitz960, live_threecheck, live_crazyhouse, live_kingofthehill, tactics")
+        await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def chess_player(self, ctx, *, words:str = "VnPower"):
+        def print_leaderboard(self, username):
+            data = get_player_stats(username).json()
+            categories = ['chess_blitz', 'chess_rapid', 'chess_bullet']
+            embed = discord.Embed(colour=discord.Colour.blurple(), title=f"{words}'s stats on Chess.com")
+            for category in categories:
+                embed.add_field(name= f'Category: {category} |', value=f"Current: {data[category]['last']['rating']} | Best: {data[category]['best']['rating']}", inline=False)
+            return embed
+        embed = print_leaderboard(words)
         await ctx.send(embed=embed)
 
 def setup(bot):

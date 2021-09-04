@@ -5,7 +5,7 @@ import math
 import random
 #####################################################
 
-class Math(commands.Cog, description="**Math**", name="🔢"):
+class Math(commands.Cog, description="Math stuff", name="Math"):
     def __init__(self, bot):
         self.bot = bot
 

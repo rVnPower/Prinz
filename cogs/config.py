@@ -21,7 +21,7 @@ async def get_prefix(bot, message):
             json.dump(prefixes, file, indent=4)
         return prefixes[str(message.guild.id)]
 
-class Config(commands.Cog, description="**Config**", name="🛠️"):
+class Config(commands.Cog, description="Bot's configuration commands", name="Config"):
 	def __init__(self, bot):
 		self.bot = bot
 		with open('translation/servers.json', 'r') as f:
@@ -67,7 +67,7 @@ class Config(commands.Cog, description="**Config**", name="🛠️"):
 		out_file.close()
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
-	@commands.command(description="Reload all cogs", aliases=['rall'])
+	@commands.command(help="Reload all cogs", aliases=['rall'])
 	async def reload_all(self, ctx, argument:str = None):
 		cogs_list = ""
 		to_send = ""
@@ -133,7 +133,7 @@ class Config(commands.Cog, description="**Config**", name="🛠️"):
 
 	@commands.has_permissions(manage_guild=True)
 	@commands.cooldown(1, 60, commands.BucketType.guild)
-	@commands.command(aliases=['change_prefix'], description="Change server's bot prefix.")
+	@commands.command(aliases=['change_prefix'], help="Change server's bot prefix.")
 	async def prefix(self, ctx, *, prefixset:str = 'l!'):
 		with open('data/prefixes.json', 'r') as f:
 			prefixes = json.load(f)

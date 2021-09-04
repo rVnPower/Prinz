@@ -9,11 +9,11 @@ import animec
 import asyncio
 #####################################################
 
-class Animestuff(commands.Cog, description="Other stuff about anime", name="➕"):
+class Animestuff(commands.Cog, description="Other stuff about anime", name="Anime Utility"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(description="Search for details of an anime charecter")
+    @commands.command(help="Search for details of an anime charecter")
     async def ani_char(self, ctx, *, words):
         loop = asyncio.get_event_loop()
         try:
@@ -32,7 +32,7 @@ class Animestuff(commands.Cog, description="Other stuff about anime", name="➕"
             embed.set_image(url=r.image_url)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['ani_search'], description="Search for details of an anime movie")
+    @commands.command(aliases=['ani_search'], help="Search for details of an anime movie")
     async def anime(self, ctx, *, words):
         seperator = ', '
         loop = asyncio.get_event_loop()

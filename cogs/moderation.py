@@ -11,7 +11,7 @@ import asyncio
 async def perform_mute_wait(time):
         await sleep_until(time)
 
-class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
+class Moderation(commands.Cog, description="A powerful banhammer", name="Moderation"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -59,7 +59,7 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
             except discord.HTTPException:
                 return
 
-    @commands.command(aliases=['k'], description="Kick a member")
+    @commands.command(aliases=['k'], help="Kick a member")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(colour=discord.Colour.blurple())
@@ -74,7 +74,7 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
                             inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['b'], description="Ban a member")
+    @commands.command(aliases=['b'], help="Ban a member")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(colour=discord.Colour.blurple())
@@ -93,11 +93,11 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
         embed.add_field(name="I'm sorry about this but...", value=f" You have been banned from {ctx.guild.name} for {reason}!")
         await member.send(embed=embed)
 
-    @commands.command(aliases=['d'], description="Clear a number of messages")
+    @commands.command(aliases=['d'], help="Clear a number of messages")
     async def clear(self, ctx, amount: int):
         await ctx.channel.purge(limit=amount + 1)
 
-    @commands.command(aliases=['u'], description="Unban an user")
+    @commands.command(aliases=['u'], help="Unban an user")
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
         banned_users = await ctx.guild.bans()
@@ -113,13 +113,13 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
                 await ctx.send("Maybe that user doesn't exist...")
 
     @commands.has_permissions(ban_members=True)
-    @commands.command(aliases=['bl'], description="Show the banned users list")
+    @commands.command(aliases=['bl'], help="Show the banned users list")
     async def banlist(self, ctx):
         banned_users = await ctx.guild.bans()
         await ctx.send(banned_users)
 
     @commands.has_permissions(manage_messages=True)
-    @commands.command(aliases=['m'], description='Mute an user')
+    @commands.command(aliases=['m'], help='Mute an user')
     async def mute(self, ctx, member: discord.Member, *, reason=None):
         guild = ctx.guild
         author = ctx.author
@@ -144,7 +144,7 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
         await member.send(embed=embed)
 
     @commands.has_permissions(manage_messages=True)
-    @commands.command(aliases=['um'], description='Unmute an user')
+    @commands.command(aliases=['um'], help='Unmute an user')
     async def unmute(self, ctx, member: discord.Member, *, reason=None):
         guild = ctx.guild
         author = ctx.author
@@ -163,7 +163,7 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
         await member.send(embed=embed)
 
     @commands.has_permissions(manage_roles=True)
-    @commands.command(description='Add a role to a member')
+    @commands.command(help='Add a role to a member')
     async def add_role(self, ctx, member:discord.Member, *, roleName, reason=None):
         role = discord.utils.get(ctx.guild.roles, name=roleName)
         try:
@@ -178,7 +178,7 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
         await ctx.send(embed=embed, delete_after=10)
 
     @commands.has_permissions(manage_roles=True)
-    @commands.command(description='Remove a role from a member')
+    @commands.command(help='Remove a role from a member')
     async def remove_role(self, ctx, member:discord.Member, *, roleName, reason=None):
         role = discord.utils.get(ctx.guild.roles, name=roleName)
         try:
@@ -194,7 +194,7 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
 
     # @commands.has_permissions(ban_members=True)
     @commands.is_owner()
-    @commands.command(description="Kick an user and delete messenges from that user for 1 day")
+    @commands.command(help="Kick an user and delete messenges from that user for 1 day")
     async def softban(self, ctx: commands.Context, member: discord.Member, *, reason: str = None):
         ''' Kick an user and delete messenges from that user for 1 day'''
         guild = ctx.guild
@@ -228,7 +228,7 @@ class Moderation(commands.Cog, description="**Moderation**", name="🔨"):
             await ctx.send(f'Done.')
 
     @commands.has_permissions(manage_messages=True)
-    @commands.command(usage="tempmute \"1d 2s\" @User [reason]")
+    @commands.command(usage="tempmute \"1d 2s\" @User [reason]", hidden=True)
     async def tempmute(self, ctx, member: discord.Member, *, time: str, reason: str = None):
         embed = discord.Embed(colour=discord.Colour.blurple())
         time = dateparser.parse(time)

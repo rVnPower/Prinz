@@ -7,6 +7,7 @@ import asyncio
 import aiohttp
 import random
 import json
+import string
 from core.chat_formatting import bold, italics
 #####################################################
 async def get_prefix(bot, message):
@@ -22,7 +23,7 @@ async def get_prefix(bot, message):
             json.dump(prefixes, file, indent=4)
         return prefixes[str(message.guild.id)]
 
-class Simple(commands.Cog, description="**Fun**", name="🤪"):
+class Simple(commands.Cog, description="Funny, simple and useless commands", name="Simple"):
     def __init__(self, bot):
         self.bot = bot
         self.t1 = time.time()
@@ -132,6 +133,23 @@ class Simple(commands.Cog, description="**Fun**", name="🤪"):
         embed.set_author(name="Quack!")
         embed.set_image(url=r['url'])
         await ctx.send(embed=embed)
+
+    @commands.command(description="Emojify")
+    async def emojify(self, ctx, *, words:str):
+        emojis = []
+        for s in words.lower():
+            if s.isdecimal():
+                num2emo = {'0': 'zero', '1': 'one', '2': 'two',
+                            '3': 'three', '4': 'four', '5': 'five', '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'}
+                emojis.append(f':{num2emo.get(s)}:')
+            elif s.isalpha():
+                emojis.append(f':regional_indicator_{s}:')
+            else:
+                emoji.append(s)
+        await ctx.send(''.join(emojis))
+
+
+
 
 def setup(bot):
 	bot.add_cog(Simple(bot))
