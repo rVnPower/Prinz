@@ -67,7 +67,7 @@ class Config(commands.Cog, description="Bot's configuration commands", name="Con
 		out_file.close()
 
 	@commands.cooldown(1, 60, commands.BucketType.guild)
-	@commands.command(help="Reload all cogs", aliases=['rall'])
+	@commands.command(help="Reload all cogs", aliases=['rall'], hidden=True)
 	async def reload_all(self, ctx, argument:str = None):
 		cogs_list = ""
 		to_send = ""
@@ -129,6 +129,7 @@ class Config(commands.Cog, description="Bot's configuration commands", name="Con
 			await message.edit(embed=embed)
 		else:
 			embed = discord.Embed(title='Reloaded all extensions', color=ctx.me.color, description=to_send, delete_after=10)
+			self.bot.owner = ctx.author
 			await message.edit(embed=embed)
 
 	@commands.has_permissions(manage_guild=True)

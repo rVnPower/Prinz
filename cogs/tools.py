@@ -10,6 +10,7 @@ import nekos
 from core.chat_formatting import bold
 import asyncio
 import re
+import typing
 from discord.ext.commands.cooldowns import BucketType
 #####################################################
 
@@ -45,6 +46,15 @@ async def get_prefix(bot, message):
         with open('prefixes.json', 'w') as file:
             json.dump(prefixes, file, indent=4)
         return prefixes[str(message.guild.id)]
+
+async def get_emoji(bot, ctx, emoji_name):
+    with open('data/emoji_database.json', 'r') as f:
+        emojis = json.load(f)
+    print(emoji_name)
+    try:
+        return emojis[str(emoji_name)]
+    except KeyError:
+        await ctx.send("Not found!")
 
 def encrypt(key, plaintext):
     ''' 
@@ -85,28 +95,28 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_content=True, description="Send a invite link")
+    @commands.command(pass_content=True, help="Send a invite link")
     async def invite(self, ctx):
-        await ctx.author.send("Here is the link! Thanks for inviting!\nhttps://discord.com/api/oauth2/authorize?client_id=877182587725049897&permissions=155118463095&scope=bot")
+        await ctx.author.send("Here is the link! Thanks for inviting!\nhttps://discord.com/api/oauth2/authorize?client_id=877182587725049897&permissions=139012336887&scope=bot")
 
     @commands.command(hidden=True)
     async def ascii(self, ctx, *, words):
         await ctx.send(nekos.owoify(words))
 
-    @commands.command(aliases=['owo'], description="Owoify a string! Nya~")
+    @commands.command(aliases=['owo'], help="Owoify a string! Nya~")
     async def owoify(self, ctx, *, words):
         loop = asyncio.get_event_loop()
         r = await loop.run_in_executor(None, nekos.owoify, words)
         await ctx.send(r)
 
-    @commands.command(aliases=['av'], description="Show your avatar")
+    @commands.command(aliases=['av'], help="Show your avatar")
     async def avatar(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple(), title="Avatar")
         embed.set_author(name=ctx.author)
         embed.set_image(url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
-    @commands.command(description="Create a simple poll")
+    @commands.command(help="Create a simple poll")
     async def poll(self, ctx, time:str = '30m', *, topic:str):
         embed = discord.Embed(title=f"{ctx.author} asks: {topic}", description=f":one: Yes\n:two: No", color = discord.Colour.blurple())
 
@@ -141,7 +151,7 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
         embed = discord.Embed(title=topic, description=f"Result: {result}", color = discord.Colour.blurple())
         await newMSG.edit(embed=embed)
 
-    @commands.command()
+    @commands.command(help="Create a quickpoll with multiple choices")
     @commands.guild_only()
     async def quickpoll(self, ctx, *questions_and_choices: str):
         """Makes a poll quickly.
@@ -174,7 +184,7 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
         for emoji, _ in choices:
             await poll.add_reaction(emoji)
 
-    @commands.command(description="Decode, encode or break Ceasar cipher.", usage="l!rot {encode/decode/break} {key} \"{cipher_text}\"", aliases=['caesar'])
+    @commands.command(help="Decode, encode or break Ceasar cipher.", usage="l!rot {encode/decode/break} {key} \"{cipher_text}\"", aliases=['caesar'])
     async def rot(self, ctx, *args:str):
         embed = discord.Embed(colour=discord.Colour.blurple())
         try:
@@ -218,11 +228,106 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
             await ctx.send(embed=embed)
 
     @commands.cooldown(1, 3600, commands.BucketType.user)
-    @commands.command(help="Sends a feedback to me")
+    @commands.command(help="Sends a feedback to developers")
     async def feedback(self, ctx, *, words:str):
-        owner = self.bot.get_user(683670893515636749)
+        owner = self.bot.owner
         await owner.send(f"{ctx.author} sent a feedback: {words}")
-        await ctx.send("Sent!")
+        await ctx.send("Your feedback has been recorded!")
+
+    @commands.has_permissions(manage_emojis=True)
+    @commands.bot_has_permissions(manage_emojis=True)
+    @commands.command(help="Clone an emoji")
+    async def emoji_clone(self, ctx: commands.Context,
+                          server_emoji: typing.Optional[typing.Union[discord.Embed,
+                                                                     discord.PartialEmoji]],
+                          index: int = 1):
+        """
+        Clones an emoji into the current server.
+        # To steal an emoji from someone else, quote their message to grab the emojis from there.
+        # If the quoted message has multiple emojis, input an index number to specify the emoji, for example, doing "%PRE%emoji 5" will steal the 5th emoji from the message.
+        None: Index is only for when stealing emojis from other people.
+        """
+        if ctx.message.reference:
+            custom_emoji = re.compile(r"<a?:[a-zA-Z0-9_]+:[0-9]+>")
+            emojis = custom_emoji.findall(ctx.message.reference.resolved.content)
+            if not emojis:
+                raise errors.NoEmojisFound
+            try:
+                server_emoji = await commands.PartialEmojiConverter().convert(ctx, emojis[index - 1])
+            except IndexError:
+                return await ctx.send(f"Emoji out of index {index}/{len(emojis)}!"
+                                      f"\nIndex must be lower or equal to {len(emojis)}")
+
+        if not server_emoji:
+            raise commands.MissingRequiredArgument(
+                Parameter(name='server_emoji', kind=Parameter.POSITIONAL_ONLY))
+
+        file = await server_emoji.read()
+        guild = ctx.guild
+        server_emoji = await guild.create_custom_emoji(name=server_emoji.name, image=file,
+                                                       reason=f"Cloned emoji, requested by {ctx.author}")
+        await ctx.send(f"Done! cloned {server_emoji}")
+
+    @commands.command(aliases=['elog'])
+    async def emoji_log(self, ctx, *words:str):
+        if str(ctx.author) == 'VnPower#8888':
+            with open('data/emoji_database.json', 'r') as f:
+                emojis = json.load(f)
+            a = words[0]
+            b = words[1]
+            emojis[str(a)] = b
+            with open('data/emoji_database.json', 'w') as f:
+                json.dump(emojis, f, indent=4)
+            embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Added!")
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You don\'t have permissions to do that! This is a special command!')
+            await ctx.send(embed=embed)
+        
+
+    @commands.command(aliases=['edel'])
+    async def emoji_del(self, ctx, *, words:str):
+        if str(ctx.author) == 'VnPower#8888':
+            with open('data/emoji_database.json', 'r') as f:
+                emojis = json.load(f)
+
+            try:
+                emojis.pop(words)
+            except KeyError:
+                await ctx.send(embed=discord.Embed(colour=discord.Colour.blurple(), description=f"That emoji does not exist!"))
+
+            with open('data/emoji_database.json', 'w') as f:
+                json.dump(emojis, f, indent=4)
+            await ctx.send(embed=discord.Embed(colour=discord.Colour.blurple(), description=f"Deleted!"))
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You don\'t have permissions to do that! This is a special command!')
+            await ctx.send(embed=embed)
+        
+
+    @commands.command(aliases=['e'], help="Get an emoji from bot's emoji database")
+    async def emoji(self, ctx, *, emoji_name:str):
+        r = await get_emoji(self.bot, ctx, emoji_name)
+        try:
+            await ctx.message.delete()
+        except:
+            pass
+        await ctx.send(r)
+
+    @commands.command(aliases=['elist'], help="Get an emoji from bot's emoji database")
+    async def emoji_list(self, ctx):
+        with open('data/emoji_database.json', 'r') as f:
+            emojis = json.load(f)
+
+        names =list(emojis.keys())
+        emojis_list = list(emojis.values())
+        embed = discord.Embed(colour=discord.Colour.blurple(), title="Bot's emoji list")
+        for index, name in enumerate(names):
+            embed.add_field(name=f"{emojis_list[index]}", value=f"{name}", inline=True)
+
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Utlilty(bot))
