@@ -192,8 +192,7 @@ class Moderation(commands.Cog, description="A powerful banhammer", name="Moderat
         embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Successfully removed {role.mention} role to {member}!")
         await ctx.send(embed=embed, delete_after=10)
 
-    # @commands.has_permissions(ban_members=True)
-    @commands.is_owner()
+    @commands.has_permissions(kick_members=True)
     @commands.command(help="Kick an user and delete messenges from that user for 1 day")
     async def softban(self, ctx: commands.Context, member: discord.Member, *, reason: str = None):
         ''' Kick an user and delete messenges from that user for 1 day'''

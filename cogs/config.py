@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands, tasks
 import random
-import json
+import json, typing
 import os
 import asyncio
 import datetime
@@ -9,17 +9,17 @@ import contextlib
 from discord.ext.commands.cooldowns import BucketType
 
 async def get_prefix(bot, message):
-    with open('data/prefixes.json', 'r') as f:
-        prefixes = json.load(f)
+	with open('data/prefixes.json', 'r') as f:
+		prefixes = json.load(f)
 
-    try:
-        return prefixes[str(message.guild.id)]
-    except KeyError:
-        prefixes[str(message.guild.id)] = 'l!'
+	try:
+		return prefixes[str(message.guild.id)]
+	except KeyError:
+		prefixes[str(message.guild.id)] = 'l!'
 
-        with open('prefixes.json', 'w') as file:
-            json.dump(prefixes, file, indent=4)
-        return prefixes[str(message.guild.id)]
+		with open('prefixes.json', 'w') as file:
+			json.dump(prefixes, file, indent=4)
+		return prefixes[str(message.guild.id)]
 
 class Config(commands.Cog, description="Bot's configuration commands", name="Config"):
 	def __init__(self, bot):
@@ -146,141 +146,248 @@ class Config(commands.Cog, description="Bot's configuration commands", name="Con
 			json.dump(prefixes, f, indent=4)
 		embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Changed server's bot prefix from `{old_prefix}` to `{prefixset}`")
 		await ctx.send(embed=embed)
+
+	@commands.command(aliases = ['setstatus', 'ss', 'activity'])
+	async def status(self, ctx, type: typing.Optional[str],* , argument: typing.Optional[str]):
+		if ctx.author.guild_permissions.administrator == True:
+			botprefix = await get_prefix(self.bot, ctx)
+
+			if type == None:
+				embed = discord.Embed(title= "`ERROR` NO STATUS GIVEN!", description="Here is a list of available types:", color = ctx.me.color)
+				embed.add_field(name=(botprefix + 'status Playing <status>'), value='Sets the status to Playing.', inline=False)
+				embed.add_field(name=(botprefix + 'status Listening <status>'), value='Sets the status to Listening.', inline=False)
+				embed.add_field(name=(botprefix + 'status Watching <status>'), value='Sets the status to Watching.', inline=False)
+				await ctx.send(embed=embed, delete_after=45)
+				await asyncio.sleep(45)
+				await ctx.message.delete()
+			else:
+				type = type.lower()
+			if type == "playing":
+				if argument !=  None:
+					# Setting `Playing ` status
+					await self.bot.change_presence(activity=discord.Game(name=f'{argument}'))
+					await ctx.message.add_reaction('✅')
+					await ctx.send(f"Activity changed to `Playing {argument}` ", delete_after=10)
+					await asyncio.sleep(10)
+					await ctx.message.delete()
+
+			if type == "listening":
+				if argument != None:
+					# Setting `Listening ` status
+					await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=f'{argument}'))
+					await ctx.message.add_reaction('✅')
+					await ctx.send(f"Activity changed to `Listening to {argument}` ", delete_after=10)
+					await asyncio.sleep(10)
+					await ctx.message.delete()
+
+			if type == "watching":
+				if argument !=  None:
+					#Setting `Watching ` status
+					await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f'{argument}'))
+					await ctx.message.add_reaction('✅')
+					await ctx.send(f"Activity changed to `Watching {argument}` ", delete_after=10)
+					await asyncio.sleep(10)
+					await ctx.message.delete()
+
+			if type == "competing":
+				if argument !=  None:
+					#Setting `other ` status
+					await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.competing, name=f'{argument}'))
+					await ctx.message.add_reaction('✅')
+					await ctx.send(f"Activity changed to `Competing in {argument}` ", delete_after=10)
+					await asyncio.sleep(10)
+					await ctx.message.delete()
+
+			if type == "clear":
+				await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.custom, name='cleared'))
+				await ctx.message.add_reaction('✅')
+				await ctx.send(f"Activity cleared ", delete_after=10)
+				await asyncio.sleep(10)
+				await ctx.message.delete()
+
+			if type != "watching" and type != "listening" and type != "playing" and type != "competing" and type != "clear" and type != "4afc07a4055edc68da62f18f7ecdd103":
+				embed = discord.Embed(title= "`ERROR` INVALID TYPE!", description="Here is a list of available types:", color = ctx.me.color)
+				embed.add_field(name=(botprefix + 'status Playing <status>'), value='Sets the status to Playing.', inline=False)
+				embed.add_field(name=(botprefix + 'status Listening <status>'), value='Sets the status to `Listening to`.', inline=False)
+				embed.add_field(name=(botprefix + 'status Watching <status>'), value='Sets the status to `Watching`.', inline=False)
+				embed.add_field(name=(botprefix + 'status Competing <status>'), value='Sets the status to `Competing in`.', inline=False)
+				await ctx.send(embed=embed, delete_after=45)
+				await asyncio.sleep(45)
+				await ctx.message.delete()
+		else:
+			await ctx.message.add_reaction('🚫')
+			await asyncio.sleep(5)
+			await ctx.message.delete()
+
+	@commands.command(aliases=['rel', 're', 'rc'])
+	@commands.is_owner()
+	async def reload(self, ctx, extension = ""):
+		embed = discord.Embed(color=ctx.me.color, description = f"🔃 {extension}")
+		message = await ctx.send(embed=embed)
+		try:
+			self.bot.reload_extension("cogs.{}".format(extension))
+			await asyncio.sleep(0.5)
+			embed = discord.Embed(color=ctx.me.color, description = f"✅ {extension}")
+			await message.edit(embed=embed)
+		except discord.ext.commands.ExtensionNotLoaded:
+			await asyncio.sleep(0.5)
+			embed = discord.Embed(color=ctx.me.color, description = f"❌ Extension not loaded")
+			await message.edit(embed=embed)
+
+		except discord.ext.commands.ExtensionNotFound:
+			await asyncio.sleep(0.5)
+			embed = discord.Embed(color=ctx.me.color, description = f"❌ Extension not found")
+			await message.edit(embed=embed)
+
+		except discord.ext.commands.NoEntryPointError:
+			await asyncio.sleep(0.5)
+			embed = discord.Embed(color=ctx.me.color, description = f"❌ No setup function")
+			await message.edit(embed=embed)
+
+		except discord.ext.commands.ExtensionFailed as e:
+			traceback_string = "".join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))
+			await asyncio.sleep(0.5)
+			embed = discord.Embed(color=ctx.me.color, description = f"❌ Execution error\n```{traceback_string}```")
+			try: await message.edit(embed=embed)
+			except:
+				embed = discord.Embed(color=ctx.me.color, description = f"❌ Execution error ```\n error too long, check the console\n```")
+				await message.edit()
+			raise e
 	'''
 
 	@commands.command(aliases=['help'], description="Halp!!!!")
 	async def h(self, ctx, *, words:str):
-	    r1 = self.bot.get_cog(words.capitalize())
-	    try:
-	        commands = r1.get_commands()
-	    except AttributeError:
-	        commands = list(self.bot.commands)
-	        embed = discord.Embed(colour=discord.Colour.blurple())
-	        for i in commands:
-	            if str(i.name).lower() == words.lower().strip():
-	                embed = discord.Embed(colour=discord.Colour.blurple(), description=i.description)
-	                embed.set_author(name=i.name.capitalize())
-	                if len(i.aliases) == 0:
-	                    embed.add_field(name="Aliases: ", value='None', inline=True)
-	                else:
-	                    embed.add_field(name="Aliases: ", value=', '.join(str(p) for p in i.aliases), inline=True)
-	                embed.add_field(name="Category: ", value=f"`{i.cog_name}`", inline=True)
-	                await ctx.send(embed=embed)
-	                return
-	        embed.title = f"That command or category doesn't exist!"
-	        embed.description = f"Try `{get_prefix(bot, ctx)}help` to get category and commands!"
-	        await ctx.send(embed=embed)
-	        pass
-	    else:
-	        commands = r1.get_commands()
+		r1 = self.bot.get_cog(words.capitalize())
+		try:
+			commands = r1.get_commands()
+		except AttributeError:
+			commands = list(self.bot.commands)
+			embed = discord.Embed(colour=discord.Colour.blurple())
+			for i in commands:
+				if str(i.name).lower() == words.lower().strip():
+					embed = discord.Embed(colour=discord.Colour.blurple(), description=i.description)
+					embed.set_author(name=i.name.capitalize())
+					if len(i.aliases) == 0:
+						embed.add_field(name="Aliases: ", value='None', inline=True)
+					else:
+						embed.add_field(name="Aliases: ", value=', '.join(str(p) for p in i.aliases), inline=True)
+					embed.add_field(name="Category: ", value=f"`{i.cog_name}`", inline=True)
+					await ctx.send(embed=embed)
+					return
+			embed.title = f"That command or category doesn't exist!"
+			embed.description = f"Try `{get_prefix(bot, ctx)}help` to get category and commands!"
+			await ctx.send(embed=embed)
+			pass
+		else:
+			commands = r1.get_commands()
 
-	        embed = discord.Embed(colour=discord.Colour.blurple(), title=f"{words.capitalize()} commands!")
-	        for command in commands:
-	            embed.add_field(name=command.name, value=f"`{command.description}`", inline=False)
-	        await ctx.send(embed=embed)
+			embed = discord.Embed(colour=discord.Colour.blurple(), title=f"{words.capitalize()} commands!")
+			for command in commands:
+				embed.add_field(name=command.name, value=f"`{command.description}`", inline=False)
+			await ctx.send(embed=embed)
 
 	@h.error
 	async def error(self, ctx, error):
-	    if isinstance(error, commands.MissingRequiredArgument):
-	        await help2(self.bot, ctx)
+		if isinstance(error, commands.MissingRequiredArgument):
+			await help2(self.bot, ctx)
 	'''
 
 
 def setup(bot):
 	class HelpEmbed(discord.Embed): # Our embed with some preset attributes to avoid setting it multiple times
-	    def __init__(self, **kwargs):
-	        super().__init__(**kwargs)
-	        self.timestamp = datetime.datetime.utcnow()
-	        text = "Use help [command] or help [category] for more information | <> is required | [] is optional"
-	        self.set_footer(text=text)
-	        self.color = discord.Color.blurple()
+		def __init__(self, **kwargs):
+			super().__init__(**kwargs)
+			self.timestamp = datetime.datetime.utcnow()
+			text = "Use help [command] or help [category] for more information | <> is required | [] is optional"
+			self.set_footer(text=text)
+			self.color = discord.Color.blurple()
 
 
 	class MyHelp(commands.HelpCommand):
-	    def __init__(self):
-	        super().__init__( # create our class with some aliases and cooldown
-	            command_attrs={
-	                "help": "The help command for the bot",
-	                "cooldown": commands.Cooldown(1, 3.0, commands.BucketType.user),
-	                "aliases": ['commands']
-	            }
-	        )
-	    
-	    async def send(self, **kwargs):
-	        """a short cut to sending to get_destination"""
-	        await self.get_destination().send(**kwargs)
+		def __init__(self):
+			super().__init__( # create our class with some aliases and cooldown
+				command_attrs={
+					"help": "The help command for the bot",
+					"cooldown": commands.Cooldown(1, 3.0, commands.BucketType.user),
+					"aliases": ['commands']
+				}
+			)
+		
+		async def send(self, **kwargs):
+			"""a short cut to sending to get_destination"""
+			await self.get_destination().send(**kwargs)
 
-	    async def send_bot_help(self, mapping):
-	        """triggers when a `<prefix>help` is called"""
-	        ctx = self.context
-	        embed = HelpEmbed(title=f"Help")
-	        embed.set_thumbnail(url=ctx.me.avatar_url)
-	        usable = 0 
+		async def send_bot_help(self, mapping):
+			"""triggers when a `<prefix>help` is called"""
+			ctx = self.context
+			embed = HelpEmbed(title=f"Help")
+			embed.set_thumbnail(url=ctx.me.avatar_url)
+			usable = 0 
 
-	        for cog, commands in mapping.items(): #iterating through our mapping of cog: commands
-	            if filtered_commands := await self.filter_commands(commands): 
-	                # if no commands are usable in this category, we don't want to display it
-	                amount_commands = len(filtered_commands)
-	                usable += amount_commands
-	                if cog: # getting attributes dependent on if a cog exists or not
-	                    name = cog.qualified_name
-	                    description = cog.description or "No description"
-	                else:
-	                    name = "No Category"
-	                    description = "Commands with no category"
+			for cog, commands in mapping.items(): #iterating through our mapping of cog: commands
+				if filtered_commands := await self.filter_commands(commands): 
+					# if no commands are usable in this category, we don't want to display it
+					amount_commands = len(filtered_commands)
+					usable += amount_commands
+					if cog: # getting attributes dependent on if a cog exists or not
+						name = cog.qualified_name
+						description = cog.description or "No description"
+					else:
+						name = "No Category"
+						description = "Commands with no category"
 
-	                embed.add_field(name=f"{name} Category [{amount_commands}]", value=description)
+					embed.add_field(name=f"{name} Category [{amount_commands}]", value=description)
 
-	        embed.description = f"{len(bot.commands)} commands | {usable} usable" 
+			embed.description = f"{len(bot.commands)} commands | {usable} usable" 
 
-	        await self.send(embed=embed)
+			await self.send(embed=embed)
 
-	    async def send_command_help(self, command):
-	        """triggers when a `<prefix>help <command>` is called"""
-	        signature = self.get_command_signature(command) # get_command_signature gets the signature of a command in <required> [optional]
-	        embed = HelpEmbed(title=signature, description=command.help or "No help found...")
+		async def send_command_help(self, command):
+			"""triggers when a `<prefix>help <command>` is called"""
+			signature = self.get_command_signature(command) # get_command_signature gets the signature of a command in <required> [optional]
+			embed = HelpEmbed(title=signature, description=command.help or "No help found...")
 
-	        if cog := command.cog:
-	            embed.add_field(name="Category", value=cog.qualified_name)
+			if cog := command.cog:
+				embed.add_field(name="Category", value=cog.qualified_name)
 
-	        can_run = "No"
-	        # command.can_run to test if the cog is usable
-	        with contextlib.suppress(commands.CommandError):
-	            if await command.can_run(self.context):
-	                can_run = "Yes"
-	            
-	        embed.add_field(name="Usable", value=can_run)
+			can_run = "No"
+			# command.can_run to test if the cog is usable
+			with contextlib.suppress(commands.CommandError):
+				if await command.can_run(self.context):
+					can_run = "Yes"
+				
+			embed.add_field(name="Usable", value=can_run)
 
-	        if command._buckets and (cooldown := command._buckets._cooldown): # use of internals to get the cooldown of the command
-	            embed.add_field(
-	                name="Cooldown",
-	                value=f"{cooldown.rate} per {cooldown.per:.0f} seconds",
-	            )
+			if command._buckets and (cooldown := command._buckets._cooldown): # use of internals to get the cooldown of the command
+				embed.add_field(
+					name="Cooldown",
+					value=f"{cooldown.rate} per {cooldown.per:.0f} seconds",
+				)
 
-	        await self.send(embed=embed)
+			await self.send(embed=embed)
 
-	    async def send_help_embed(self, title, description, commands): # a helper function to add commands to an embed
-	        embed = HelpEmbed(title=title, description=description or "No help found...")
+		async def send_help_embed(self, title, description, commands): # a helper function to add commands to an embed
+			embed = HelpEmbed(title=title, description=description or "No help found...")
 
-	        if filtered_commands := await self.filter_commands(commands):
-	            for command in filtered_commands:
-	                embed.add_field(name=self.get_command_signature(command), value=command.help or "No help found...")
-	           
-	        await self.send(embed=embed)
+			if filtered_commands := await self.filter_commands(commands):
+				for command in filtered_commands:
+					embed.add_field(name=self.get_command_signature(command), value=command.help or "No help found...")
+			   
+			await self.send(embed=embed)
 
-	    async def send_group_help(self, group):
-	        """triggers when a `<prefix>help <group>` is called"""
-	        title = self.get_command_signature(group)
-	        await self.send_help_embed(title, group.help, group.commands)
+		async def send_group_help(self, group):
+			"""triggers when a `<prefix>help <group>` is called"""
+			title = self.get_command_signature(group)
+			await self.send_help_embed(title, group.help, group.commands)
 
-	    async def send_cog_help(self, cog):
-	        """triggers when a `<prefix>help <cog>` is called"""
-	        title = cog.qualified_name or "No"
-	        await self.send_help_embed(f'{title} Category', cog.description, cog.get_commands())
+		async def send_cog_help(self, cog):
+			"""triggers when a `<prefix>help <cog>` is called"""
+			title = cog.qualified_name or "No"
+			await self.send_help_embed(f'{title} Category', cog.description, cog.get_commands())
 
-	    async def send_error_message(self, error):
-	        embed = discord.Embed(title="Error", description=error)
-	        channel = self.get_destination()
-	        await channel.send(embed=embed)
+		async def send_error_message(self, error):
+			embed = discord.Embed(title="Error", description=error)
+			channel = self.get_destination()
+			await channel.send(embed=embed)
 	bot.help_command = MyHelp()
 	bot.add_cog(Config(bot))

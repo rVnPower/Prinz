@@ -9,7 +9,7 @@ class Math(commands.Cog, description="Math stuff", name="Math"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="binary", description="Convert everything to binary.")
+    @commands.command(name="binary", help="Convert everything to binary.")
     async def _binary(self, ctx, *, words:str):
         Type = words.split(' ')[0]
         string = words.split(str(Type+' '))
@@ -34,7 +34,7 @@ class Math(commands.Cog, description="Math stuff", name="Math"):
             embed.set_author(name=f'Please provide a type! (Ex: "decode" or "encode")')
             await ctx.send(embed=embed)
 
-    @commands.command(description="Check if an integer is a prime number")
+    @commands.command(help="Check if an integer is a prime number")
     async def prime(self, ctx, n:int):
         m = math.sqrt(abs(n))
         i = 2

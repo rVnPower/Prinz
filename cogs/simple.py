@@ -28,12 +28,12 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         self.bot = bot
         self.t1 = time.time()
 
-    @commands.command(name="hi", description="She will greet you!")
+    @commands.command(name="hi", help="She will greet you!")
     async def _hi(self, ctx):
         # Say hi!
         await ctx.send(f'Hi! {ctx.author.mention}')
 
-    @commands.command(name="ping", description="Checks bot latency.")
+    @commands.command(name="ping", help="Checks bot latency.")
     async def _ping(self, ctx):
         # Checks bot latency
         t2 = time.time()
@@ -48,7 +48,7 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         embed.add_field(name="Runtime: ", value=f"{round(h)} hour{'s' if h > 1 else ''}, {round(m)} minute{'s' if round(m) > 1 else ''}, {round(s)} second{'s' if round(s) > 1 else ''}", inline=True)
         await ctx.send(embed=embed)
 
-    @commands.command(description="Display informations about this bot.")
+    @commands.command(help="Display informations about this bot.")
     async def info(self, ctx):
         # Prints infomation about the admin
         embed = discord.Embed(colour=discord.Colour.blurple(), description="Prinz is a simple Discord bot that was made for informations and anime. I do not want this bot to grow for now, because of Discord bad decisions.")
@@ -58,24 +58,24 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         embed.add_field(name="Support us?", value="Vote for the bot: ")
         await ctx.send(embed=embed)
 
-    @commands.command(description="DM you a message")
+    @commands.command(help="DM you a message")
     async def dm(self, ctx, *, words):
         await ctx.author.send(words)
 
-    @commands.command(description="Get a random textcat", aliases=['kao'])
+    @commands.command(help="Get a random textcat", aliases=['kao'])
     async def textcat(self, ctx):
         loop = asyncio.get_event_loop()
         r = await loop.run_in_executor(None, nekos.textcat)
         await ctx.send(r)
 
-    @commands.command(description="Get a random fact")
+    @commands.command(help="Get a random fact")
     async def fact(self, ctx):
         loop = asyncio.get_event_loop()
         r = await loop.run_in_executor(None, nekos.fact)
         embed = discord.Embed(colour=discord.Colour.blurple(), title='Did you know?', description=r)
         await ctx.send(embed=embed)
 
-    @commands.command(description="Get a random cat")
+    @commands.command(help="Get a random cat")
     async def cat(self, ctx):
         phrase = ['Meow!', 'Grrrr...', 'Nya~']
         loop = asyncio.get_event_loop()
@@ -85,14 +85,14 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         embed.set_footer(text=random.choice(phrase))
         await ctx.send(embed=embed)
 
-    @commands.command(description="Get a random `why?` question")
+    @commands.command(help="Get a random `why?` question")
     async def why(self, ctx):
         loop = asyncio.get_event_loop()
         r = await loop.run_in_executor(None, nekos.why)
         embed = discord.Embed(colour=discord.Colour.blurple(), description=r.capitalize())
         await ctx.send(embed=embed)
 
-    @commands.command(description="Answer your question with a random answer", aliases=['8ball'])
+    @commands.command(help="Answer your question with a random answer", aliases=['8ball'])
     async def eightball(self, ctx, *, words:str):
         print(ctx.author)
         loop = asyncio.get_event_loop()
@@ -103,7 +103,7 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
             embed = discord.Embed(colour=discord.Colour.blurple(), description="That does not look like a question.")
         await ctx.send(embed=embed)
 
-    @commands.command(description="Get a random dog")
+    @commands.command(help="Get a random dog")
     async def dog(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_footer(text="Source: https://dog.ceo/api/breeds/image/random")
@@ -119,7 +119,7 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         embed.set_image(url=r['message'])
         await ctx.send(embed=embed)
 
-    @commands.command(description="Get a random duck")
+    @commands.command(help="Get a random duck")
     async def duck(self, ctx):
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_footer(text="Source: https://random-d.uk/api/random?format=json")
@@ -134,7 +134,7 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         embed.set_image(url=r['url'])
         await ctx.send(embed=embed)
 
-    @commands.command(description="Emojify")
+    @commands.command(help="Emojify")
     async def emojify(self, ctx, *, words:str):
         emojis = []
         for s in words.lower():
@@ -147,8 +147,6 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
             else:
                 emoji.append(s)
         await ctx.send(''.join(emojis))
-
-
 
 
 def setup(bot):

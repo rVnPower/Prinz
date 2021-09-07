@@ -12,6 +12,7 @@ import asyncio
 import re
 import typing
 from discord.ext.commands.cooldowns import BucketType
+from googletrans import Translator
 #####################################################
 
 def decrypt(key, ciphertext):
@@ -55,6 +56,7 @@ async def get_emoji(bot, ctx, emoji_name):
         return emojis[str(emoji_name)]
     except KeyError:
         await ctx.send("Not found!")
+        return None
 
 def encrypt(key, plaintext):
     ''' 
@@ -313,7 +315,8 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
             await ctx.message.delete()
         except:
             pass
-        await ctx.send(r)
+        if r is not None:
+            await ctx.send(r)
 
     @commands.command(aliases=['elist'], help="Get an emoji from bot's emoji database")
     async def emoji_list(self, ctx):
@@ -328,6 +331,28 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
 
         await ctx.send(embed=embed)
 
+    @commands.command(help="Translate texts")
+    async def trans(self, ctx, *args:str):
+        translator = Translator()
+        try:
+            lang, text = args[0], args[1]
+        except IndexError:
+            text = args[0]
+            lang = 'asduhasdasd'
+        try:
+            result = translator.translate(text, dest=lang)
+        except ValueError:
+            text = args[0]
+            result = translator.translate(text)
+            embed = discord.Embed(colour=discord.Colour.blurple(), 
+                title=f"Translated from {result.src} to {result.dest}! (auto detect)",
+                description=result.text)
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple(), 
+            title=f"Translated from {result.src} to {result.dest}!",
+            description=result.text)
+            await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Utlilty(bot))

@@ -140,21 +140,49 @@ class Animensfw(commands.Cog, description="NSFW anime commands", name="Anime NSF
 
     @commands.command(help="Get a bunch of NSFW anime images on HentaiZ")
     async def hentaiz(self, ctx, page:int=random.randint(1, 200)):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://hentaiz.cc/gallery/page/{page}', headers=self.headers) as resp:
-                r = await resp.text()
-                soup = BeautifulSoup(r, 'lxml')
-                for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
-                    await ctx.send(img['data-mdb-img'])
+        if ctx.channel.is_nsfw():
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'https://hentaiz.cc/gallery/page/{page}', headers=self.headers) as resp:
+                    r = await resp.text()
+                    soup = BeautifulSoup(r, 'lxml')
+                    links = []
+                    for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
+                        links.append(img['data-mdb-img'])
+                        if len(links) > 4:
+                            await ctx.send('\n'.join(links))
+                            links.clear()
+                            asyncio.sleep(2)
+                    try:
+                        await ctx.send('\n'.join(links))
+                    except:
+                        pass
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
 
     @commands.command(help="Get a bunch of NSFW furry anime images on HentaiZ")
     async def hz_furry(self, ctx, page:int=random.randint(1, 200)):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://hentaiz.cc/gallery/page/{page}/?channels%5B%5D=622677550065516554', headers=self.headers) as resp:
-                r = await resp.text()
-                soup = BeautifulSoup(r, 'lxml')
-                for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
-                    await ctx.send(img['data-mdb-img'])
+        if ctx.channel.is_nsfw():
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'https://hentaiz.cc/gallery/page/{page}/?channels%5B%5D=622677550065516554', headers=self.headers) as resp:
+                    r = await resp.text()
+                    soup = BeautifulSoup(r, 'lxml')
+                    links = []
+                    for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
+                        links.append(img['data-mdb-img'])
+                        if len(links) > 4:
+                            await ctx.send('\n'.join(links))
+                            links.clear()
+                            asyncio.sleep(2)
+                    try:
+                        await ctx.send('\n'.join(links))
+                    except:
+                        pass
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
 
     @commands.command(help="Get a bunch of NSFW yuri anime images on HentaiZ")
     async def hz_yuri(self, ctx, page:int=random.randint(1, 200)):
@@ -162,17 +190,40 @@ class Animensfw(commands.Cog, description="NSFW anime commands", name="Anime NSF
             async with session.get(f'https://hentaiz.cc/gallery/page/{page}/?channels%5B%5D=616622475773476884', headers=self.headers) as resp:
                 r = await resp.text()
                 soup = BeautifulSoup(r, 'lxml')
+                links = []
                 for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
-                    await ctx.send(img['data-mdb-img'])
+                    links.append(img['data-mdb-img'])
+                    if len(links) > 4:
+                        await ctx.send('\n'.join(links))
+                        links.clear()
+                        asyncio.sleep(2)
+                try:
+                    await ctx.send('\n'.join(links))
+                except:
+                    pass
 
     @commands.command(help="Get a bunch of real life girls images on HentaiZ")
     async def hz_real(self, ctx, page:int=random.randint(1, 200)):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://hentaiz.cc/gallery/page/{page}/?channels%5B%5D=781870041862897684', headers=self.headers) as resp:
-                r = await resp.text()
-                soup = BeautifulSoup(r, 'lxml')
-                for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
-                    await ctx.send(img['data-mdb-img'])
+        if ctx.channel.is_nsfw():
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'https://hentaiz.cc/gallery/page/{page}/?channels%5B%5D=781870041862897684', headers=self.headers) as resp:
+                    r = await resp.text()
+                    soup = BeautifulSoup(r, 'lxml')
+                    links = []
+                    for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
+                        links.append(img['data-mdb-img'])
+                        if len(links) > 4:
+                            await ctx.send('\n'.join(links))
+                            links.clear()
+                            asyncio.sleep(2)
+                    try:
+                        await ctx.send('\n'.join(links))
+                    except:
+                        pass
+        else:
+            embed = discord.Embed(colour=discord.Colour.blurple())
+            embed.set_author(name='You can only use this command in a NSFW channel!')
+            await ctx.send(embed=embed)
 
     @commands.command(aliases=['rD'], description="Get a random doujin on NHentai")
     async def random_doujin(self, ctx):

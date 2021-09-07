@@ -61,8 +61,18 @@ class Anime(commands.Cog, description="General anime commands", name="Anime"):
             async with session.get(f'https://hentaiz.cc/gallery/page/{page}/?channels%5B0%5D=616622316356501515', headers=self.headers) as resp:
                 r = await resp.text()
                 soup = BeautifulSoup(r, 'lxml')
+                links = []
                 for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
-                    await ctx.send(img['data-mdb-img'])
+                    links.append(img['data-mdb-img'])
+                    if len(links) > 4:
+                        await ctx.send('\n'.join(links))
+                        links.clear()
+                        asyncio.sleep(2)
+                try:
+                    await ctx.send('\n'.join(links))
+                except:
+                    pass
+
 
     @commands.command(help="Kiss an user")
     async def kiss(self, ctx, member:discord.Member):
