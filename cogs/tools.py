@@ -331,7 +331,7 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
 
         await ctx.send(embed=embed)
 
-    @commands.command(help="Translate texts")
+    @commands.command(help="Translate texts", aliases=['translate'])
     async def trans(self, ctx, *args:str):
         translator = Translator()
         try:
