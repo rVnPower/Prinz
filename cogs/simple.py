@@ -9,6 +9,7 @@ import random
 import json
 import string
 from core.chat_formatting import bold, italics
+from core.mem_profile import memory_usage_resource
 #####################################################
 async def get_prefix(bot, message):
     with open('data/prefixes.json', 'r') as f:
@@ -46,6 +47,7 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'Pong! {p}ms!')
         embed.add_field(name="Runtime: ", value=f"{round(h)} hour{'s' if h > 1 else ''}, {round(m)} minute{'s' if round(m) > 1 else ''}, {round(s)} second{'s' if round(s) > 1 else ''}", inline=True)
+        embed.add_field(name="Memory used: ", value=f"{memory_usage_resource()} MB")
         await ctx.send(embed=embed)
 
     @commands.command(help="Display informations about this bot.")
