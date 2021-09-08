@@ -38,7 +38,20 @@ class Anime(commands.Cog, description="General anime commands", name="Anime"):
         r = await loop.run_in_executor(None, animec.waifu.Waifu.waifu)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_image(url=r)
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await msg.add_reaction('🔄')
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for("reaction_add", check=lambda reaction , user: user==ctx.author and reaction.emoji == '🔄', timeout=30.0)
+            except asyncio.TimeoutError:
+                return
+            else:
+                if reaction.emoji == '🔄':
+                    embed = discord.Embed(colour=discord.Colour.blurple())
+                    r = await loop.run_in_executor(None, animec.waifu.Waifu.waifu)
+                    embed.set_image(url=r)
+                    await msg.edit(embed=embed)
+                    await msg.remove_reaction('🔄', ctx.author)
 
     @commands.command(help="Send a random catgirl pic")
     async def neko(self, ctx):

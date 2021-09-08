@@ -253,7 +253,7 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
             custom_emoji = re.compile(r"<a?:[a-zA-Z0-9_]+:[0-9]+>")
             emojis = custom_emoji.findall(ctx.message.reference.resolved.content)
             if not emojis:
-                raise errors.NoEmojisFound
+                pass
             try:
                 server_emoji = await commands.PartialEmojiConverter().convert(ctx, emojis[index - 1])
             except IndexError:
@@ -261,8 +261,7 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
                                       f"\nIndex must be lower or equal to {len(emojis)}")
 
         if not server_emoji:
-            raise commands.MissingRequiredArgument(
-                Parameter(name='server_emoji', kind=Parameter.POSITIONAL_ONLY))
+            pass
 
         file = await server_emoji.read()
         guild = ctx.guild
