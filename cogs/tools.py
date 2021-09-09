@@ -331,18 +331,12 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
         await ctx.send(embed=embed)
 
     @commands.command(help="Translate texts", aliases=['translate'])
-    async def trans(self, ctx, *args:str):
+    async def trans(self, ctx, *, lang:str='en', src:str, text:str):
         translator = Translator()
         try:
-            lang, text = args[0], args[1]
-        except IndexError:
-            text = args[0]
-            lang = 'asduhasdasd'
-        try:
-            result = translator.translate(text, dest=lang)
+            result = translator.translate(text, dest=lang, src=src)
         except ValueError:
-            text = args[0]
-            result = translator.translate(text)
+            result = translator.translate(text, src=src)
             embed = discord.Embed(colour=discord.Colour.blurple(), 
                 title=f"Translated from {result.src} to {result.dest}! (auto detect)",
                 description=result.text)
