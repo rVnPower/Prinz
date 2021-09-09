@@ -46,8 +46,8 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         p = round(self.bot.latency * 1000)
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=f'Pong! {p}ms!')
-        embed.add_field(name="Runtime: ", value=f"{round(h)} hour{'s' if h > 1 else ''}, {round(m)} minute{'s' if round(m) > 1 else ''}, {round(s)} second{'s' if round(s) > 1 else ''}", inline=True)
-        embed.add_field(name="Memory used: ", value=f"{memory_usage_resource()} MB")
+        embed.add_field(name="Runtime: ", value=f"{round(h)} hour{'s' if h > 1 else ''}, {round(m)} minute{'s' if round(m) > 1 else ''}, {round(s)} second{'s' if round(s) > 1 else ''}", inline=False)
+        embed.add_field(name="Memory used: ", value=f"{memory_usage_resource()} MB", inline=True)
         await ctx.send(embed=embed)
 
     @commands.command(help="Display informations about this bot.")
