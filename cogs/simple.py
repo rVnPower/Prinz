@@ -136,7 +136,7 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
         embed.set_image(url=r['url'])
         await ctx.send(embed=embed)
 
-    @commands.command(help="Emojify")
+    @commands.command(help="Emojify a string")
     async def emojify(self, ctx, *, words:str):
         emojis = []
         for s in words.lower():
@@ -149,6 +149,18 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
             else:
                 emoji.append(s)
         await ctx.send(''.join(emojis))
+
+    @commands.command(help="Tell you a joke", aliases=['joke', 'jk'])
+    async def tellmeajoke(self, ctx):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://yourmommmaosamaobama.hisroyal123.repl.co/?message=tell%me%a%joke') as resp:
+                if int(resp.status) != 200:
+                    embed.set_author(name="The server does not respond... Maybe try again later.")
+                    await ctx.send(embed=embed)
+                    return
+                r = await resp.text()
+        embed.description = r
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

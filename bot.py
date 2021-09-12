@@ -45,7 +45,7 @@ trainList = []
 for row in greetingsAndQuestion:
     trainList.append(row['question'])
     trainList.append(row['answer'])
-chatbot = ChatBot('Miharu hay la cai gi do', logic_adapters=[
+chatbot = ChatBot('Prinz', logic_adapters=[
                         {
             'import_path': 'chatterbot.logic.BestMatch',
             'default_response': 'I don\'t understand.',
@@ -146,4 +146,5 @@ for filename in os.listdir('./cogs'):
 
 keep_alive()
 load_dotenv()
-bot.run(os.getenv("TOKEN"))
+# bot.run(os.getenv("TOKEN"))
+bot.run("ODg2NDQxMTAyNDEwOTE1ODQw.YT1onA.T2vi9V-YigHzRUlqAmQlw-fi__c")

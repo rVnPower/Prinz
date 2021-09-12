@@ -3,7 +3,6 @@ import psutil
 import resource
 import sys
 
-
 def memory_usage_psutil():
     # return the memory usage in MB
     process = psutil.Process(os.getpid())
