@@ -147,4 +147,4 @@ for filename in os.listdir('./cogs'):
 keep_alive()
 load_dotenv()
 # bot.run(os.getenv("TOKEN"))
-bot.run("ODg2NDQxMTAyNDEwOTE1ODQw.YT1onA.T2vi9V-YigHzRUlqAmQlw-fi__c")
+bot.run("ODg2NDQxMTAyNDEwOTE1ODQw.YT1onA.jHYayzHqWFImoO38oeLo0csK9U8")

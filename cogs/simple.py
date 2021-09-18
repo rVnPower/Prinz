@@ -152,16 +152,17 @@ class Simple(commands.Cog, description="Funny, simple and useless commands", nam
 
     @commands.command(help="Tell you a joke", aliases=['joke', 'jk'])
     async def tellmeajoke(self, ctx):
+        embed = discord.Embed(color=discord.Color.blurple())
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://yourmommmaosamaobama.hisroyal123.repl.co/?message=tell%me%a%joke') as resp:
                 if int(resp.status) != 200:
+                    
                     embed.set_author(name="The server does not respond... Maybe try again later.")
                     await ctx.send(embed=embed)
                     return
-                r = await resp.text()
-        embed.description = r
+                r = await resp.json()
+        embed.description = r['message']
         await ctx.send(embed=embed)
 
-
 def setup(bot):
-	bot.add_cog(Simple(bot))
+    bot.add_cog(Simple(bot))
