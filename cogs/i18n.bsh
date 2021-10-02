@@ -1,0 +1,4 @@
+xgettext -i owner.py -o test.pot -d owner
+msginit -i owner.pot -o locale/vi/LC_MESSAGES/owner.po -l vi
+cd locale/vi/LC_MESSAGES/
+msgfmt owner.po -o owner.mo
