@@ -49,7 +49,7 @@ async def get_prefix(bot, message):
         return prefixes[str(message.guild.id)]
 
 async def get_emoji(bot, ctx, emoji_name):
-    with open('data/emoji_database.json', 'r') as f:
+    with open('others/emoji_database.json', 'r') as f:
         emojis = json.load(f)
     print(emoji_name)
     try:
@@ -242,80 +242,39 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
     async def feedback(self, ctx, *, words:str):
         owner = self.bot.owner
         await owner.send(f"{ctx.author} sent a feedback: {words}")
-        await ctx.send("Your feedback has been recorded!")
-
-    @commands.has_permissions(manage_emojis=True)
-    @commands.bot_has_permissions(manage_emojis=True)
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Clone an emoji")
-    async def emoji_clone(self, ctx: commands.Context,
-                          server_emoji: typing.Optional[typing.Union[discord.Embed,
-                                                                     discord.PartialEmoji]],
-                          index: int = 1):
-        """
-        Clones an emoji into the current server.
-        # To steal an emoji from someone else, quote their message to grab the emojis from there.
-        # If the quoted message has multiple emojis, input an index number to specify the emoji, for example, doing "%PRE%emoji 5" will steal the 5th emoji from the message.
-        None: Index is only for when stealing emojis from other people.
-        """
-        if ctx.message.reference:
-            custom_emoji = re.compile(r"<a?:[a-zA-Z0-9_]+:[0-9]+>")
-            emojis = custom_emoji.findall(ctx.message.reference.resolved.content)
-            if not emojis:
-                pass
-            try:
-                server_emoji = await commands.PartialEmojiConverter().convert(ctx, emojis[index - 1])
-            except IndexError:
-                return await ctx.send(f"Emoji out of index {index}/{len(emojis)}!"
-                                      f"\nIndex must be lower or equal to {len(emojis)}")
-
-        if not server_emoji:
-            pass
-
-        file = await server_emoji.read()
-        guild = ctx.guild
-        server_emoji = await guild.create_custom_emoji(name=server_emoji.name, image=file,
-                                                       reason=f"Cloned emoji, requested by {ctx.author}")
-        await ctx.send(f"Done! cloned {server_emoji}")
+        await ctx.send("Your feedback has been sent!")
 
     @commands.command(aliases=['elog'])
     @commands.cooldown(1, 2, commands.BucketType.user)
+    @commands.is_owner()
     async def emoji_log(self, ctx, *words:str):
-        if str(ctx.author) == 'VnPower#8888':
-            with open('data/emoji_database.json', 'r') as f:
-                emojis = json.load(f)
-            a = words[0]
-            b = words[1]
-            emojis[str(a)] = b
-            with open('data/emoji_database.json', 'w') as f:
-                json.dump(emojis, f, indent=4)
-            embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Added!")
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='You don\'t have permissions to do that! This is a special command!')
-            await ctx.send(embed=embed)
+        with open('others/emoji_database.json', 'r') as f:
+            emojis = json.load(f)
+        a = words[0]
+        b = words[1]
+        emojis[str(a)] = b
+        with open('others/emoji_database.json', 'w') as f:
+            json.dump(emojis, f, indent=4)
+        embed = discord.Embed(colour=discord.Colour.blurple(), description=f"Added!")
+        await ctx.send(embed=embed)
         
 
     @commands.command(aliases=['edel'])
     @commands.cooldown(1, 2, commands.BucketType.user)
+    @commands.is_owner()
     async def emoji_del(self, ctx, *, words:str):
-        if str(ctx.author) == 'VnPower#8888':
-            with open('data/emoji_database.json', 'r') as f:
-                emojis = json.load(f)
+        with open('others/emoji_database.json', 'r') as f:
+            emojis = json.load(f)
 
-            try:
-                emojis.pop(words)
-            except KeyError:
-                await ctx.send(embed=discord.Embed(colour=discord.Colour.blurple(), description=f"That emoji does not exist!"))
+        try:
+            emojis.pop(words)
+        except KeyError:
+            await ctx.send(embed=discord.Embed(colour=discord.Colour.blurple(), description=f"That emoji does not exist!"))
 
-            with open('data/emoji_database.json', 'w') as f:
-                json.dump(emojis, f, indent=4)
-            await ctx.send(embed=discord.Embed(colour=discord.Colour.blurple(), description=f"Deleted!"))
-        else:
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name='You don\'t have permissions to do that! This is a special command!')
-            await ctx.send(embed=embed)
+        with open('others/emoji_database.json', 'w') as f:
+            json.dump(emojis, f, indent=4)
+        await ctx.send(embed=discord.Embed(colour=discord.Colour.blurple(), description=f"Deleted!"))
+
         
 
     @commands.command(aliases=['e'], help="Get an emoji from bot's emoji database")
@@ -332,7 +291,7 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
     @commands.command(aliases=['elist'], help="Get an emoji from bot's emoji database")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def emoji_list(self, ctx):
-        with open('data/emoji_database.json', 'r') as f:
+        with open('others/emoji_database.json', 'r') as f:
             emojis = json.load(f)
 
         names =list(emojis.keys())

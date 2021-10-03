@@ -48,6 +48,7 @@ EXTENSIONS = [
     'cogs.NSFW',
     'cogs.owner',
     'cogs.utility',
+    'cogs.images',
     'cogs.events.errors',
     'cogs.events.events',
 ]

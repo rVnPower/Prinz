@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix=BOT_PREFIX if not TEST_MODE else TEST_BOT_PREF
             case_insensitive=True,
             # case_insensitive_prefix=True,
             activity=discord.Activity(type=discord.ActivityType.competing, name='a boot up challenge'),
-            owner_id=881015410110124032,
+            owner_id=683670893515636749,
             reconnect=True,
             max_messages=10000,
             chunk_guilds_at_startup=False,  # this is here for easy access. In case I need to switch it fast to False I won't need to look at docs.
