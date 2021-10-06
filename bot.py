@@ -4,6 +4,7 @@ from discord.ext import commands, tasks
 import aiohttp
 import os
 import asyncio
+import psutil
 # from chatterbot import ChatBot
 # from chatterbot.trainers import ListTrainer
 from utils.help import PrinzHelp
@@ -20,7 +21,11 @@ bot = commands.Bot(command_prefix=BOT_PREFIX if not TEST_MODE else TEST_BOT_PREF
             reconnect=True,
             max_messages=10000,
             chunk_guilds_at_startup=False,  # this is here for easy access. In case I need to switch it fast to False I won't need to look at docs.
-            help_command=PrinzHelp())
+            help_command=PrinzHelp(),
+            strip_after_prefix=True,
+)
+bot.session = aiohttp.ClientSession()
+bot.process = psutil.Process()
 
 for cog in EXTENSIONS:
     bot.load_extension(cog)

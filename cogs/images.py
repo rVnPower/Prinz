@@ -7,7 +7,7 @@ from epicbot_images import effects
 
 from config import EMOJIS
 
-class Images(commands.Cog, description="Things with images", name="Utlilty"):
+class Images(commands.Cog, description="Things with images", name="Images"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -22,7 +22,7 @@ class Images(commands.Cog, description="Things with images", name="Utlilty"):
         avatar_bytes = await user.display_avatar.replace(format='png', size=256).read()
         async with ctx.channel.typing():
             await ctx.reply(
-                file=discord.File(await self.client.loop.run_in_executor(None, functools.partial(effects.blur, avatar_bytes, intensity)))
+                file=discord.File(await self.bot.loop.run_in_executor(None, functools.partial(effects.blur, avatar_bytes, intensity)))
             )
 
 

@@ -6,7 +6,7 @@ import asyncio
 import traceback
 from discord.ext.commands.cooldowns import BucketType
 
-from config import BOT_PREFIX
+from config import BOT_PREFIX, EXTENSIONS
 from utils.embed import error_embed, normal_embed
 
 import gettext
@@ -53,9 +53,8 @@ class Config(commands.Cog, description="For admin", name="Config"):
 		to_send = ""
 		err = False
 		first_reload_failed_extensions = []
-		for filename in os.listdir("./cogs"):
-			if filename.endswith(".py"):
-				cogs_list = f"{cogs_list} \n🔃 {filename[:-3]}"
+		for filename in EXTENSIONS:
+			cogs_list = f"{cogs_list} \n🔃 {filename}"
 
 		if argument == 'silent' or argument == 's':
 			silent = True
@@ -69,30 +68,29 @@ class Config(commands.Cog, description="For admin", name="Config"):
 		embed = discord.Embed(color=ctx.me.color, description=cogs_list)
 		message = await ctx.send(embed=embed)
 
-		for filename in os.listdir("./cogs"):
-			if filename.endswith(".py"):
-				try:
-					self.bot.reload_extension("cogs.{}".format(filename[:-3]))
-					to_send = f"{to_send} \n✅ {filename[:-3]}"
-				except commands.NoEntryPointError:
-					first_reload_failed_extensions.append(filename)
+		for filename in EXTENSIONS:
+			try:
+				self.bot.reload_extension(filename)
+				to_send = f"{to_send} \n✅ {filename}"
+			except commands.NoEntryPointError:
+				first_reload_failed_extensions.append(filename)
 
 		for filename in first_reload_failed_extensions:
 			try:
-				self.bot.reload_extension("cogs.{}".format(filename[:-3]))
-				to_send = f"{to_send} \n✅ {filename[:-3]}"
+				self.bot.reload_extension(filename)
+				to_send = f"{to_send} \n✅ {filename}"
 
 			except discord.ext.commands.ExtensionNotLoaded:
-				to_send = f"{to_send} \n❌ {filename[:-3]} - Not loaded"
+				to_send = f"{to_send} \n❌ {filename} - Not loaded"
 			except discord.ext.commands.ExtensionNotFound:
-				to_send = f"{to_send} \n❌ {filename[:-3]} - Not found"
+				to_send = f"{to_send} \n❌ {filename} - Not found"
 			except discord.ext.commands.NoEntryPointError:
-				to_send = f"{to_send} \n❌ {filename[:-3]} - No setup func"
+				to_send = f"{to_send} \n❌ {filename} - No setup func"
 			except discord.ext.commands.ExtensionFailed as e:
 				traceback_string = "".join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))
-				to_send = f"{to_send} \n❌ {filename[:-3]} - Execution error"
+				to_send = f"{to_send} \n❌ {filename} - Execution error"
 				embed_error = discord.Embed(color=ctx.me.color,
-											description=f"\n❌ {filename[:-3]} Execution error - Traceback"
+											description=f"\n❌ {filename} Execution error - Traceback"
 														f"\n```\n{traceback_string}\n```")
 				err = True
 				await ctx.author.send(embed=embed_error)

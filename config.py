@@ -30,6 +30,7 @@ STARBOARD_COLOR = 15655584
 # LINK
 EMOJIS = {
     "tick_no": "❌",
+    "tick_yes": "✔️",
     "loading": "<a:typing:883912551367327824>",
     'nsfw': '🔞',
     'flushed': "<:HyperFlushed:661729636513742853>",
@@ -45,6 +46,7 @@ EXTENSIONS = [
     'cogs.info',
     'cogs.mod',
     'cogs.music',
+    # 'cogs.musictest2',
     'cogs.NSFW',
     'cogs.owner',
     'cogs.utility',

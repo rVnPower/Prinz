@@ -5,7 +5,7 @@ import random
 import asyncio
 import time
 from others.songs import easy
-from games import twenty, tictactoe, minesweeper
+from games import twenty, tictactoe, minesweeper, wumpus
 from discord.ext.commands.cooldowns import BucketType
 #####################################################
 
@@ -13,8 +13,13 @@ class Games(commands.Cog, description="Games you can play", name="Game"):
 	def __init__(self, bot):
 		self.bot = bot
 
+	@commands.command(help="Play Wumpus")
+	@commands.cooldown(1, 10, commands.BucketType.user)
+	async def _wumpus(self, ctx):
+		await wumpus.play(self.bot, ctx)
+
 	@commands.command(help="Play a guessing game (Guess a number from 1 to 1000)")
-	@commands.cooldown(1, 2, commands.BucketType.user)
+	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def guess(self, ctx):
 		# Simple guessing game
 		embed = discord.Embed(colour=discord.Colour.blurple(), title="Guess a number between 1 and 1000.")
@@ -97,6 +102,9 @@ class Games(commands.Cog, description="Games you can play", name="Game"):
 				break
 			else:
 				pass
+
+	
+
 
 
 def setup(bot):

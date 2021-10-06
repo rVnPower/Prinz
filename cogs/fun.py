@@ -9,6 +9,7 @@ import random
 import json
 from dadjokes import Dadjoke
 from typing import Optional
+import psutil
 
 from discord.ext.commands.cooldowns import BucketType
 from others.mem_profile import memory_usage_resource
@@ -30,18 +31,18 @@ async def get_prefix(bot, message):
             json.dump(prefixes, file, indent=4)
         return prefixes[str(message.guild.id)]
 
-class Fun(commands.Cog, description="Funny, simple and useless commands", name="Simple"):
+class Fun(commands.Cog, description="idk", name="Fun"):
     def __init__(self, bot):
         self.bot = bot
         self.t1 = time.time()
 
-    @commands.command(name="hi", help="She will greet you!")
+    @commands.command(name="hi", help="I will greet you!")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def _hi(self, ctx):
         # Say hi!
         await ctx.send(f'Hi! {ctx.author.mention}')
 
-    @commands.command(name="ping", help="Checks bot latency.")
+    @commands.command(name="ping", help="Checks my latency.")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def _ping(self, ctx):
         # Checks bot latency
@@ -53,6 +54,19 @@ class Fun(commands.Cog, description="Funny, simple and useless commands", name="
         s = s % 60
         p = round(self.bot.latency * 1000)
         embed = discord.Embed(colour=discord.Colour.blurple())
+        embed.description = ("""**System CPU:**\n- Frequency: {0} Mhz\n- Cores: {1}\n- Usage: {2}%\n\n
+                        **System Memory:**\n- Available: {3} MB\n- Total: {4} MB\n- Used: {5} MB\n\n
+                        **System Disk:**\n- Total: {6} GB\n- Used: {7} GB\n- Free: {8} GB\n\n
+                        **Process Info:**\n- Memory Usage: {9} MB\n- CPU Usage: {10}%\n- Threads: {11}""").format(round(psutil.cpu_freq().current, 2),
+                                                                                                                psutil.cpu_count(), psutil.cpu_percent(),
+                                                                                                                round(psutil.virtual_memory().available / 1048576),
+                                                                                                                round(psutil.virtual_memory().total / 1048576),
+                                                                                                                round(psutil.virtual_memory().used / 1048576),
+                                                                                                                round(psutil.disk_usage("/").total / 1073741824, 2),
+                                                                                                                round(psutil.disk_usage("/").used / 1073741824, 2),
+                                                                                                                round(psutil.disk_usage("/").free / 1073741824, 2),
+                                                                                                                round(self.bot.process.memory_full_info().rss / 1048576, 2),
+                                                                                                                self.bot.process.cpu_percent(), self.bot.process.num_threads())
         embed.set_author(name=f'Pong! {p}ms!')
         embed.add_field(name="Runtime: ", value=f"{round(h)} hour{'s' if h > 1 else ''}, {round(m)} minute{'s' if round(m) > 1 else ''}, {round(s)} second{'s' if round(s) > 1 else ''}", inline=False)
         embed.add_field(name="Memory used: ", value=f"{memory_usage_resource()} MB", inline=True)
@@ -68,11 +82,6 @@ class Fun(commands.Cog, description="Funny, simple and useless commands", name="
     #     embed.add_field(name=f"{await get_prefix(self.bot, ctx)}invite: ", value="DM you an invite link", inline=True)
     #     embed.add_field(name="Support us?", value="Vote for the bot: ")
     #     await ctx.send(embed=embed)
-
-    @commands.command(help="DM you a message")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def dm(self, ctx, *, words):
-        await ctx.author.send(words)
 
     @commands.command(help="Get a random textcat", aliases=['kao', 'kaoemoji'])
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -161,7 +170,7 @@ class Fun(commands.Cog, description="Funny, simple and useless commands", name="
         embed.description = result['message']
         await ctx.send(embed=embed)
 
-    @commands.command(help="Flip a coin... or a user.")
+    @commands.command(help="Flip a coin... or a user. (Thanks to RedBot)")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def flip(self, ctx, user: discord.Member = None):
         """Flip a coin... or a user.

@@ -114,14 +114,6 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
         r = await loop.run_in_executor(None, nekos.owoify, words)
         await ctx.send(r)
 
-    @commands.command(aliases=['av'], help="Show your avatar")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def avatar(self, ctx):
-        embed = discord.Embed(colour=discord.Colour.blurple(), title="Avatar")
-        embed.set_author(name=ctx.author)
-        embed.set_image(url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-
     @commands.command(help="Create a simple poll")
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def poll(self, ctx, time:str = '30m', *, topic:str):
@@ -134,7 +126,7 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
         s = s % 60
 
         embed.add_field(name="Duration: ", value=f"{h} hour{'s' if h > 1 else ''}, {m} minute{'s' if m > 1 else ''}, {s} second{'s' if s > 1 else ''}")
-        embed.set_footer(text= f"Poll created at {ctx.message.created_at}", icon_url=ctx.author.avatar_url)
+        embed.set_footer(text= f"Poll created at {ctx.message.created_at}", icon_url=ctx.author.display_avatar.url)
         msg = await ctx.send(embed=embed)
         try:
             await ctx.message.delete()

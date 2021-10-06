@@ -4,6 +4,12 @@ import json
 async def get_requests_as_json(url, headers=None):
 	async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as resp:
+                r = await resp.json()
+                return r
+
+async def get_requests_as_json_ct(url, headers=None):
+	async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as resp:
                 r = await resp.json(content_type=None)
                 return r
 

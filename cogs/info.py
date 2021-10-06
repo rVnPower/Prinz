@@ -1,5 +1,6 @@
 #####################################################
 import discord
+from discord.utils import escape_markdown
 from discord.ext import commands, tasks
 import random
 import wikipedia
@@ -10,12 +11,20 @@ import wolframalpha
 from pyowm import OWM
 from pyowm.utils import config, timestamps
 import requests
-from chessdotcom import get_player_stats, get_leaderboards
+import datetime
+import time
+import codecs
+import pathlib
 
 import os
 from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource, errors
+from typing import List, Optional, Union
 
 from discord.ext.commands.cooldowns import BucketType
+
+from utils.embed import error_embed
+from utils.time import datetime_to_seconds
+from config import ORANGE_COLOR, MAIN_COLOR, EMOJIS
 #####################################################
 async def sauce_ctx(ctx, words):
     sauce = SauceNao(api_key='18007b616a0808aa80ae9e17e3a8d110e53b081c')
@@ -51,39 +60,6 @@ async def sauce_ctx(ctx, words):
 class Information(commands.Cog, description="Informative commands", name='Information'):
     def __init__(self, bot):
         self.bot = bot
-        self.data = get_leaderboards().json
-
-    @commands.command(aliases=['whois'], help='Check an user infomation.')
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def wis(self, ctx, member: discord.Member):
-        roles = [role for role in member.roles]
-        embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
-        embed.set_author(name=f"Infomation of {member}")
-        embed.set_thumbnail(url=member.avatar_url)
-        embed.add_field(name='ID:' ,value=member)
-        embed.add_field(name='Nickname: ',value=member.display_name)
-        embed.add_field(name= 'Joined on: ', value= member.created_at.strftime("%a, %#d %B %Y, %I:%M %p"))
-        embed.add_field(name= 'Joined server on: ', value= member.joined_at.strftime("%a, %#d %B %Y, %I:%M %p"))
-        embed.add_field(name= f"Roles: ({len(roles)})", value=" ".join([role.mention for role in roles]))
-        embed.add_field(name= "Highest role: ",value=member.top_role.mention)
-        await ctx.send(embed=embed)
-
-    @commands.command(help="Check your Discord account details", aliases=['whoisme'])
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def whoami(self, ctx):
-        roles = [role for role in ctx.author.roles]
-        embed = discord.Embed(colour=ctx.author.color, timestamp=ctx.message.created_at)
-        embed.set_author(name=f"Infomation of {ctx.author}")
-        embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.add_field(name='ID:' ,value=ctx.author)
-        embed.add_field(name='Nickname: ',value=ctx.author.display_name)
-        embed.add_field(name= 'Joined on: ', value= ctx.author.created_at.strftime("%a, %#d %B %Y, %I:%M %p"))
-        embed.add_field(name= 'Joined server on: ', value= ctx.author.joined_at.strftime("%a, %#d %B %Y, %I:%M %p"))
-        embed.add_field(name= f"Roles: ({len(roles)})", value=" ".join([role.mention for role in roles]))
-        embed.add_field(name= "Highest role: ",value=ctx.author.top_role.mention)
-        embed.add_field(name="Vanity URL: ", value=ctx.guild.vanity_url_code)
-        await ctx.send(embed=embed)
-
 
     @commands.command(name="weather", help="Checks weather in a location.")
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -186,45 +162,86 @@ class Information(commands.Cog, description="Informative commands", name='Inform
             embed = discord.Embed(colour=discord.Colour.blurple(), title="Nothing found...")
             await ctx.send(embed=embed)
 
-    @commands.command(name="covid", help="Get COVID-19 infomation from a territory, region or country.")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def _covid(self, ctx, *, words:str):
-        # Prints COVID-19 infomation in a country
-        async with aiohttp.ClientSession() as session:
-            async with session.get('https://api.covid19api.com/summary') as resp:
-                covi = await resp.json()
-        newConfirmed = 0
-        totalConfirmed= 0
-        newDeaths = 0
-        totalDeaths= 0
-        newRecovered = 0
-        totalRecovered= 0
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    @commands.command(help="Get COVID-19 stats about any country.")
+    async def covid(self, ctx, *, country=None):
+        PREFIX = ctx.clean_prefix
+        if country is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.message.reply(embed=error_embed("Invalid Usage!", f"Please use it like this: `{PREFIX}covid <country>`"))
+
         try:
-            print(covi['Countries'])
-        except KeyError:
-            embed = discord.Embed(colour=discord.Colour.blurple())
-            embed.set_author(name="Service is temporarily unavailable at this time.")
-            await ctx.send(embed=embed)
-            return
-        for i in covi['Countries']:
-            if str(i['Country'].lower()) == str(words.lower()) or str(i['CountryCode'].lower()) == str(words.lower()):
-                newConfirmed = i['NewConfirmed']
-                totalConfirmed= i['TotalConfirmed']
-                newDeaths = i['NewDeaths']
-                totalDeaths= i['TotalDeaths']
-                newRecovered = i['NewRecovered']
-                totalRecovered= i['TotalRecovered']
-                embed = discord.Embed(colour=discord.Colour.blurple())
-                embed.set_author(name=f"Covid-19 stats in {i['Country']}({i['CountryCode']})!")
-                embed.add_field(name="New comfirmed:", value=newConfirmed)
-                embed.add_field(name="Total comfirmed:", value=totalConfirmed)
-                embed.add_field(name="New deaths:", value=newDeaths)
-                embed.add_field(name="Total deaths:", value=totalDeaths)
-                embed.add_field(name="New recovered:", value=newRecovered)
-                embed.add_field(name="Total recovered:", value=totalRecovered)
-                embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/239446877953720321/691020838379716698/unknown.png')
-                await ctx.send(embed=embed)
-                break
+            async with self.bot.session.get(f"https://coronavirus-19-api.herokuapp.com/countries/{country.lower()}") as r:
+                response = await r.json()
+        except Exception:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.message.reply(embed=error_embed("Error!", f"Couldn't find COVID-19 stats about `{country}`."))
+
+        country = response['country']
+        total_cases = response['cases']
+        today_cases = response['todayCases']
+        total_deaths = response['deaths']
+        today_deaths = response['todayDeaths']
+        recovered = response['recovered']
+        active_cases = response['active']
+        critical_cases = response['critical']
+        total_tests = response['totalTests']
+        cases_per_one_million = response['casesPerOneMillion']
+        deaths_per_one_million = response['deathsPerOneMillion']
+        tests_per_one_million = response['testsPerOneMillion']
+
+        embed = discord.Embed(
+            title=f"COVID-19 Status of {country}",
+            description="This information isn't always live, so it may not be accurate.",
+            color=ORANGE_COLOR
+        )
+        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/564520348821749766/701422183217365052/2Q.png")
+
+        embed.add_field(
+            name="Total",
+            value=f"""
+```yaml
+Total Cases: {total_cases}
+Total Deaths: {total_deaths}
+Total Tests: {total_tests}
+```
+            """,
+            inline=False
+        )
+        embed.add_field(
+            name="Today",
+            value=f"""
+```yaml
+Today Cases: {today_cases}
+Today Deaths: {today_deaths}
+```
+            """,
+            inline=False
+        )
+        embed.add_field(
+            name="Other",
+            value=f"""
+```yaml
+Recovered: {recovered}
+Active Cases: {active_cases}
+Critical Cases: {critical_cases}
+```
+            """,
+            inline=False
+        )
+        embed.add_field(
+            name="Per One Million",
+            value=f"""
+```yaml
+Cases Per One Million: {cases_per_one_million}
+Deaths Per One Million: {deaths_per_one_million}
+Tests Per One Million: {tests_per_one_million}
+```
+            """,
+            inline=False
+        )
+
+        await ctx.message.reply(embed=embed)
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 2, commands.BucketType.user)
@@ -243,28 +260,6 @@ class Information(commands.Cog, description="Informative commands", name='Inform
         output = next(result.results).text
         embed = discord.Embed(colour=discord.Colour.blurple())
         embed.set_author(name=output)
-        await ctx.send(embed=embed)
-
-    @commands.command(name="server", help="Gets this server infomation.")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def _server(self, ctx):
-        embed = discord.Embed(colour=discord.Colour.blurple(), timestamp=ctx.message.created_at)
-        role_count = len(ctx.guild.roles)
-        list_of_bots = [bot.mention for bot in ctx.guild.members if bot.bot]
-
-        embed.add_field(name='Name:', value=f"{ctx.guild.name}", inline=True)
-        embed.add_field(name="Server ID:", value=ctx.guild.id, inline=True)
-        embed.add_field(name='Owner:', value=ctx.guild.owner, inline=True)
-        embed.add_field(name='Verification Level:', value=ctx.guild.verification_level, inline=True)
-        embed.add_field(name='Highest role:', value=ctx.guild.roles[-2], inline=True)
-        embed.add_field(name="Region:", value=ctx.guild.region, inline=True)
-        embed.add_field(name="Explicit Content Filter: ", value=ctx.guild.explicit_content_filter, inline=True)
-        embed.add_field(name='Number Of Members', value=ctx.guild.member_count, inline=True)
-        embed.add_field(name='Bots:', value=(', '.join(list_of_bots)))
-        embed.add_field(name='Created At', value=ctx.guild.created_at.__format__('%A, %d. %B %Y @ %H:%M:%S'), inline=False)
-        embed.set_thumbnail(url=ctx.guild.icon_url)
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['gUser'], help="Get information of a GitHub user.")
@@ -434,31 +429,209 @@ class Information(commands.Cog, description="Informative commands", name='Inform
                 embed.add_field(name=f"{i['name']}", value=f"Likes: {i['likes']} | Downloads: {i['downloads']}", inline=False)
             await ctx.send(embed=embed)
 
-    @commands.command(help="Get a category leaderboard on Chess.com")
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def chess_top(self, ctx, *, words:str = "daily"):
-        data2 = self.data['leaderboards']
-        categories = self.data['leaderboards'].keys()
-        for category in categories:
-            if category == words.lower().strip():
-                embed = discord.Embed(colour=discord.Colour.blurple(), title=f"Category: {category}")
-                embed.set_author(name="Chess.com leaderboard!")
-                for player in data2[category]:
-                    embed.add_field(name=f"Rank: {player['rank']}", value=f"Username: {player['username']} | Rating: {player['score']}", inline=False)
-                await ctx.send(embed=embed)
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(help="Get info about a role.")
+    async def roleinfo(self, ctx: commands.Context, role: discord.Role = None):
+        prefix = ctx.clean_prefix
+        if role is None:
+            ctx.command.reset_cooldown(ctx)
+            return await ctx.reply(embed=error_embed(
+                f"{EMOJIS['tick_no']} Invalid Usage!",
+                f"Please mention a role to get info about.\nCorrect Usage: `{prefix}roleinfo @role`"
+            ))
+        embed = discord.Embed(
+            title=f"{EMOJIS['tick_yes']} Role Information",
+            color=role.color
+        )
+        embed.add_field(
+            name="Basic Info:",
+            value=f"""
+```yaml
+Name: {role.name}
+ID: {role.id}
+Position: {role.position}
+Color: {str(role.color)[1:]}
+Hoisted: {role.hoist}
+Members: {len(role.members)}
+```
+            """,
+            inline=False
+        )
+        something = ""
+        for permission in role.permissions:
+            a, b = permission
+            a = ' '.join(a.split('_')).title()
+            hmm = '+' if b else '-'
+            something += hmm + ' ' + a + '\n'
+        embed.add_field(
+            name="Permissions:",
+            value=f"```diff\n{something}\n```",
+            inline=False
+        )
+        await ctx.reply(embed=embed)
 
-    @commands.command(hidden=True)
-    @commands.cooldown(1, 2, commands.BucketType.user)
-    async def chess_player(self, ctx, *, words:str = "VnPower"):
-        def print_leaderboard(self, username):
-            data = get_player_stats(username).json()
-            categories = ['chess_blitz', 'chess_rapid', 'chess_bullet']
-            embed = discord.Embed(colour=discord.Colour.blurple(), title=f"{words}'s stats on Chess.com")
-            for category in categories:
-                embed.add_field(name= f'Category: {category} |', value=f"Current: {data[category]['last']['rating']} | Best: {data[category]['best']['rating']}", inline=False)
-            return embed
-        embed = print_leaderboard(words)
-        await ctx.send(embed=embed)
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(help="Get info about users!")
+    async def userinfo(self, ctx, user: Optional[Union[discord.Member, discord.User]] = None):
+        if isinstance(ctx, commands.Context):
+            user = user or ctx.author
+        else:
+            user = user or ctx.target
+
+        _user = await self.bot.fetch_user(user.id)  # to get the banner
+
+        embed = discord.Embed(
+            color=_user.accent_color or user.color or MAIN_COLOR,
+            description=f"{user.mention} {escape_markdown(str(user))} ({user.id})",
+            timestamp=datetime.datetime.utcnow()
+        ).set_author(name=user, icon_url=user.display_avatar.url
+        ).set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar.url
+        ).set_thumbnail(url=user.display_avatar.url
+        )
+        if _user.banner is not None:
+            embed.set_image(url=_user.banner.url)
+
+        embed1 = embed.copy()
+        c = str(int(user.created_at.astimezone(datetime.timezone.utc).timestamp()))
+        j = str(int(user.joined_at.astimezone(datetime.timezone.utc).timestamp())) if isinstance(user, discord.Member) else None
+        embed1.add_field(
+            name="Account Info:",
+            value=f"""
+**Username:** {escape_markdown(user.name)}
+**Nickname:** {escape_markdown(user.display_name)}
+**ID:** {user.id}
+            """,
+            inline=False
+        )
+        embed1.add_field(
+            name="Age Info:",
+            value=f"""
+**Created At:** <t:{c}:F> <t:{c}:R>
+**Joined At:** {'<t:' + j + ':F> <t:' + j + ':R>' if j is not None else 'Not in the server.'}
+            """,
+            inline=False
+        )
+        embed1.add_field(
+            name="URLs:",
+            value=f"""
+**Avatar URL:** [Click Me]({user.display_avatar.url})
+**Guild Avatar URL:** [Click Me]({(user.guild_avatar.url if user.guild_avatar is not None else user.display_avatar.url) if isinstance(user, discord.Member) else user.display_avatar.url})
+**Banner URL:** {'[Click Me](' + _user.banner.url + ')' if _user.banner is not None else 'None'}
+            """,
+            inline=False
+        )
+
+        embed2 = embed.copy()
+        r = (', '.join(role.mention for role in user.roles[1:][::-1]) if len(user.roles) > 1 else 'No Roles.') if isinstance(user, discord.Member) else 'Not in server.'
+        embed2.add_field(
+            name="Roles:",
+            value=r if len(r) <= 1024 else r[0:1006] + ' and more...',
+            inline=False
+        )
+
+        embed3 = embed.copy()
+        embed3.add_field(
+            name="Permissions:",
+            value=', '.join([perm.replace('_', ' ').title() for perm, value in iter(user.guild_permissions) if value]) if isinstance(user, discord.Member) else 'Not in server.',
+            inline=False
+        )
+        embeds = [embed1, embed2, embed3]
+        await ctx.reply(embed=embed1)
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(help="Get info about the server!")
+    async def serverinfo(self, ctx: commands.Context):
+        guild: discord.Guild = ctx.guild
+        embed = discord.Embed(
+            title=f"Server Information",
+            description=f"Description: {guild.description}",
+            color=MAIN_COLOR
+        ).set_author(
+            name=guild.name,
+            icon_url=guild.me.display_avatar.url if guild.icon is None else guild.icon.url
+        ).set_footer(text=f"ID: {guild.id}")
+        if guild.icon is not None:
+            embed.set_thumbnail(url=guild.icon.url)
+        embed.add_field(
+            name="Basic Info:",
+            value=f"""
+**Owner:** <@{guild.owner_id}>
+**Created At:** <t:{round(time.time() - (datetime_to_seconds(guild.created_at) - time.time()))}:F>
+**Region:** {str(guild.region).title()}
+**System Channel:** {"None" if guild.system_channel is None else guild.system_channel.mention}
+**Verification Level:** {str(guild.verification_level).title()}
+            """,
+            inline=False
+        )
+        embed.add_field(
+            name="Members Info:",
+            value=f"""
+**Members:** `{len(guild.members)}`
+**Humans:** `{len(list(filter(lambda m: not m.bot, guild.members)))}`
+**Bots:** `{len(list(filter(lambda m: m.bot, guild.members)))}`
+            """,
+            inline=True
+        )
+        embed.add_field(
+            name="Channels Info:",
+            value=f"""
+**Categories:** `{len(guild.categories)}`
+**Text Channels:** `{len(guild.text_channels)}`
+**Voice Channels:** `{len(guild.voice_channels)}`
+**Threads:** `{len(guild.threads)}`
+            """,
+            inline=True
+        )
+        embed.add_field(
+            name="Other Info:",
+            value=f"""
+**Roles:** `{len(guild.roles)}`
+**Emojis:** `{len(guild.emojis)}`
+**Stickers:** `{len(guild.stickers)}`
+                """
+        )
+        if guild.features:
+            embed.add_field(
+                name="Features:",
+                value=', '.join([feature.replace('_', ' ').title() for feature in guild.features]),
+                inline=False
+            )
+        if guild.banner is not None:
+            embed.set_image(url=guild.banner.url)
+
+        return await ctx.reply(embed=embed)
+
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.command(aliases=['av', 'pfp'], help="Get the user's avatar")
+    async def avatar(self, ctx: commands.Context, user: Optional[Union[discord.Member, discord.User]] = None):
+        user = user or ctx.author
+        embed = discord.Embed(
+            title=f"Avatar of {escape_markdown(str(user))}",
+            color=user.color,
+            description=f'Link as: [`png`]({user.display_avatar.replace(format="png").url}) | [`jpg`]({user.display_avatar.replace(format="jpg").url}) | [`webp`]({user.display_avatar.replace(format="webp").url})'
+        ).set_image(url=user.display_avatar.url)
+        await ctx.message.reply(embed=embed)
+
+    @commands.command(aliases=['lc'],
+                      help="Lines of python code used making the bot")
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def linecount(self, ctx):
+        """ Lines of python code used making the bot """
+
+        pylines = 0
+        pyfiles = 0
+        for path, subdirs, files in os.walk('.'):
+            for name in files:
+                if name.endswith('.py'):
+                    pyfiles += 1
+                    with codecs.open('./' + str(pathlib.PurePath(path, name)), 'r', 'utf-8') as f:
+                        for i, l in enumerate(f):
+                            if l.strip().startswith('#') or len(l.strip()) == 0:  # skip commented lines.
+                                pass
+                            else:
+                                pylines += 1
+
+        await ctx.send("I am made up of **{0}** files and **{1}** lines of code.\n".format(f'{pyfiles:,}', f'{pylines:,}'))
 
 def setup(bot):
     bot.add_cog(Information(bot))

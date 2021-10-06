@@ -17,6 +17,14 @@ class Moderation(commands.Cog, description="A powerful banhammer", name="Moderat
     def __init__(self, bot):
         self.bot = bot
 
+    async def _basic_cleanup_strategy(self, ctx, search):
+        count = 0
+        async for msg in ctx.history(limit=search, before=ctx.message):
+            if msg.author == ctx.me:
+                await msg.delete()
+                count += 1
+        return {'Bot': count}
+
     @staticmethod
     async def get_invite_for_reinvite(ctx: commands.Context, max_age: int = 86400):
         """Handles the reinvite logic for getting an invite
@@ -262,42 +270,29 @@ class Moderation(commands.Cog, description="A powerful banhammer", name="Moderat
         await ctx.send(embed=embed)
         loop = ctx.bot.loop
         loop.create_task(perform_mute_wait(time))
-'''
-    @commands.command()
-    async def tempban(self, ctx: commands.Context, member: discord.Member, duration: Optional[commands.TimedeltaConverter] = None, days: Optional[int] = None,*,reason: str = None):
-        """Temporarily ban a user from this server.
-        `duration` is the amount of time the user should be banned for.
-        `days` is the amount of days of messages to cleanup on tempban.
-        Examples:
-           - `[p]tempban @Twentysix Because I say so`
-            This will ban Twentysix for the default amount of time set by an administrator.
-           - `[p]tempban @Twentysix 15m You need a timeout`
-            This will ban Twentysix for 15 minutes.
-           - `[p]tempban 428675506947227648 1d2h15m 5 Evil person`
-            This will ban the user for 1 day 2 hours 15 minutes and will delete the last 5 days of their messages.
-        """
-        guild = ctx.guild
-        author = ctx.author
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        if author == member:
-            embed.set_author(name=f"I can't let you do that {author.mention}!")
-            await ctx.send(embed=embed)
-            return
-        elif guild.me.top_role <= member.top_role or member == guild.owner:
-            await ctx.send("I cannot do that due to Discord hierarchy rules.")
-            return
 
-        if duration is None:
-            duration = timedelta(seconds=await self.config.guild(guild).default_tempban_duration())
-        unban_time = datetime.now(timezone.utc) + duration
 
-        if days is None:
-            days = await self.config.guild(guild).default_days()
-        if not (0 <= days <= 7):
-            await ctx.send("Invaild days. Days must be between 0 and 7.")
-        invite = await self.get_invite_for_reinvite(ctx, int(duration.total_seconds() + 86400))
-        if invite is None:
-            invite = ""
-'''
+    @commands.command(help="Clean up the bot's messages")
+    @commands.has_permissions(manage_messages=True)
+    @commands.cooldown(1, 5, commands.BucketType.member)
+    @commands.guild_only()
+    async def cleanup(self, ctx, search=100):
+        """ Cleans up the bot's messages from the channel.
+        If the bot has Manage Messages permissions then it will try to delete messages that look like they invoked the bot as well. """
+
+        strategy = self._basic_cleanup_strategy
+        if ctx.me.permissions_in(ctx.channel).manage_messages:
+            strategy = self._complex_cleanup_strategy
+
+        spammers = await strategy(ctx, search)
+        deleted = sum(spammers.values())
+        messages = ['{0} message was removed.'.format(deleted) if deleted == 1 else '{0} messages were removed.'.format(deleted)]
+        if deleted:
+            messages.append('\nTotal messages by user:')
+            spammers = sorted(spammers.items(), key=lambda t: t[1], reverse=True)
+            messages.extend(f'- **{author}**: {count}' for author, count in spammers)
+
+        await ctx.send('\n'.join(messages))
+
 def setup(bot):
     bot.add_cog(Moderation(bot))

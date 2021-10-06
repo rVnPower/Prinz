@@ -18,7 +18,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0'}
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Send a random anime image from VnPower's Google Drive")
+    @commands.command(help="Send a random illustration from my owner's Google Drive")
     async def sfw(self, ctx):
       url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/G-Rated/{random.randint(1,145)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())
@@ -27,7 +27,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
       await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Send a random ecchi image")
+    @commands.command(help="Send a random ecchi illustration from my owner's Google Drive")
     async def ecchi(self, ctx):
       url = f'https://raw.githubusercontent.com/rVnPower/LewdPower/master/Yes/Ecchi/{random.randint(1,82)}.jpg'
       embed = discord.Embed(colour=discord.Colour.blurple())
@@ -58,7 +58,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
                     await msg.remove_reaction('🔄', ctx.author)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Send a random catgirl pic")
+    @commands.command(help="Send a random catgirl illustration")
     async def neko(self, ctx):
         loop = asyncio.get_event_loop()
         r = await loop.run_in_executor(None, animec.waifu.Waifu.neko)
@@ -75,7 +75,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Get a bunch of anime images on HentaiZ")
+    @commands.command(help="Get a bunch of SFW illustration on HentaiZ")
     async def hz_anime(self, ctx, page:int=random.randint(1, 200)):
         r = await get_requests_as_text()
         soup = BeautifulSoup(r, 'lxml')
@@ -92,7 +92,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
             pass
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Kiss an user")
+    @commands.command(help="Kiss someone")
     async def kiss(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -104,7 +104,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Hug an user")
+    @commands.command(help="Hug someone")
     async def hug(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -116,7 +116,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Cuddle an user")
+    @commands.command(help="Cuddle someone")
     async def cuddle(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -161,7 +161,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Pat an user")
+    @commands.command(help="Pat someone")
     async def pat(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -173,7 +173,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Lick an user")
+    @commands.command(help="Lick somebody")
     async def lick(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -186,7 +186,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Bite an user")
+    @commands.command(help="Bite somebody")
     async def bite(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -198,7 +198,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Handhold an user")
+    @commands.command(help="Handhold somebody")
     async def handhold(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -210,7 +210,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Slap an user")
+    @commands.command(help="Slap somebody")
     async def slap(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -222,7 +222,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Bonk an user")
+    @commands.command(help="Bonk somebody")
     async def bonk(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -234,7 +234,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Poke an user")
+    @commands.command(help="Poke somebody")
     async def poke(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -246,7 +246,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Kill an user")
+    @commands.command(help="Kill somebody")
     async def kill(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -258,7 +258,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Bully an user")
+    @commands.command(help="Bully somebody")
     async def bully(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)
@@ -270,7 +270,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
         await ctx.send(embed=embed)
 
     @commands.cooldown(1, 2, commands.BucketType.user)
-    @commands.command(help="Highfive with an user")
+    @commands.command(help="Highfive with somebody")
     async def highfive(self, ctx, member:discord.Member):
         mem = str(member)
         author = str(ctx.author)

@@ -1,13 +1,14 @@
 import discord
 from discord.ext import commands
 
+import aiohttp
 from typing import Union
 
 from utils.embed import error_embed, success_embed
 from utils.ui import Confirm
 from config import EMOJIS, MAIN_COLOR
 
-class Emojis(commands.Cog):
+class Emojis(commands.Cog, description="Things with emojis"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -29,7 +30,7 @@ class Emojis(commands.Cog):
             pass
         await ctx.send(emoji.url)
 
-    @commands.command(help="Clone emojis!", aliases=['clone-emoji', 'cloneemoji'])
+    @commands.command(help="Clone emojis! (Thanks to EpicBot)", aliases=['clone-emoji', 'cloneemoji'])
     @commands.has_permissions(manage_emojis=True)
     @commands.bot_has_permissions(manage_emojis=True)
     @commands.cooldown(3, 30, commands.BucketType.user)
@@ -110,77 +111,35 @@ class Emojis(commands.Cog):
             view=None
         )
 
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.author.bot:
-            return
-        if not message.guild:
-            return
-        # checking if nqn is enabled or not
-        guild_config = await self.bot.get_guild_config(message.guild.id)
-        if not guild_config['nqn']:
-            return
-        # checking for blacklisted users
-        for e in self.bot.blacklisted_cache:
-            if message.author.id == e['_id']:
-                return
-        # spliting the message content
-        pain = message.content.split(" ")
+    @commands.command(help="Create an emoji", aliases=['cemoji', 'createemoji'], name='create-emoji')
+    @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.member)
+    @commands.has_permissions(manage_emojis=True)
+    @commands.bot_has_permissions(manage_emojis=True)
+    async def createemoji(self, ctx, emoji_url: str, *, emoji_name: str):
+        """ Create an emoji """
 
-        # empty string that i'll fill with cu- i mean the final nqn output text
-        final_msg = ""
-        # am iterating thru every single word in the list `pain`
-        for e in pain:
-            # spliting the word with ":" for checking if it has emoji or not
-            hmm = e.split(":")
+        if len(emoji_name) > 32:
+            raise commands.BadArgument("Emoji name can't be longer than 32 characters, you're {0} characters over".format(len(emoji_name) - 32))
 
-            # if it had emoji it would have 2 `:` in the word which means the lenght of `hmm` would atleast be `3` and if its not 3 then we dont do anything
-            if len(hmm) < 3:
-                final_msg += e + " "
-            # it has 2 or more `:` in the word so it has chances of having `:something:` in it
-            else:
-                i = 1
-                # another empty string that im gonna fill with cu- i mean text!
-                interesting = ""
-                for h in range(0, len(hmm)):
-                    ee = hmm[h]
-                    # now over here im checking if the word that im replacing with the emoji is in between the 2 `:`'s
+        if len(ctx.guild.emojis) >= ctx.guild.emoji_limit:
+            raise commands.BadArgument("This guild has reached the max amount of emojis added.")
 
-                    # like when i split "amogus:some_emoji:amogus" i will get ["amogus", "some_emoji", "amogus"]
-                    # so im making sure that i replace "some_emoji" with the actual emoji string
-                    if i % 2 == 0:
-                        # finding the emoji...
-                        emoji = discord.utils.get(self.bot.emojis, name=ee)
-                        # here im checking if the actual word contains a nitro emoji or a fake emoji
+        try:
+            async with aiohttp.ClientSession() as c:
+                async with c.get(emoji_url) as f:
+                    bio = await f.read()
 
-                        # by nitro emoji i mean "<:emoji_name:ID>" and by fake emoji i mean ":emoji_name:"
-                        # we only want to replace if it contains a fake emoji and not a real emoji
-                        if emoji is not None and emoji.is_usable() and (hmm[h + 1][18: 19] != ">"):
-                            interesting += str(emoji)
-                        else:
-                            interesting += ":" + ee + (":" if len(hmm) != i else "")
-                    else:
-                        interesting += ee
-                    i += 1
-                final_msg += interesting + " "
-        if final_msg not in [message.content, message.content[:-1], message.content + " "]:
-            msg_attachments = []
-            for attachment in message.attachments:
-                uwu = await attachment.to_file()
-                msg_attachments.append(uwu)
-            await message.delete()
-            webhooks = await message.channel.webhooks()
-            webhook = discord.utils.get(webhooks, name="EpicBot NQN", user=self.bot.user)
-            if webhook is None:
-                webhook = await message.channel.create_webhook(name="EpicBot NQN")
-
-            await webhook.send(
-                final_msg,
-                files=msg_attachments,
-                username=message.author.display_name,
-                avatar_url=message.author.display_avatar.url,
-                allowed_mentions=discord.AllowedMentions.none()
-            )
+            emoji = await ctx.guild.create_custom_emoji(name=emoji_name, image=bio)
+            await ctx.send("{0} Successfully created {1} emoji in this server.".format(EMOJIS['tick_yes'], emoji))
+        except aiohttp.InvalidURL:
+            await ctx.send("Emoji URL is invalid")
+        except discord.InvalidArgument:
+            await ctx.send("The URL doesn't contain any image")
+        except discord.HTTPException as err:
+            await ctx.send(err)
+        except TypeError:
+            await ctx.send("You need to either provide an image URL or upload one with the command")
 
 def setup(bot):
     bot.add_cog(Emojis(bot))

@@ -10,7 +10,7 @@ class HelpEmbed(discord.Embed): # Our embed with some preset attributes to avoid
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.timestamp = datetime.datetime.utcnow()
-        text = "Use help [command] or help [category] for more information | <> is required | [] is optional"
+        text = "Made from ❤️ by VnPower | ÔwÔ"
         self.set_footer(text=text)
         self.color = MAIN_COLOR
 
@@ -32,7 +32,7 @@ class PrinzHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         """triggers when a `<prefix>help` is called"""
         ctx = self.context
-        embed = HelpEmbed(title=f"{ctx.me.display_name} Help")
+        embed = HelpEmbed().set_author(name=f"{ctx.me.display_name} Help", icon_url=ctx.me.display_avatar.url)
         # embed.set_thumbnail(url=ctx.author.avatar_url)
         usable = 0 
 
@@ -50,7 +50,7 @@ class PrinzHelp(commands.HelpCommand):
 
                 embed.add_field(name=f"{name} [{amount_commands}]", value=description, inline=True)
 
-        embed.description = f"{usable} usable"
+        embed.description = f"{amount_commands} commands | {usable} usable"
         embed.add_field(name="Like the bot?", value="[Invite the bot](https://discord.com/api/oauth2/authorize?client_id=877182587725049897&permissions=139012336887&scope=bot)", inline=False)
 
         await self.send(embed=embed)

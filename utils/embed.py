@@ -1,7 +1,7 @@
 from discord import Embed, Colour
 from config import MAIN_COLOR, RED_COLOR, YELLOW_COLOR
 
-def success_embed(title, description=None):
+def success_embed(title, description):
 	return Embed(
 		title=title,
 		description=description,
@@ -9,7 +9,7 @@ def success_embed(title, description=None):
 	)
 
 
-def normal_embed(title, description=None):
+def normal_embed(title, description):
 	return Embed(
 		title=title,
 		description=description,
