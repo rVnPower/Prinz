@@ -1,10 +1,9 @@
 #####################################################
 import discord
 from discord.utils import escape_markdown
-from discord.ext import commands, tasks
+from discord.ext import commands
 import random
 import wikipedia
-import aiohttp
 import json
 import asyncio
 import wolframalpha
@@ -15,7 +14,13 @@ import datetime
 import time
 import codecs
 import pathlib
-
+import aiohttp
+import discord
+import contextlib
+from bs4 import BeautifulSoup
+import json
+import logging
+import re
 import os
 from pysaucenao import SauceNao, PixivSource, VideoSource, MangaSource, errors
 from typing import List, Optional, Union
@@ -632,6 +637,40 @@ Members: {len(role.members)}
                                 pylines += 1
 
         await ctx.send("I am made up of **{0}** files and **{1}** lines of code.\n".format(f'{pyfiles:,}', f'{pylines:,}'))
+
+    @commands.command(brief="Search the urban dictionary")
+    @commands.guild_only()
+    @commands.is_nsfw()
+    async def urban(self, ctx, *, urban: str):
+        """ Search for a term in the urban dictionary """
+
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'http://api.urbandictionary.com/v0/define?term={urban}') as r:
+                url = await r.json()
+
+        if url is None:
+            return await ctx.send("No URL found")
+
+        count = len(url.get('list', []))
+        if count == 0:
+            return await ctx.send("No results were found.")
+        result = url['list'][random.randint(0, count - 1)]
+
+        definition = result['definition']
+        example = result['example']
+        if len(definition) >= 1000:
+            definition = definition[:1000]
+            definition = definition.rsplit(' ', 1)[0]
+            definition += '...'
+
+        text = """**Search:** {0}\n**Author:** {1}\n
+                 {2} | {3}\n**Definition:**\n{4}\n
+                 **Example:**\n{5}""".format(result['word'], result['author'],
+                                             result['thumbs_up'], result['thumbs_down'],
+                                             definition, example)
+        await ctx.send(text)
+
+
 
 def setup(bot):
     bot.add_cog(Information(bot))

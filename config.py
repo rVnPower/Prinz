@@ -51,6 +51,7 @@ EXTENSIONS = [
     'cogs.owner',
     'cogs.utility',
     'cogs.images',
+    'cogs.extrainfo',
     'cogs.events.errors',
     'cogs.events.events',
 ]
