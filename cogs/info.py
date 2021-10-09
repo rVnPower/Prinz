@@ -670,7 +670,5 @@ Members: {len(role.members)}
                                              definition, example)
         await ctx.send(text)
 
-
-
 def setup(bot):
     bot.add_cog(Information(bot))

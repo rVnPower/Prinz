@@ -46,12 +46,12 @@ EXTENSIONS = [
     'cogs.info',
     'cogs.mod',
     'cogs.music',
-    # 'cogs.musictest2',
     'cogs.NSFW',
     'cogs.owner',
     'cogs.utility',
     'cogs.images',
     'cogs.extrainfo',
+    # 'cogs.russianroulette',
     'cogs.events.errors',
     'cogs.events.events',
 ]

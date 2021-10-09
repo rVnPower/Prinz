@@ -240,7 +240,7 @@ class Animensfw(commands.Cog, description="NSFW anime commands", name="Anime NSF
     @commands.cooldown(1, 2, commands.BucketType.user)
     async def random_doujin(self, ctx):
         if ctx.channel.is_nsfw():
-            nhentai_async = NHentaiAsync()
+            nhentai_async = NHentai.NHentaiAsync()
             Doujin = await nhentai_async.get_random()
             embed = discord.Embed(colour=discord.Colour.blurple(), title=Doujin.title, url=f'https://nhentai.net/g/{Doujin.id}', description=f"ID: {Doujin.id}")
             embed.set_image(url=Doujin.images[0])

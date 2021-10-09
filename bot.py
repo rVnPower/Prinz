@@ -28,6 +28,7 @@ bot.session = aiohttp.ClientSession()
 bot.process = psutil.Process()
 
 for cog in EXTENSIONS:
+    print(cog)
     bot.load_extension(cog)
 
 bot.run(BOT_TOKEN if not TEST_MODE else TEST_TOKEN)

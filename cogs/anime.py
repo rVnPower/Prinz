@@ -8,7 +8,7 @@ import asyncio
 import aiohttp
 from bs4 import BeautifulSoup
 
-from utils.requests import get_requests_as_json, get_requests_as_text
+from utils.requests import async_post_json, async_post_text
 from discord.ext.commands.cooldowns import BucketType
 #####################################################
 
@@ -77,7 +77,7 @@ class Anime(commands.Cog, description="For weebs", name="Anime"):
     @commands.cooldown(1, 2, commands.BucketType.user)
     @commands.command(help="Get a bunch of SFW illustration on HentaiZ")
     async def hz_anime(self, ctx, page:int=random.randint(1, 200)):
-        r = await get_requests_as_text()
+        r = await async_post_text()
         soup = BeautifulSoup(r, 'lxml')
         links = []
         for img in soup.findAll('img', class_="lazyload img-fluid mb-2 shadow-5-strong rounded"):
