@@ -1,10 +1,6 @@
 #####################################################
 import discord
 from discord.ext import commands, tasks
-import math
-import random
-import string
-import requests
 import json
 import nekos
 import asyncio
@@ -96,7 +92,7 @@ async def convert(self, ctx, argument):
 			await ctx.send(embed=embed)
 	return time
 
-class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
+class Utility(commands.Cog, description="Some tools", name="Utlilty"):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -118,7 +114,7 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
 		await ctx.send(r)
 
 	@commands.command(help="Create a simple poll")
-	@commands.cooldown(1, 2, commands.BucketType.user)
+	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def poll(self, ctx, time:str = '30m', *, topic:str):
 		embed = discord.Embed(title=f"{ctx.author} asks: {topic}", description=f":one: Yes\n:two: No", color = discord.Colour.blurple())
 
@@ -353,4 +349,4 @@ class Utlilty(commands.Cog, description="Some tools", name="Utlilty"):
 		await ctx.channel.send("```Markup\n{}```".format(response))
 
 def setup(bot):
-	bot.add_cog(Utlilty(bot))
+	bot.add_cog(Utility(bot))

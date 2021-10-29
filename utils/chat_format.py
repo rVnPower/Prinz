@@ -13,3 +13,6 @@ def box(text: str, lang: str = "") -> str:
     """
     ret = "```{}\n{}\n```".format(lang, text)
     return ret
+
+def li(title: str = "", desc:str):
+    return ""

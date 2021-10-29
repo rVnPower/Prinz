@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 from random import randint, choice
 import asyncio
 import time
-from games import twenty, tictactoe, minesweeper, wumpus
+from games import twenty, tictactoe, minesweeper, wumpus, hangman
 from discord.ext.commands.cooldowns import BucketType
 
 from discord.ext import commands

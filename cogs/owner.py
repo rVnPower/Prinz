@@ -217,7 +217,11 @@ class Config(commands.Cog, description="For admin", name="Config"):
 				embed = discord.Embed(color=ctx.me.color, description = f"❌ Execution error ```\n error too long, check the console\n```")
 				await message.edit()
 			raise e
-	
+
+	@commands.command(help="About me!")
+	@commands.cooldown(1, 10, commands.BucketType.user)
+	async def about(self, ctx):
+		embed = normal_embed(title="Prinz", )
 
 def setup(bot):
 	bot.add_cog(Config(bot))

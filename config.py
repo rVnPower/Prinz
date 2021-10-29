@@ -30,11 +30,16 @@ STARBOARD_COLOR = 15655584
 # LINK
 EMOJIS = {
     "tick_no": "❌",
-    "tick_yes": "✔️",
+    "tick_yes": ":white_check_mark:",
     "loading": "<a:typing:883912551367327824>",
     'nsfw': '🔞',
     'flushed': "<:HyperFlushed:661729636513742853>",
     'heart': "<:heart_boost:878671895690633247>",
+    'up_arrow': ":arrow_up:",
+    'down_arrow': ":arrow_down:",
+    'left_arrow': ":arrow_left:",
+    'right_arrow': ":arrow_right:",
+    'snowflake': ":snowflake:"
 }
 
 # COGS
@@ -54,4 +59,8 @@ EXTENSIONS = [
     # 'cogs.russianroulette',
     'cogs.events.errors',
     'cogs.events.events',
+]
+
+TEST_EXTENSIONS = [
+    'test_cogs.quiz'
 ]

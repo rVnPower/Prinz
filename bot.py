@@ -8,7 +8,7 @@ import psutil
 # from chatterbot import ChatBot
 # from chatterbot.trainers import ListTrainer
 from utils.help import PrinzHelp
-from config import BOT_TOKEN, TEST_TOKEN, BOT_PREFIX, TEST_BOT_PREFIX, EXTENSIONS
+from config import BOT_TOKEN, TEST_TOKEN, BOT_PREFIX, TEST_BOT_PREFIX, EXTENSIONS, TEST_EXTENSIONS
 from utils.bot import Bot
 
 TEST_MODE = True
@@ -30,5 +30,11 @@ bot.process = psutil.Process()
 for cog in EXTENSIONS:
     print(cog)
     bot.load_extension(cog)
+
+if TEST_MODE:
+    for cog in TEST_EXTENSIONS:
+        print(cog)
+        bot.load_extension(cog)
+
 
 bot.run(BOT_TOKEN if not TEST_MODE else TEST_TOKEN)
